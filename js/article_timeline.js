@@ -121,10 +121,13 @@
 				return data
 			})()
 			
+			start_date = ( statistic.length > 0 ) ? statistic[statistic.length - 1].date : new Date();
+			start_date = new Date( start_date.getFullYear(), start_date.getMonth(), start_date.getDate() + 1);
+
 			end_date = ( statistic.length > 0 ) ? statistic[0].date : new Date();
 			end_date = new Date( end_date.getFullYear(), end_date.getMonth(), end_date.getDate() + 1);
-			
-			this.data.date_range.from = new Date( end_date.getFullYear(), end_date.getMonth(), end_date.getDate() - 31 );
+
+			this.data.date_range.from = start_date;
 			this.data.date_range.to = end_date;
 			
 			this.crosshair_position = this.data.date_range.from.getTime();
@@ -142,19 +145,26 @@
 			};
 
 			scale_change_bar.bind("state-change", function(e, state){
-				var date_range = { "from" : new Date( namespace.crosshair_position ), "to" :new Date( namespace.crosshair_position ) };
-				switch( state.name ){
-					case "MONTH"    :
-					default         :
-							date_range.to = new Date( date_range.to.setDate( date_range.to.getDate() + 31 ) );
-						break;
-					case "WEEK"     :
-							date_range.to = new Date( date_range.to.setDate( date_range.to.getDate() + 7 ) );
-						break;
-					case "DAY"      :
-							date_range.to = new Date( date_range.to.setDate( date_range.to.getDate() + 1 ) );
-						break;
-				}
+//				var date_range = {
+//					"from" 	: 	new Date( namespace.crosshair_position )
+//					,"to" 	:	new Date( namespace.crosshair_position )
+//				};
+				var date_range = {
+					"from" 	: 	namespace.data.date_range.from
+					,"to" 	:	namespace.data.date_range.to
+				};
+//				switch( state.name ){
+//					case "MONTH"    :
+//					default         :
+//							date_range.to = new Date( date_range.to.setDate( date_range.to.getDate() + 31 ) );
+//						break;
+//					case "WEEK"     :
+//							date_range.to = new Date( date_range.to.setDate( date_range.to.getDate() + 7 ) );
+//						break;
+//					case "DAY"      :
+//							date_range.to = new Date( date_range.to.setDate( date_range.to.getDate() + 1 ) );
+//						break;
+//				}
 				namespace.assemblyTempData.apply( namespace, [ namespace.data.date_range ] );
 				namespace.plotInit(date_range);
 				namespace.graph.setCrosshair({"x" : namespace.crosshair_position});
@@ -836,6 +846,7 @@
 				graph_container = graph.getPlaceholder();
 			
 			function scrollToSelectedRange(){
+
 				var coord = graph.getCrosshairPosition(),
 					offset = graph.c2p( coord );
 
@@ -860,7 +871,7 @@
 
 					namespace.article_list.load(load_date_range);
 					namespace.article_list.element.bind("items.loaded", function(){
-						scrollToSelectedRange();
+//						scrollToSelectedRange();   //
 					})
 				}
 			}
@@ -870,7 +881,7 @@
 				namespace.navigator.graph.lockCrosshair();
 				namespace.navigator.crosshair_position = parseInt( data.x )
 				graph.setCrosshair({"x" : namespace.navigator.crosshair_position });
-				scrollToSelectedRange()
+//				scrollToSelectedRange()
 			})
 			
 			graph_container.bind("mousedown.graph_navigation", function(e){
@@ -878,7 +889,7 @@
 				namespace.navigator.graph.unlockCrosshair();
 				
 				graph_container.bind("mousemove.graph_navigation", function(){
-					scrollToSelectedRange()
+//					scrollToSelectedRange()
 				});
 				graph_container.bind("mouseup.graph_navigation", function(){
 					graph_container
@@ -894,6 +905,7 @@
 			var scrollTimer = 0;
 			$(".timeline_navigator_controls a.prev,.timeline_navigator_controls a.next", this.target).bind("click", function(e){
 				e.preventDefault();
+				return;
 //				alert('');
 				var item = $(this),
 					scrolled_items;
@@ -935,7 +947,7 @@
 				namespace.scrollEvents.update.objects.upload.apply(namespace);
 				namespace.scrollEvents.update.statistic.redraw.apply(namespace);
 				
-				namespace.navigator.graph.setCrosshair({"x" : namespace.article_list.active.item.data("timestamp")});
+//				namespace.navigator.graph.setCrosshair({"x" : namespace.article_list.active.item.data("timestamp")});
 			});
 		},
 		
