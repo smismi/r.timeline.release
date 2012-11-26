@@ -4,7 +4,9 @@
 	<meta charset="utf-8">
 	<title>Назначение Шойгу и отставка Сердюкова | РИА Новости</title>
 
+
 	<link rel="stylesheet" type="text/css" href="css/common.css">
+	<link rel="stylesheet" type="text/css" href="css/scrollbar.css">
 
 	<script type="text/javascript" src="js/jquery.min.js"></script>
 	<script type="text/javascript" src="js/jquery.state.js?"></script>
@@ -13,8 +15,11 @@
 	<script type="text/javascript" src="js/jquery.flot.crosshair.js?"></script>
 	<script type="text/javascript" src="js/jquery.flot.navigate.js?"></script>
 	<script type="text/javascript" src="js/article_timeline.js"></script>
+	<script type="text/javascript" src="js/iscroll-lite.js"></script>
 </head>
 <body>
+
+
 <div id="story_timeline_container" class="story_timeline_container">
 	<div class="story_main_container">
 		<div class="story_main" style="border: none;">
@@ -31,13 +36,13 @@
 				</div>
 			</div>
 			<div class="timeline_navigator_container">
-				<div class="timeline_navigator_controls" style="width:1000px; overflow: auto"><a href="#"
+				<div id="wrapper" class="timeline_navigator_controls" style="width:1000px; overflow: auto"><a href="#"
 																								 class="prev"><span
 						class="ico"></span></a><a
 						href="#" class="next"><span class="ico"></span></a>
 
 					<div id="timeline_navigator" unselectable="on"
-						 style="padding: 0px; position: relative; width: 1000px;">
+						 style="padding: 0px; position: relative; width: 4000px;">
 					</div>
 					<div id="timeline_navigator_loader" class="timeline_loader_1"></div>
 				</div>
@@ -121,7 +126,12 @@
 					},
 					"list":"shoygu_serdyukov_06112012"
 				});
+
+
+		myScroll = new iScroll('wrapper', { scrollbarClass: 'myScrollbar', hScroll: true, vScroll: false});
 	});
 </script>
+
+
 </body>
 </html>

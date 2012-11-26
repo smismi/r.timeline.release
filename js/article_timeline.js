@@ -122,10 +122,10 @@
 			})()
 			
 			start_date = ( statistic.length > 0 ) ? statistic[statistic.length - 1].date : new Date();
-			start_date = new Date( start_date.getFullYear(), start_date.getMonth(), start_date.getDate() + 1);
+			start_date = new Date( start_date.getFullYear(), start_date.getMonth(), start_date.getDate() - 10);
 
 			end_date = ( statistic.length > 0 ) ? statistic[0].date : new Date();
-			end_date = new Date( end_date.getFullYear(), end_date.getMonth(), end_date.getDate() + 1);
+			end_date = new Date( end_date.getFullYear(), end_date.getMonth(), end_date.getDate() + 10);
 
 			this.data.date_range.from = start_date;
 			this.data.date_range.to = end_date;
@@ -251,15 +251,25 @@
 		}, //
 		
 		"plotInit"	:	function( date_range ){
+
 			var namespace = this,
 				min_value = date_range.from.getTime(),
 				max_value = date_range.to.getTime();
 
+			var fix_timestamp = ({
+				"MONTH" : 31 * 24 * 60 * 60 * 1000, //12*60*60*1000
+				"WEEK" : 31 * 24 * 60 * 60 * 1000,
+				"DAY" : 24 * 60 * 60 * 1000 //30*60*1000
+			})[ namespace.scale_change.state.get().name ];
+
+			$("#timeline_navigator").css({
+				width: 2000
+			})
 			this.graph = $.plot(
 				$("#timeline_navigator", this.target), 
 				[ { "data" : this.data.statistic_temp }, { "data" : this.data.statistic_temp, "xaxis" : 2 } ], 
 				{
-					"crosshair" :   { "mode" : "x", "locked" : true, "image" : this.plot_crosshair_image },
+//					"crosshair" :   { "mode" : "x", "locked" : true, "image" : this.plot_crosshair_image },
 					"grid"		:	{
 						"clickable"     :   true,
 						"hoverable"     :   true,
@@ -270,30 +280,26 @@
 						"markings"		:	function areas(axes) {
 
 							var markings            =   [],
-								markings_counter    =   ({ 
-									"MONTH" : 31, 
-									"WEEK" : 7, 
-									"DAY" : 24 
-								})[ namespace.scale_change.state.get().name ] - 1;
-							
+								markings_counter    =   5000;
+
 							do {
 								if( axes.xaxis.ticks[ markings_counter  ] ){
-									
-									var fix_timestamp = ({ 
+
+									var fix_timestamp = ({
 											"MONTH" : 43200000, //12*60*60*1000
-											"WEEK" : 43200000, 
-											"DAY" : 1800000 //30*60*1000 
+											"WEEK" : 43200000,
+											"DAY" : 1800000 //30*60*1000
 										})[ namespace.scale_change.state.get().name ]
-									
-									markings.push({ 
-										"x1axis"		: { 
-											"from"	: axes.xaxis.ticks[ markings_counter  ].v + fix_timestamp, 
+
+									markings.push({
+										"x1axis"		: {
+											"from"	: axes.xaxis.ticks[ markings_counter  ].v + fix_timestamp,
 											"to"	: axes.xaxis.ticks[ markings_counter - axes.xaxis.n ].v + fix_timestamp
-										}, 
+										},
 										"color"		: ( markings_counter % 2 ) ? "#ffffff" : "#f7f7f7"
 									});
 								}
-									
+
 								markings_counter -= axes.xaxis.n;
 							} while ( markings_counter > 0 );
 
@@ -330,7 +336,7 @@
 
 								var ticks       =   [],
 									last_date   =   new Date( date_range.max ),
-									tick_counter=   ({ "MONTH" : 31, "WEEK" : 7, "DAY" : 24 })[ namespace.scale_change.state.get().name ];
+									tick_counter=   1000;
 
 								switch( namespace.scale_change.state.get().name ) {
 									case 'DAY':
@@ -512,7 +518,7 @@
 			this.active.month = $(".timeline_month:first").addClass("active_month");
             this.active.day = $(".timeline_day:first", this.active.month).addClass("active_day");
             this.active.item = $("article:first", this.active.day).addClass("active_article");
-			
+
 		},
 		
 		"data"			:	{
@@ -834,7 +840,7 @@
 						"list"		:	this.settings.list
 					});
 					
-			this.navigator.crosshair_position = this.article_list.active.item.data("timestamp");
+//			this.navigator.crosshair_position = this.article_list.active.item.data("timestamp");
 			this.story = {
 				"timeline"	:	$(".story_timeline", this.target),
 				"container"	:	$(".story_main_container", this.target),
@@ -936,7 +942,7 @@
 			
 			
 			$(window).bind("scroll", function(e){
-				console.log('scroll');
+//				console.log('scroll');
 				namespace.story.scrollTop = $(window).scrollTop()
 				
 				namespace.scrollEvents.update.header.apply( namespace );
@@ -946,7 +952,7 @@
 				namespace.scrollEvents.update.statistic.upload.apply(namespace);
 				namespace.scrollEvents.update.objects.upload.apply(namespace);
 				namespace.scrollEvents.update.statistic.redraw.apply(namespace);
-				
+
 //				namespace.navigator.graph.setCrosshair({"x" : namespace.article_list.active.item.data("timestamp")});
 			});
 		},
