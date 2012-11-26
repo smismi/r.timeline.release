@@ -958,7 +958,7 @@
 				namespace.scrollEvents.update.statistic.upload.apply(namespace);
 				namespace.scrollEvents.update.objects.upload.apply(namespace);
 				namespace.scrollEvents.update.statistic.redraw.apply(namespace);
-
+				myScroll.scrollTo(-50, 0, 2000, true);
 //				namespace.navigator.graph.setCrosshair({"x" : namespace.article_list.active.item.data("timestamp")});
 			});
 		},
