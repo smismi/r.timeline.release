@@ -4,7 +4,7 @@
 		"nominative"    :   [ "январь", "февраль", "март", "апрель", "май", "июнь", "июль", "август", "сентябрь", "октябрь", "ноябрь", "декабрь" ],
 		"genitive"      :   [ "января", "февраля", "марта", "апреля", "мая", "июня", "июля", "августа", "сентября", "октября", "ноября", "декабря" ]
 	};
-
+	
 	var DefaultTemplates = {
             "month"     :   "<div id=\"month-item-${date.getTime()}\" class=\"timeline_month\" data-timestamp=\"${date.getTime()}\">\n\
                                 {{each( index, value ) content}}\n\
@@ -119,15 +119,12 @@
 				}
 				data.sort(function(a,b){ return b.date.getTime() - a.date.getTime(); });
 				return data
-			})();
-
-			start_date = ( statistic.length > 0 ) ? statistic[statistic.length - 1].date : new Date();
-            start_date = new Date( start_date.getFullYear(), start_date.getMonth(), start_date.getDate() - 10);
-
+			})()
+			
 			end_date = ( statistic.length > 0 ) ? statistic[0].date : new Date();
-			end_date = new Date( end_date.getFullYear(), end_date.getMonth(), end_date.getDate() + 10);
-
-			this.data.date_range.from = start_date;
+			end_date = new Date( end_date.getFullYear(), end_date.getMonth(), end_date.getDate() + 1);
+			
+			this.data.date_range.from = new Date( end_date.getFullYear(), end_date.getMonth(), end_date.getDate() - 31 );
 			this.data.date_range.to = end_date;
 			
 			this.crosshair_position = this.data.date_range.from.getTime();
@@ -244,16 +241,10 @@
 		}, //
 		
 		"plotInit"	:	function( date_range ){
-
-
-
 			var namespace = this,
 				min_value = date_range.from.getTime(),
 				max_value = date_range.to.getTime();
-                range_value =  max_value - min_value;
-            $("#timeline_navigator").css({
-                width: 1000 * range_value / 2678400000
-            })
+
 			this.graph = $.plot(
 				$("#timeline_navigator", this.target), 
 				[ { "data" : this.data.statistic_temp }, { "data" : this.data.statistic_temp, "xaxis" : 2 } ], 
@@ -407,7 +398,7 @@
 		"get"	:	{
 			"hour"	:	{
 				"next"	:	function( from_date ){
-					var star_search_from_hour = parseInt( ( this.data.date_range.to.getTime() - from_date.getTime() ) / 3600000 ), // 1
+					var star_search_from_hour = parseInt( ( this.data.date_range.to.getTime() - from_date.getTime() ) / 3600000 ), // 1 
 						next_day_date = undefined;
 
 					while( !(next_day_date instanceof Date) && star_search_from_hour >= 0 ){
@@ -418,7 +409,7 @@
 					return next_day_date;
 				},
 				"prev"	:	function( from_date ){
-					var star_search_from_hour = parseInt( ( this.data.date_range.to.getTime() - from_date.getTime() ) / 3600000 ), // 1
+					var star_search_from_hour = parseInt( ( this.data.date_range.to.getTime() - from_date.getTime() ) / 3600000 ), // 1 
 						next_day_date = undefined;
 
 					while( !(next_day_date instanceof Date) && this.data.statistic.length > star_search_from_hour ){
@@ -599,10 +590,6 @@
 		"item"		:	{
 			"get"		:	{
 				"next"	:	function( timestamp ){
-
-
-                    console.log("next");
-
 					var date = new Date(timestamp),
 						data = {}, temp_data = {}, data_item = [], i;
 						
@@ -649,10 +636,7 @@
 					return data;
 				},
 				"prev"	:	function( timestamp ){
-
-
-                    console.log("prev");
-                    var date = new Date(timestamp),
+					var date = new Date(timestamp),
 						data = {}, temp_data = {}, data_item = [], i;
 						
 					date.month = new Date( date.getFullYear(), date.getMonth() );
