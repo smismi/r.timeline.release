@@ -95,7 +95,7 @@
 				"target"	:	undefined
 			};
 			this.settings = $.extend( {}, defaults, options );
-			
+
 			this.target = this.settings.target;
 			this.loader = $("#timeline_navigator_loader", this.target);
 
@@ -138,6 +138,7 @@
 			$("a", scale_change_bar).bind("click", function(e){
 				e.preventDefault();
 				scale_change_bar_state.set( $(this).data("scale-size") );
+
 			});
 			this.scale_change = {
 				"bar"	:	scale_change_bar,
@@ -911,15 +912,19 @@
 			var scrollTimer = 0;
 			$(".timeline_navigator_controls a.prev,.timeline_navigator_controls a.next", this.target).bind("click", function(e){
 				e.preventDefault();
-				return;
-//				alert('');
+
+
 				var item = $(this),
 					scrolled_items;
 
-				if( item.hasClass("prev") )
+				if( item.hasClass("prev") ) {
 					scrolled_items = namespace.article_list.item.get.prev.apply( namespace.article_list, [ namespace.navigator.crosshair_position ] )
-				else if( item.hasClass("next") )
+					myScroll.scrollTo(-50, 0, 2000, true);
+				}
+				else if( item.hasClass("next") ) {
 					scrolled_items = namespace.article_list.item.get.next.apply( namespace.article_list, [ namespace.navigator.crosshair_position ] )
+					myScroll.scrollTo(50, 0, 2000, true);
+				}
 				
 				if(scrolled_items.item){
 					var month = $("#month-item-" + scrolled_items.month.date.getTime(), namespace.article_list.target),
@@ -934,6 +939,7 @@
 						clearTimeout( scrollTimer );
 						item.trigger("click");
 						scrollTimer = setTimeout(timoutClick, 600);
+
 					};
 				scrollTimer = setTimeout(timoutClick, 600);
 			}).bind("mouseup mouseleave", function(){
