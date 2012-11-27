@@ -87,7 +87,7 @@
 	var TimelineNavigator = function(options){
 		this.init( options )
 	};
-	
+	//todo = rr
 	TimelineNavigator.prototype = {
 		"constructor"	:	TimelineNavigator,
 		"init"			:	function( options ){
@@ -100,8 +100,9 @@
 			this.loader = $("#timeline_navigator_loader", this.target);
 
 			var namespace = this,
+				start_date,
 				end_date;
-			
+
 			this.data = {
 				"statistic"			:	[],
 				"statistic_temp"	:	[],
@@ -120,7 +121,7 @@
 				data.sort(function(a,b){ return b.date.getTime() - a.date.getTime(); });
 				return data
 			})()
-			
+			// тут считаем начало и конец реального периода
 			start_date = ( statistic.length > 0 ) ? statistic[statistic.length - 1].date : new Date();
 			start_date = new Date( start_date.getFullYear(), start_date.getMonth(), start_date.getDate() - 10);
 
@@ -129,7 +130,9 @@
 
 			this.data.date_range.from = start_date;
 			this.data.date_range.to = end_date;
-			
+
+
+
 			this.crosshair_position = this.data.date_range.from.getTime();
 			//scale bar init
 			var scale_change_bar = $(".scale-change-bar", this.target),
@@ -145,7 +148,7 @@
 				"state"	:	scale_change_bar_state
 			};
 
-			scale_change_bar.bind("state-change", function(e, state){
+			scale_change_bar.bind("state-change", function(e, state){   // байнд на смену стейтов
 //				var date_range = {
 //					"from" 	: 	new Date( namespace.crosshair_position )
 //					,"to" 	:	new Date( namespace.crosshair_position )
@@ -270,7 +273,7 @@
 				$("#timeline_navigator", this.target), 
 				[ { "data" : this.data.statistic_temp }, { "data" : this.data.statistic_temp, "xaxis" : 2 } ], 
 				{
-//					"crosshair" :   { "mode" : "x", "locked" : true, "image" : this.plot_crosshair_image },
+					"crosshair" :   { "mode" : "x", "locked" : true, "image" : this.plot_crosshair_image },
 					"grid"		:	{
 						"clickable"     :   true,
 						"hoverable"     :   true,
@@ -281,7 +284,7 @@
 						"markings"		:	function areas(axes) {
 
 							var markings            =   [],
-								markings_counter    =   5000;
+								markings_counter    =   5000;  // todo считать сколько будет отсечек
 
 							do {
 								if( axes.xaxis.ticks[ markings_counter  ] ){
@@ -864,7 +867,7 @@
 					var load_date_range ={
 						"from"	:	undefined,
 						"to"	:	undefined
-					}
+					};
 
 					var last_loaded = { "month" : namespace.article_list.articles.content[ namespace.article_list.articles.dates[namespace.article_list.articles.dates.length - 1] ] }
 						last_loaded.day = last_loaded.month.content[ last_loaded.month.dates[last_loaded.month.dates.length - 1] ];
@@ -878,17 +881,18 @@
 
 					namespace.article_list.load(load_date_range);
 					namespace.article_list.element.bind("items.loaded", function(){
-//						scrollToSelectedRange();   //
+						scrollToSelectedRange();
 					})
 				}
 			}
 			
 			
 			graph_container.bind("plotclick.graph_navigation", function(e, data, point){
+				alert(1);
 				namespace.navigator.graph.lockCrosshair();
 				namespace.navigator.crosshair_position = parseInt( data.x )
 				graph.setCrosshair({"x" : namespace.navigator.crosshair_position });
-//				scrollToSelectedRange()
+ 				scrollToSelectedRange()
 			})
 			
 			graph_container.bind("mousedown.graph_navigation", function(e){
