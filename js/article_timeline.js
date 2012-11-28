@@ -123,10 +123,10 @@
 			})()
 			// тут считаем начало и конец реального периода
 			start_date = ( statistic.length > 0 ) ? statistic[statistic.length - 1].date : new Date();
-			start_date = new Date( start_date.getFullYear(), start_date.getMonth(), start_date.getDate() - 10);
+			start_date = new Date( start_date.getFullYear(), start_date.getMonth(), start_date.getDate() - 15);
 
 			end_date = ( statistic.length > 0 ) ? statistic[0].date : new Date();
-			end_date = new Date( end_date.getFullYear(), end_date.getMonth(), end_date.getDate() + 10);
+			end_date = new Date( end_date.getFullYear(), end_date.getMonth(), end_date.getDate() + 15);
 
 			this.data.date_range.from = start_date;
 			this.data.date_range.to = end_date;
@@ -170,7 +170,7 @@
 //						break;
 //				}
 				namespace.assemblyTempData.apply( namespace, [ namespace.data.date_range ] );
-				namespace.plotInit(date_range);
+				namespace.plotInit(date_range, scale_change_bar_state.settings.state.settings.state);
 				namespace.graph.setCrosshair({"x" : namespace.crosshair_position});
 			})
 
@@ -185,11 +185,13 @@
 				"from"	:	new Date( this.data.date_range.from.getFullYear(), this.data.date_range.from.getMonth(), this.data.date_range.from.getDate() ),
 				"to"	:	new Date( this.data.date_range.to.getFullYear(), this.data.date_range.to.getMonth(), this.data.date_range.to.getDate() )
 			};
-			this.plotInit( plot_date_range );
+			this.plotInit( plot_date_range, scale_change_bar_state.settings.state.settings.state); // todo porno name
 			this.graph.setCrosshair({"x" : end_date.getTime()});
 			
 		},  // INIT
 		"load"			:	function( date_range ){
+			console.log('load' + date_range.from + ' - ' + date_range.to);
+
 			var date_string = {
 					"from"		:   date_range.from.getFullYear() + ( ( date_range.from.getMonth() < 9 ) ? '0' : '' ) + ( date_range.from.getMonth() + 1) + ( ( date_range.from.getDate() < 10 ) ? '0' : '' ) + date_range.from.getDate(),
 					"to"		:	date_range.to.getFullYear() + ( ( date_range.to.getMonth() < 9 ) ? '0' : '' ) + ( date_range.to.getMonth() + 1) + ( ( date_range.to.getDate() < 10 ) ? '0' : '' ) + date_range.to.getDate()
@@ -254,7 +256,8 @@
 
 		}, //
 		
-		"plotInit"	:	function( date_range ){
+		"plotInit"	:	function( date_range, plot_state ){
+			console.log('plotInit' + date_range.from + ' - ' + date_range.to);
 
 			var namespace = this,
 				min_value = date_range.from.getTime(),
@@ -262,12 +265,12 @@
 
 			var fix_timestamp = ({
 				"MONTH" : 31 * 24 * 60 * 60 * 1000, //12*60*60*1000
-				"WEEK" : 31 * 24 * 60 * 60 * 1000,
+				"WEEK" : 7 * 24 * 60 * 60 * 1000,
 				"DAY" : 24 * 60 * 60 * 1000 //30*60*1000
-			})[ namespace.scale_change.state.get().name ];
+			})[ plot_state ];
 
 			$("#timeline_navigator").css({
-				width: 2000
+				width: 1000 * (max_value - min_value)  / fix_timestamp
 			})
 			this.graph = $.plot(
 				$("#timeline_navigator", this.target), 
@@ -402,7 +405,7 @@
 				}
 			);
 				
-			this.graph.lockCrosshair();
+//			this.graph.lockCrosshair();
 		},
 		
 		"assembly"  :   function( data ){
@@ -443,6 +446,7 @@
 		},
 
 		"assemblyTempData"  :   function( date_range ){
+			console.log('assably' + date_range.from + ' - ' + date_range.to);
 			var data = [];
 			
 			switch( this.scale_change.state.get().name ){
@@ -744,7 +748,8 @@
 		
 		
 		"load"		:	function( date_range ){
-			
+			console.log('plotInit' + date_range.from + ' - ' + date_range.to);
+
 			var namespace = this;
 			
 			var date_string = "" + date_range.to.getFullYear()
@@ -879,16 +884,15 @@
 					var selected_date = new Date( parseInt( offset.x ) );
 					load_date_range.from = new Date( selected_date.getFullYear(), selected_date.getMonth(), selected_date.getDate() );
 
-					namespace.article_list.load(load_date_range);
-					namespace.article_list.element.bind("items.loaded", function(){
-						scrollToSelectedRange();
-					})
+//					namespace.article_list.load(load_date_range);
+//					namespace.article_list.element.bind("items.loaded", function(){
+//						scrollToSelectedRange();
+//					})
 				}
 			}
 			
 			
 			graph_container.bind("plotclick.graph_navigation", function(e, data, point){
-				alert(1);
 				namespace.navigator.graph.lockCrosshair();
 				namespace.navigator.crosshair_position = parseInt( data.x )
 				graph.setCrosshair({"x" : namespace.navigator.crosshair_position });
@@ -896,22 +900,22 @@
 			})
 			
 			graph_container.bind("mousedown.graph_navigation", function(e){
-				e.preventDefault();
-				namespace.navigator.graph.unlockCrosshair();
-				
-				graph_container.bind("mousemove.graph_navigation", function(){
-//					scrollToSelectedRange()
-				});
-				graph_container.bind("mouseup.graph_navigation", function(){
-					graph_container
-						.unbind("mousemove.graph_navigation")
-						.unbind("mouseup.graph_navigation");
-					
-					namespace.navigator.graph.lockCrosshair();
-				});
-				return false;
+//				e.preventDefault();
+//				namespace.navigator.graph.unlockCrosshair();
+//
+//				graph_container.bind("mousemove.graph_navigation", function(){
+////					scrollToSelectedRange()
+//				});
+//				graph_container.bind("mouseup.graph_navigation", function(){
+//					graph_container
+//						.unbind("mousemove.graph_navigation")
+//						.unbind("mouseup.graph_navigation");
+//
+//					namespace.navigator.graph.lockCrosshair();
+//				});
+//				return false;
 			});
-			
+
 			
 			var scrollTimer = 0;
 			$(".timeline_navigator_controls a.prev,.timeline_navigator_controls a.next", this.target).bind("click", function(e){
@@ -923,11 +927,11 @@
 
 				if( item.hasClass("prev") ) {
 					scrolled_items = namespace.article_list.item.get.prev.apply( namespace.article_list, [ namespace.navigator.crosshair_position ] )
-					myScroll.scrollTo(-50, 0, 2000, true);
+					myScroll.scrollTo('-50px', 0, 2000, true);
 				}
 				else if( item.hasClass("next") ) {
 					scrolled_items = namespace.article_list.item.get.next.apply( namespace.article_list, [ namespace.navigator.crosshair_position ] )
-					myScroll.scrollTo(50, 0, 2000, true);
+					myScroll.scrollTo('50px', 0, 2000, true);
 				}
 				
 				if(scrolled_items.item){
@@ -951,20 +955,20 @@
 			});
 			
 			
-			$(window).bind("scroll", function(e){
-//				console.log('scroll');
-				namespace.story.scrollTop = $(window).scrollTop()
-				
-				namespace.scrollEvents.update.header.apply( namespace );
-				
-                namespace.story.dummy.position_top = namespace.story.scrollTop + namespace.story.dummy.position().top + namespace.story.dummy.outerHeight()/2;
-				namespace.scrollEvents.update.objects.activate.apply(namespace);
-				namespace.scrollEvents.update.statistic.upload.apply(namespace);
-				namespace.scrollEvents.update.objects.upload.apply(namespace);
-				namespace.scrollEvents.update.statistic.redraw.apply(namespace);
-				myScroll.scrollTo(-50, 0, 2000, true);
-//				namespace.navigator.graph.setCrosshair({"x" : namespace.article_list.active.item.data("timestamp")});
-			});
+//			$(window).bind("scroll", function(e){
+////				console.log('scroll');
+//				namespace.story.scrollTop = $(window).scrollTop()
+//
+//				namespace.scrollEvents.update.header.apply( namespace );
+//
+//                namespace.story.dummy.position_top = namespace.story.scrollTop + namespace.story.dummy.position().top + namespace.story.dummy.outerHeight()/2;
+//				namespace.scrollEvents.update.objects.activate.apply(namespace);
+//				namespace.scrollEvents.update.statistic.upload.apply(namespace);
+//				namespace.scrollEvents.update.objects.upload.apply(namespace);
+//				namespace.scrollEvents.update.statistic.redraw.apply(namespace);
+//				myScroll.scrollTo(-50, 0, 2000, true);
+////				namespace.navigator.graph.setCrosshair({"x" : namespace.article_list.active.item.data("timestamp")});
+//			});
 		},
 		
 		"get"	:	{
@@ -1100,7 +1104,7 @@
 									}
 								}
 								
-								this.article_list.load(load_date_range);
+//								this.article_list.load(load_date_range);
 							}
 						}
 					}
@@ -1128,12 +1132,12 @@
 							
 							this.navigator.load.apply( this.navigator, [{ "to" : this.navigator.data.date_range.from, "from" : load_from_date }] );
 							
-							this.navigator.target.bind("statistic.loaded", function(e){
-								if( typeof( namespace.navigator.full_load ) == 'undefined' || !namespace.navigator.full_load )
-									namespace.scrollEvents.update.objects.upload.apply(namespace);
-								
-								namespace.navigator.target.unbind("statistic.loaded");
-							})
+//							this.navigator.target.bind("statistic.loaded", function(e){
+//								if( typeof( namespace.navigator.full_load ) == 'undefined' || !namespace.navigator.full_load )
+//									namespace.scrollEvents.update.objects.upload.apply(namespace);
+//
+//								namespace.navigator.target.unbind("statistic.loaded");
+//							})
 							
 						}
 					},
@@ -1167,6 +1171,7 @@
 						}
 						if( typeof( coord.left ) != 'undefined' && coord.left != 0 )
 							this.navigator.graph.pan( coord );
+						console.log("redraw")
 					}
 					
 				}
