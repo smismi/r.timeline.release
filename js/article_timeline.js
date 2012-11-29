@@ -990,7 +990,7 @@
 						item.trigger("click");
 						scrollTimer = setTimeout(timoutClick, 600);
 
-					};s
+					};
 				scrollTimer = setTimeout(timoutClick, 600);
 			}).bind("mouseup mouseleave", function(){
 				clearTimeout( scrollTimer );
