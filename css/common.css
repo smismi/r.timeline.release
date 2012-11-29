@@ -7201,6 +7201,7 @@ label.checkbox input {
 
 .story_timeline_container {
 	float: left;
+    margin-right: 250px;
 }
 .story_timeline_container .timeline_video_data {
 	display: none;
@@ -7530,8 +7531,8 @@ label.checkbox input {
 	font-size: .8em;
 }
 .timeline_navigator_container .scale-change-bar {
-	margin: 1px 0;
-	height: 20px;
+    margin: 1px 248px;
+    height: 20px;
 	text-align: right;
 	float: right;
 }
