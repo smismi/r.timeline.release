@@ -869,8 +869,9 @@
 
 				var active_article = namespace.get.nextArticleByTimestamp.apply(namespace, [ parseInt( offset.x ) ])
 				if(active_article.length != 0){
-					scrollTo(0,active_article.offset().top - 200)
-					myScroll.scrollTo(-150, 0, 200);
+					scrollTo(0,active_article.offset().top - 200);
+					__(active_article[0].dataset.timestamp)
+					myScroll.scrollTo(0, 0, 200);
 				}else{
 					var load_date_range ={
 						"from"	:	undefined,
