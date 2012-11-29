@@ -185,9 +185,10 @@
 				"from"	:	new Date( this.data.date_range.from.getFullYear(), this.data.date_range.from.getMonth(), this.data.date_range.from.getDate() ),
 				"to"	:	new Date( this.data.date_range.to.getFullYear(), this.data.date_range.to.getMonth(), this.data.date_range.to.getDate() )
 			};
+			myScroll = new iScroll('wrapper', { scrollbarClass: 'myScrollbar', hScroll: true, vScroll: false});
+
 			this.plotInit( plot_date_range, scale_change_bar_state.settings.state.settings.state); // todo porno name
 			this.graph.setCrosshair({"x" : end_date.getTime()});
-			
 		},  // INIT
 		"load"			:	function( date_range ){
 			console.log('load' + date_range.from + ' - ' + date_range.to);
@@ -257,8 +258,8 @@
 		}, //
 		
 		"plotInit"	:	function( date_range, plot_state ){
-			console.log('plotInit' + date_range.from + ' - ' + date_range.to);
 
+			__('plotInit' + date_range.from + ' - ' + date_range.to);
 			var namespace = this,
 				min_value = date_range.from.getTime(),
 				max_value = date_range.to.getTime();
@@ -270,7 +271,7 @@
 			})[ plot_state ];
 
 			$("#timeline_navigator").css({
-				width: 1000 * (max_value - min_value)  / fix_timestamp
+				width: 1000 * (max_value - min_value)  / fix_timestamp // скотлько раз в тысяче ширины поместяться данные этого масштаба от-до
 			})
 			this.graph = $.plot(
 				$("#timeline_navigator", this.target), 
@@ -404,8 +405,8 @@
 					]
 				}
 			);
-				
 //			this.graph.lockCrosshair();
+			myScroll.refresh()
 		},
 		
 		"assembly"  :   function( data ){
@@ -861,6 +862,7 @@
 				graph_container = graph.getPlaceholder();
 			
 			function scrollToSelectedRange(){
+				__("scrollToSelectedRange");
 
 				var coord = graph.getCrosshairPosition(),
 					offset = graph.c2p( coord );
@@ -868,6 +870,7 @@
 				var active_article = namespace.get.nextArticleByTimestamp.apply(namespace, [ parseInt( offset.x ) ])
 				if(active_article.length != 0){
 					scrollTo(0,active_article.offset().top - 200)
+					myScroll.scrollTo(-150, 0, 200);
 				}else{
 					var load_date_range ={
 						"from"	:	undefined,
@@ -889,31 +892,37 @@
 //						scrollToSelectedRange();
 //					})
 				}
+
+
 			}
 			
 			
 			graph_container.bind("plotclick.graph_navigation", function(e, data, point){
-				namespace.navigator.graph.lockCrosshair();
-				namespace.navigator.crosshair_position = parseInt( data.x )
-				graph.setCrosshair({"x" : namespace.navigator.crosshair_position });
- 				scrollToSelectedRange()
+				if (!click_lock) {
+					namespace.navigator.graph.lockCrosshair();
+					namespace.navigator.crosshair_position = parseInt( data.x )
+					graph.setCrosshair({"x" : namespace.navigator.crosshair_position });
+ 					scrollToSelectedRange()
+				}
 			})
 			
 			graph_container.bind("mousedown.graph_navigation", function(e){
-//				e.preventDefault();
+				e.preventDefault();
+ 				click_lock = false;
 //				namespace.navigator.graph.unlockCrosshair();
 //
-//				graph_container.bind("mousemove.graph_navigation", function(){
-////					scrollToSelectedRange()
-//				});
-//				graph_container.bind("mouseup.graph_navigation", function(){
-//					graph_container
-//						.unbind("mousemove.graph_navigation")
-//						.unbind("mouseup.graph_navigation");
-//
-//					namespace.navigator.graph.lockCrosshair();
-//				});
-//				return false;
+				graph_container.bind("mousemove.graph_navigation", function(){
+//					scrollToSelectedRange()
+ 					click_lock = true;
+ 				});
+				graph_container.bind("mouseup.graph_navigation", function(){
+
+						graph_container
+							.unbind("mousemove.graph_navigation")
+							.unbind("mouseup.graph_navigation");
+ //					namespace.navigator.graph.lockCrosshair();
+				});
+				return false;
 			});
 
 			
@@ -948,13 +957,12 @@
 						item.trigger("click");
 						scrollTimer = setTimeout(timoutClick, 600);
 
-					};
+					};s
 				scrollTimer = setTimeout(timoutClick, 600);
 			}).bind("mouseup mouseleave", function(){
 				clearTimeout( scrollTimer );
 			});
-			
-			
+
 //			$(window).bind("scroll", function(e){
 ////				console.log('scroll');
 //				namespace.story.scrollTop = $(window).scrollTop()
@@ -1204,3 +1212,7 @@
 		
 	}
 })(jQuery)
+
+function __(text) {
+	$("#log").append("<div>" + text +"</div>");
+}
