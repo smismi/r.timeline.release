@@ -118,7 +118,7 @@
 				"queries"			:	{},
 				"date_range"		:	{}
 			};
-			
+
 			var statistic = (function(){
 				var data = namespace.settings.data
 				for( var i = 0; i < data.length; i++ ){
@@ -131,22 +131,22 @@
 			})()
 			// тут считаем начало и конец реального периода
 			start_date = ( statistic.length > 0 ) ? statistic[statistic.length - 1].date : new Date();
-//			start_date = new Date( start_date.getFullYear(), start_date.getMonth(), start_date.getDate());
+			start_date = new Date( start_date.getFullYear(), start_date.getMonth(), start_date.getDate() - 1);
 
-			end_date = ( statistic.length > 0 ) ? statistic[0].date  : new Date();
-//			end_date = new Date( end_date.getFullYear(), end_date.getMonth(), end_date.getDate());
+			end_date  = ( statistic.length > 0 ) ? statistic[0].date  : new Date();
+            this.crosshair_position = ( statistic.length > 0 ) ? statistic[0].date  : new Date();
+			end_date = new Date( end_date.getFullYear(), end_date.getMonth(), end_date.getDate() + 2);
 
 			this.data.date_range.from = start_date;
 			this.data.date_range.to = end_date;
 
 
-
-			this.crosshair_position = this.data.date_range.to.getTime();
 			__('CROSSHAIR ' + this.crosshair_position);
+            $("#current_timestamp").html(this.crosshair_position.getFullYear() + ' ' +  this.crosshair_position.getMonth()  + ' ' +  this.crosshair_position.getDate())
 			//scale bar init
 			var scale_change_bar = $(".scale-change-bar", this.target),
 				scale_change_bar_state = scale_change_bar.state({ "state_list" : SCALE_CHANGE_BAR_STATELIST });
-			
+
 			$("a", scale_change_bar).bind("click", function(e){
 				e.preventDefault();
 				scale_change_bar_state.set( $(this).data("scale-size") );
@@ -158,10 +158,15 @@
 			};
 
 			scale_change_bar.bind("state-change", function(e, state){   // байнд на смену стейтов
+
+
 //				var date_range = {
 //					"from" 	: 	new Date( namespace.crosshair_position )
 //					,"to" 	:	new Date( namespace.crosshair_position )
 //				};
+
+
+
 				var date_range = {
 					"from" 	: 	namespace.data.date_range.from
 					,"to" 	:	namespace.data.date_range.to
@@ -189,7 +194,7 @@
 			// graph init
 			this.assembly.apply( this, [ statistic ] );
 			this.assemblyTempData.apply( this, [ this.data.date_range ] );
-			
+
 			namespace.plot_crosshair_image = new Image();
 			namespace.plot_crosshair_image.src = "http://ria.ru/i/icons/timeline/crosshair.png";
 
@@ -197,30 +202,29 @@
 				"from"	:	new Date( this.data.date_range.from.getFullYear(), this.data.date_range.from.getMonth(), this.data.date_range.from.getDate() ),
 				"to"	:	new Date( this.data.date_range.to.getFullYear(), this.data.date_range.to.getMonth(), this.data.date_range.to.getDate() )
 			};
-			myScroll = new iScroll('wrapper', { scrollbarClass: 'myScrollbar', hScroll: true, vScroll: false});
-
 			this.plotInit( plot_date_range, scale_change_bar_state.settings.state.settings.state); // todo porno name
-			this.graph.setCrosshair({"x" : end_date.getTime()});
 
-
-
+            myScroll = new iScroll('wrapper', { scrollbarClass: 'myScrollbar', hScroll: true, vScroll: false});
+            this.graph.setCrosshair({"x" : end_date.getTime()});
+            this.test();
 		},  // INIT
+        "test" : function (ret) {
+//            alert(ret);
 
-        "getDim" : function ( date_range, plot_state ) {
-            var min_value = date_range.from.getTime(),
-                max_value = date_range.to.getTime();
-
-            var fix_timestamp = ({
-                "MONTH" : 31 * 24 * 60 * 60 * 1000, //12*60*60*1000
-                "WEEK" : 7 * 24 * 60 * 60 * 1000,
-                "DAY" : 3 * 24 * 60 * 60 * 1000 //30*60*1000
-            })[ plot_state ];
-
-            $("#timeline_navigator").css({
-                width: 1000 * (max_value - min_value)  / fix_timestamp // скотлько раз в тысяче ширины поместяться данные этого масштаба от-до
-            })
-
-            return "arrrye"
+//            var timecheck = this.crosshair_position
+//            var min_value = date_range.from.getTime(),
+//                max_value = date_range.to.getTime();
+//
+//            var fix_timestamp = ({
+//                "MONTH" : 31 * 24 * 60 * 60 * 1000, //12*60*60*1000
+//                "WEEK" : 7 * 24 * 60 * 60 * 1000,
+//                "DAY" : 3 * 24 * 60 * 60 * 1000 //30*60*1000
+//            })[ namespace.navigator.scale_change.state.settings.state.settings.state ];
+//
+//            _w = 1000 * (max_value - min_value)  / fix_timestamp; //width_plot
+//            _x = 1000 * (timecheck - min_value)  / fix_timestamp;
+//
+//            myScroll.scrollTo(-_x + 500, 0, 200);
         },
 		"plotInit"	:	function( date_range, plot_state ){
 
@@ -371,7 +375,7 @@
 				}
 			);
 //			this.graph.lockCrosshair();
-			myScroll.refresh()
+//			myScroll.refresh();
 		},
 		
 		"assembly"  :   function( data ){
@@ -537,41 +541,41 @@
                 }
                 
                 return content_data;
-            },
-            "merge" :   function( content1, content2, parent ){
-                
-                var namespace = this;
-                for( var key in content2 ){
-                    if( content1.hasOwnProperty( key ) ){
-                        if( content1[ key ] instanceof Array && content2[ key ] instanceof Array ){
-                            var array_content1 = content1[ key ],
-                                array_content2 = content2[ key ];
-                            for( var i = 0; i < array_content2.length; i++ )
-                                for( var j = 0; j < array_content1.length; j++ )
-                                    if( array_content2[i] == array_content1[j] )
-                                        array_content2.splice(i,1)
-                            content1[key] = array_content1.concat( array_content2 );
-                        }else if( content1[ key ].constructor === Object )
-                            content1[key] = namespace.data.merge.apply( namespace, [ content1[ key ], content2[ key ], content1 ] );
-                    }
-                    else{
-                        var item = content2[ key ];
-                        content1[ key ] = item;
-                        if( item.type ){
-                            switch( item.type ){
-                                case "month"    :
-										namespace.item[ item.type ].generate.apply( namespace, [ item, namespace.element ] );
-                                    break;
-                                default         : 
-										namespace.item[ item.type ].generate.apply( namespace, [ item, $("#" + parent.type + "-item-" + parent.date.getTime(), namespace.element ) ] );
-                                    break;
-                            }
-                        }
-                    }
-                }
-                
-                return content1;
-            }
+            }//,
+//            "merge" :   function( content1, content2, parent ){
+//
+//                var namespace = this;
+//                for( var key in content2 ){
+//                    if( content1.hasOwnProperty( key ) ){
+//                        if( content1[ key ] instanceof Array && content2[ key ] instanceof Array ){
+//                            var array_content1 = content1[ key ],
+//                                array_content2 = content2[ key ];
+//                            for( var i = 0; i < array_content2.length; i++ )
+//                                for( var j = 0; j < array_content1.length; j++ )
+//                                    if( array_content2[i] == array_content1[j] )
+//                                        array_content2.splice(i,1)
+//                            content1[key] = array_content1.concat( array_content2 );
+//                        }else if( content1[ key ].constructor === Object )
+//                            content1[key] = namespace.data.merge.apply( namespace, [ content1[ key ], content2[ key ], content1 ] );
+//                    }
+//                    else{
+//                        var item = content2[ key ];
+//                        content1[ key ] = item;
+//                        if( item.type ){
+//                            switch( item.type ){
+//                                case "month"    :
+//										namespace.item[ item.type ].generate.apply( namespace, [ item, namespace.element ] );
+//                                    break;
+//                                default         :
+//										namespace.item[ item.type ].generate.apply( namespace, [ item, $("#" + parent.type + "-item-" + parent.date.getTime(), namespace.element ) ] );
+//                                    break;
+//                            }
+//                        }
+//                    }
+//                }
+//
+//                return content1;
+//            }
 		},
 		
 		
@@ -708,79 +712,8 @@
 						scrollTo( 0, article.position().top + $(".story_main_container", this).outerHeight() + 50 );
 				}
 			}
-		},
-		
-		
-		"load"		:	function( date_range ){
-			console.log('plotInitLOAD' + date_range.from + ' - ' + date_range.to);
-
-			var namespace = this;
-			
-			var date_string = "" + date_range.to.getFullYear()
-								+ (( date_range.to.getMonth() < 9 ) ? "0" + (date_range.to.getMonth() + 1) : (date_range.to.getMonth() + 1) ) 
-								+ (( date_range.to.getDate() < 10 ) ? "0" + date_range.to.getDate() : date_range.to.getDate() );
-
-			if( typeof( this.queries[ date_string ] ) == 'undefined' && typeof( date_range.to ) != 'undefined' ){
-				
-				namespace.loader.show();
-				
-				var request_params = {
-					"list_sid"	:	this.list,
-					"date"		:	date_range.to
-				};
-				
-				request_params.date = "" + request_params.date.getFullYear() 
-										+ (( request_params.date.getMonth() < 9 ) ? "0" + (request_params.date.getMonth() + 1) : request_params.date.getMonth() + 1 ) 
-										+ (( request_params.date.getDate() < 10 ) ? "0" + request_params.date.getDate() : request_params.date.getDate() ) 
-				
-				if( !date_range.from )
-					date_range.from = date_range.to;
-				else{
-					var date_range_days = parseInt( ( date_range.from.getTime() - date_range.to.getTime() ) / 24 * 60 * 60 * 1000 )
-					//console.log( date_range_days, "fix it - push to this.queries boolean object" );
-				}
-					
-				
-				request_params.start_date = date_range.from;
-				
-				if( request_params.start_date.getTime() > date_range.to.getTime())
-					request_params.start_date = date_range.to;
-					
-				request_params.start_date = "" + request_params.start_date.getFullYear() 
-									+ (( request_params.start_date.getMonth() < 9 ) ? "0" + (request_params.start_date.getMonth() + 1) : request_params.start_date.getMonth() + 1 ) 
-									+ (( request_params.start_date.getDate() < 10 ) ? "0" + request_params.start_date.getDate() : request_params.start_date.getDate() ) 
-				
-				this.queries[ date_string ] = $.ajax({
-					"url"       :   "/services/timeline/getlist",
-					"type"      :   "POST",
-					"dataType"  :   "html",
-					"data"      :   request_params,
-					"success"   :   function( response ){
-						
-						var response = $.parseXML( response ),
-							json_data = $.parseJSON( $("json", $(response)).text() ),
-							videos = $("xml_data videos", response);
-						
-						if( json_data.articles && json_data.articles.length > 0 ){
-							var reg = new RegExp("new Date\\(\"[0-9]{4}\/[0-9]{2}\/[0-9]{2} [0-9]{2}:[0-9]{2}\"\\)", "i")
-
-							for( var i = 0; i < json_data.articles.length; i++ )
-								if( typeof( json_data.articles[i].date ) == "string" && reg.exec( json_data.articles[i].date )  )
-									json_data.articles[i].date = eval( json_data.articles[i].date );
-
-							json_data.articles.sort( function( a,b ){ return b.date.getTime() - a.date.getTime(); } );
-							namespace.video_container.append( $("<div />").html( videos.text() ).children() );
-							var grouped_data = namespace.data.grouping.apply( namespace, [ json_data.articles  ] )
-							namespace.articles = namespace.data.merge.apply( namespace, [ namespace.articles, grouped_data ] );
-							
-							namespace.element.trigger("items.loaded");
-							namespace.loader.hide();
-						}
-					}
-				});
-			}
 		}
-		
+
 	}
 	//todo = StoryTimeline
 	var StoryTimeline = function( options ){
@@ -848,12 +781,11 @@
 
 			}
 			function scrollToSelectedRange(){
-				__("scrollToSelectedRange");
 
 				var coord = graph.getCrosshairPosition(),
 					offset = graph.c2p( coord );
                 	scrollScroll(offset.x);
-
+//                this.test();
 				var active_article = namespace.get.nextArticleByTimestamp.apply(namespace, [ parseInt( offset.x ) ]);
 
 
@@ -874,11 +806,10 @@
 
 					var selected_date = new Date( parseInt( offset.x ) );
 					load_date_range.from = new Date( selected_date.getFullYear(), selected_date.getMonth(), selected_date.getDate() );
-
-//					namespace.article_list.load(load_date_range);
-					namespace.article_list.element.bind("items.loaded", function(){
-						scrollToSelectedRange();
-					})
+//
+//					namespace.article_list.element.bind("items.loaded", function(){
+//						scrollToSelectedRange();
+//					})
 				}
 
 
@@ -900,7 +831,6 @@
 //				namespace.navigator.graph.unlockCrosshair();
 //
 				graph_container.bind("mousemove.graph_navigation", function(){
-//					scrollToSelectedRange()
  					click_lock = true;
  				});
 				graph_container.bind("mouseup.graph_navigation", function(){
@@ -1098,8 +1028,6 @@
 										};
 									}
 								}
-								
-//								this.article_list.load(load_date_range);
 							}
 						}
 					}
@@ -1125,15 +1053,7 @@
 							
 							load_from_date = new Date( load_from_date.getFullYear(), load_from_date.getMonth() - 1, 1 );
 							
-//							this.navigator.load.apply( this.navigator, [{ "to" : this.navigator.data.date_range.from, "from" : load_from_date }] );
-							
-//							this.navigator.target.bind("statistic.loaded", function(e){
-//								if( typeof( namespace.navigator.full_load ) == 'undefined' || !namespace.navigator.full_load )
-//									namespace.scrollEvents.update.objects.upload.apply(namespace);
-//
-//								namespace.navigator.target.unbind("statistic.loaded");
-//							})
-							
+
 						}
 					},
 					

@@ -7251,6 +7251,7 @@ label.checkbox input {
 	overflow: hidden;
 	position: relative;
 	padding: 22px 18px 0;
+    margin-top: 160px;
 }
 .story_timeline_container .story_timeline .timeline_month .timeline_day {
 	padding-bottom: 20px;
