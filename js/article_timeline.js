@@ -135,7 +135,7 @@
 
 
 			this.crosshair_position = this.data.date_range.to.getTime();
-			__('crossH_pos ' + this.crosshair_position);
+			__('CROSSHAIR ' + this.crosshair_position);
 			//scale bar init
 			var scale_change_bar = $(".scale-change-bar", this.target),
 				scale_change_bar_state = scale_change_bar.state({ "state_list" : SCALE_CHANGE_BAR_STATELIST });
@@ -162,13 +162,16 @@
 //				switch( state.name ){
 //					case "MONTH"    :
 //					default         :
+//							date_range.from = new Date( date_range.to.setDate( date_range.to.getDate() - 31 ) );
 //							date_range.to = new Date( date_range.to.setDate( date_range.to.getDate() + 31 ) );
 //						break;
 //					case "WEEK"     :
+//							date_range.from = new Date( date_range.to.setDate( date_range.to.getDate() - 7 ) );
 //							date_range.to = new Date( date_range.to.setDate( date_range.to.getDate() + 7 ) );
 //						break;
 //					case "DAY"      :
-//							date_range.to = new Date( date_range.to.setDate( date_range.to.getDate() + 1 ) );
+//							date_range.from = new Date( date_range.to.setDate( date_range.to.getDate() - 15 ) );
+//							date_range.to = new Date( date_range.to.setDate( date_range.to.getDate() + 15 ) );
 //						break;
 //				}
 				namespace.assemblyTempData.apply( namespace, [ namespace.data.date_range ] );
@@ -702,7 +705,7 @@
 		
 		
 		"load"		:	function( date_range ){
-			console.log('plotInit' + date_range.from + ' - ' + date_range.to);
+			console.log('plotInitLOAD' + date_range.from + ' - ' + date_range.to);
 
 			var namespace = this;
 			
@@ -803,7 +806,7 @@
 						"list"		:	this.settings.list
 					});
 					
-//			this.navigator.crosshair_position = this.article_list.active.item.data("timestamp");
+			this.navigator.crosshair_position = this.article_list.active.item.data("timestamp");
 			this.story = {
 				"timeline"	:	$(".story_timeline", this.target),
 				"container"	:	$(".story_main_container", this.target),
@@ -835,8 +838,8 @@
 				_x = 1000 * (timecheck - min_value)  / fix_timestamp;
 
 				myScroll.scrollTo(-_x + 500, 0, 200);
-				__('timecheck' + _x);
-				__('scrollScroll' + _w);
+//				__('timecheck' + _x);
+//				__('scrollScroll' + _w);
 
 
 
@@ -846,39 +849,34 @@
 
 				var coord = graph.getCrosshairPosition(),
 					offset = graph.c2p( coord );
-                scrollScroll(offset.x);
-
-
-//				var coord_x_active = namespace.get.coord_x_active.apply(namespace, [ parseInt( offset.x ) ]);
+                	scrollScroll(offset.x);
 
 				var active_article = namespace.get.nextArticleByTimestamp.apply(namespace, [ parseInt( offset.x ) ]);
 
 
-//				if(active_article.length != 0){
-//					scrollTo(0,active_article.offset().top - 200);
-//					__(active_article[0].dataset.timestamp)
-//					myScroll.scrollTo(0, 0, 200);
-//				}else{
-//					var load_date_range ={
-//						"from"	:	undefined,
-//						"to"	:	undefined
-//					};
-//
-//					var last_loaded = { "month" : namespace.article_list.articles.content[ namespace.article_list.articles.dates[namespace.article_list.articles.dates.length - 1] ] }
-//						last_loaded.day = last_loaded.month.content[ last_loaded.month.dates[last_loaded.month.dates.length - 1] ];
-//
-//					var prev_day_date = namespace.navigator.get.hour.prev.apply( namespace.navigator, [ last_loaded.day.date ] );
-//					if( typeof( prev_day_date ) != 'undefined' )
-//						load_date_range.to = new Date( prev_day_date.getFullYear(), prev_day_date.getMonth(), prev_day_date.getDate() )
-//
-//					var selected_date = new Date( parseInt( offset.x ) );
-//					load_date_range.from = new Date( selected_date.getFullYear(), selected_date.getMonth(), selected_date.getDate() );
-//
-////					namespace.article_list.load(load_date_range);
-////					namespace.article_list.element.bind("items.loaded", function(){
-////						scrollToSelectedRange();
-////					})
-//				}
+				if(active_article.length != 0){
+					scrollTo(0,active_article.offset().top - 200);
+				}else{
+					var load_date_range ={
+						"from"	:	undefined,
+						"to"	:	undefined
+					};
+
+					var last_loaded = { "month" : namespace.article_list.articles.content[ namespace.article_list.articles.dates[namespace.article_list.articles.dates.length - 1] ] }
+					last_loaded.day = last_loaded.month.content[ last_loaded.month.dates[last_loaded.month.dates.length - 1] ];
+
+					var prev_day_date = namespace.navigator.get.hour.prev.apply( namespace.navigator, [ last_loaded.day.date ] );
+					if( typeof( prev_day_date ) != 'undefined' )
+						load_date_range.to = new Date( prev_day_date.getFullYear(), prev_day_date.getMonth(), prev_day_date.getDate() )
+
+					var selected_date = new Date( parseInt( offset.x ) );
+					load_date_range.from = new Date( selected_date.getFullYear(), selected_date.getMonth(), selected_date.getDate() );
+
+//					namespace.article_list.load(load_date_range);
+					namespace.article_list.element.bind("items.loaded", function(){
+						scrollToSelectedRange();
+					})
+				}
 
 
 			}
@@ -889,7 +887,7 @@
 					namespace.navigator.graph.lockCrosshair();
 					namespace.navigator.crosshair_position = parseInt( data.x )
 					graph.setCrosshair({"x" : namespace.navigator.crosshair_position });
- 					scrollToSelectedRange(namespace)
+ 					scrollToSelectedRange()
 				}
 			})
 			
@@ -907,7 +905,7 @@
 						graph_container
 							.unbind("mousemove.graph_navigation")
 							.unbind("mouseup.graph_navigation");
- //					namespace.navigator.graph.lockCrosshair();
+ 					namespace.navigator.graph.lockCrosshair();
 				});
 				return false;
 			});
@@ -1124,7 +1122,7 @@
 							
 							load_from_date = new Date( load_from_date.getFullYear(), load_from_date.getMonth() - 1, 1 );
 							
-							this.navigator.load.apply( this.navigator, [{ "to" : this.navigator.data.date_range.from, "from" : load_from_date }] );
+//							this.navigator.load.apply( this.navigator, [{ "to" : this.navigator.data.date_range.from, "from" : load_from_date }] );
 							
 //							this.navigator.target.bind("statistic.loaded", function(e){
 //								if( typeof( namespace.navigator.full_load ) == 'undefined' || !namespace.navigator.full_load )
