@@ -94,6 +94,13 @@
 			var defaults = {
 				"target"	:	undefined
 			};
+			var plot_state = "MONTH";
+			var fix_time = ({
+				"MONTH" : 31 * 24 * 60 * 60 * 1000, //12*60*60*1000
+				"DAY" : 7 * 24 * 60 * 60 * 1000,
+				"HOUR" : 60 * 60 * 1000 //30*60*1000
+			})[plot_state];
+
 			this.settings = $.extend( {}, defaults, options );
 
 			this.target = this.settings.target;
@@ -124,10 +131,10 @@
 			})()
 			// тут считаем начало и конец реального периода
 			start_date = ( statistic.length > 0 ) ? statistic[statistic.length - 1].date : new Date();
-			start_date = new Date( start_date.getFullYear(), start_date.getMonth(), start_date.getDate() - 15);
+//			start_date = new Date( start_date.getFullYear(), start_date.getMonth(), start_date.getDate());
 
-			end_date = ( statistic.length > 0 ) ? statistic[0].date : new Date();
-			end_date = new Date( end_date.getFullYear(), end_date.getMonth(), end_date.getDate() + 15);
+			end_date = ( statistic.length > 0 ) ? statistic[0].date  : new Date();
+//			end_date = new Date( end_date.getFullYear(), end_date.getMonth(), end_date.getDate());
 
 			this.data.date_range.from = start_date;
 			this.data.date_range.to = end_date;
@@ -217,7 +224,7 @@
         },
 		"plotInit"	:	function( date_range, plot_state ){
 
-			__('plotInit' + date_range.from + ' - ' + date_range.to);
+			__('plotInit');
 			var namespace = this,
 				min_value = date_range.from.getTime(),
 				max_value = date_range.to.getTime();
@@ -820,10 +827,6 @@
 			var date_range = this.navigator.data.date_range;
 
 			function scrollScroll(timecheck){
-
-
-
-
 
 				var min_value = date_range.from.getTime(),
 					max_value = date_range.to.getTime();

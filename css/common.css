@@ -8551,3 +8551,14 @@ filter: progid:DXImageTransform.Microsoft.gradient(startColorstr=#FFEDEDED,endCo
 .ie6 .list_item.story .list_item_info, .ie7 .list_item.story .list_item_info {
 	width: 190px;
 }
+
+
+.middle_check {
+	background: #f00;
+	position: absolute;
+	left: 50%;
+	height: 10px;
+	width: 4px;
+	margin-left: -1px;
+	bottom: 0;
+}
