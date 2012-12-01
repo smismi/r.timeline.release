@@ -141,8 +141,6 @@
             this.data.date_range.from = start_date;
             this.data.date_range.to = end_date;
 
-
-            __('CROSSHAIR ' + this.crosshair_position);
             //scale bar init
             var scale_change_bar = $(".scale-change-bar", this.target),
                 scale_change_bar_state = scale_change_bar.state({ "state_list" : SCALE_CHANGE_BAR_STATELIST });
