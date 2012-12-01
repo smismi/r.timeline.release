@@ -180,27 +180,9 @@
             this.plotInit( plot_date_range, scale_change_bar_state.settings.state.settings.state); // todo porno name
 
             myScroll = new iScroll('wrapper', { scrollbarClass: 'myScrollbar', hScroll: true, vScroll: false});
-            this.graph.setCrosshair({"x" : end_date.getTime()});
-            this.test();
+            namespace.graph.setCrosshair({"x" : end_date.getTime()});
+            this.scrollToSelectedRange(end_date.getTime());
         },  // INIT
-        "test" : function (ret) {
-//            alert(ret);
-
-//            var timecheck = this.crosshair_position
-//            var min_value = date_range.from.getTime(),
-//                max_value = date_range.to.getTime();
-//
-//            var fix_timestamp = ({
-//                "MONTH" : 31 * 24 * 60 * 60 * 1000, //12*60*60*1000
-//                "WEEK" : 7 * 24 * 60 * 60 * 1000,
-//                "DAY" : 3 * 24 * 60 * 60 * 1000 //30*60*1000
-//            })[ namespace.navigator.scale_change.state.settings.state.settings.state ];
-//
-//            _w = 1000 * (max_value - min_value)  / fix_timestamp; //width_plot
-//            _x = 1000 * (timecheck - min_value)  / fix_timestamp;
-//
-//            myScroll.scrollTo(-_x + 500, 0, 200);
-        },
         "plotInit"	:	function( date_range, plot_state ){
 
             __('plotInit');
@@ -401,8 +383,39 @@
             data.sort(function(a,b){ return a[0] - b[0] });
 
             this.data.statistic_temp = data;
-        }
+        },
 
+        "scrollToSelectedRange" : function() {
+            namespace = this;
+            var graph = this.graph;
+            var coord = graph.getCrosshairPosition(),
+                offset = graph.c2p( coord );
+            namespace.scrollScroll(offset.x);
+            __(namespace.crosshair_position);
+
+        },
+        "scrollScroll" : function(timecheck) {
+            namespace = this;
+            var crosshair_position = new Date(this.crosshair_position);
+            var date_range = this.data.date_range;
+
+            var min_value = date_range.from.getTime(),
+                max_value = date_range.to.getTime();
+
+            var fix_timestamp = ({
+                "MONTH" : 31 * 24 * 60 * 60 * 1000, //12*60*60*1000
+                "WEEK" : 7 * 24 * 60 * 60 * 1000,
+                "DAY" : 3 * 24 * 60 * 60 * 1000 //30*60*1000
+            })[ namespace.scale_change.state.settings.state.settings.state ];
+
+            _w = 1000 * (max_value - min_value)  / fix_timestamp; //width_plot
+            _x = 1000 * (timecheck - min_value)  / fix_timestamp;
+
+            myScroll.scrollTo(-_x + 500, 0, 200);
+
+            $("#current_timestamp").html(crosshair_position.getFullYear() + ' ' +  crosshair_position.getMonth()  + ' ' +  crosshair_position.getDate())
+
+        }
     };
 
 
@@ -449,14 +462,12 @@
             var graph = this.navigator.graph,
                 graph_container = graph.getPlaceholder();
 
-            var date_range = this.navigator.data.date_range;
-
             graph_container.bind("plotclick.graph_navigation", function(e, data, point){
                 if (!click_lock) {
                     namespace.navigator.graph.lockCrosshair();
                     namespace.navigator.crosshair_position = parseInt( data.x )
                     graph.setCrosshair({"x" : namespace.navigator.crosshair_position });
-                    namespace.scrollToSelectedRange();
+                    namespace.navigator.scrollToSelectedRange();
                 }
             })
 
@@ -479,37 +490,6 @@
             });
         },
 
-        "scrollToSelectedRange" : function() {
-            namespace = this;
-            var graph = this.navigator.graph;
-            var coord = graph.getCrosshairPosition(),
-                offset = graph.c2p( coord );
-            namespace.scrollScroll(offset.x);
-            __(namespace.navigator.crosshair_position);
-
-        },
-        "scrollScroll" : function(timecheck) {
-            namespace = this;
-            var crosshair_position = new Date(this.navigator.crosshair_position);
-            var date_range = this.navigator.data.date_range;
-
-            var min_value = date_range.from.getTime(),
-                max_value = date_range.to.getTime();
-
-            var fix_timestamp = ({
-                "MONTH" : 31 * 24 * 60 * 60 * 1000, //12*60*60*1000
-                "WEEK" : 7 * 24 * 60 * 60 * 1000,
-                "DAY" : 3 * 24 * 60 * 60 * 1000 //30*60*1000
-            })[ namespace.navigator.scale_change.state.settings.state.settings.state ];
-
-            _w = 1000 * (max_value - min_value)  / fix_timestamp; //width_plot
-            _x = 1000 * (timecheck - min_value)  / fix_timestamp;
-
-            myScroll.scrollTo(-_x + 500, 0, 200);
-
-            $("#current_timestamp").html(crosshair_position.getFullYear() + ' ' +  crosshair_position.getMonth()  + ' ' +  crosshair_position.getDate())
-
-        }
     }
 
 
