@@ -788,7 +788,7 @@
                 	scrollScroll(offset.x);
 //                this.test();
 				var active_article = namespace.get.nextArticleByTimestamp.apply(namespace, [ parseInt( offset.x ) ]);
-
+                __(namespace.navigator.crosshair_position);
 
 				if(active_article.length != 0){
 					scrollTo(0,active_article.offset().top - 200);

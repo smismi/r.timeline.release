@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Назначение Шойгу и отставка Сердюкова | РИА Новости</title>
+
+
+    <link rel="stylesheet" type="text/css" href="css/common.css">
+    <link rel="stylesheet" type="text/css" href="css/scrollbar.css">
+
+    <script type="text/javascript" src="js/jquery.min.js"></script>
+    <script type="text/javascript" src="js/jquery.state.js?"></script>
+    <script type="text/javascript" src="js/jquery.tmpl.js?"></script>
+    <script type="text/javascript" src="js/jquery.flot.js?"></script>
+    <script type="text/javascript" src="js/jquery.flot.crosshair.js?"></script>
+    <script type="text/javascript" src="js/jquery.flot.navigate.js?"></script>
+    <script type="text/javascript" src="js/limetine.js"></script>
+    <script type="text/javascript" src="js/iscroll-lite.js"></script>
+</head>
+<body>
+
+
+<div id="story_timeline_container" class="story_timeline_container">
+    <div class="story_main_container">
+        <div class="story_main" style="border: none;">
+            <div class="story_summary">
+                <div class="story_summary_header"><h3>Тема</h3><a
+                        href="/export/rss2/shoygu_serdyukov_06112012/index.xml" class="header_rss">RSS</a><span
+                        class="page_content_title_header_watch subscribe-to unsubscribed" data-type="story"
+                        data-sid="shoygu_serdyukov_06112012" data-title="Назначение Шойгу и отставка Сердюкова"
+                        data-url="/trend/shoygu_serdyukov_06112012/" data-status="unsubscribed"><label
+                        class="unsubscribed" style="display: block;">Отслеживать</label><label class="subscribed">Не
+                    отслеживать</label></span>
+
+                    <div class="clearfix"></div>
+                </div>
+            </div>
+            <div class="timeline_navigator_container">
+                <div id="wrapper" class="timeline_navigator_controls" style="width:1000px; overflow: auto"><a href="#"
+                                                                                                              class="prev"><span
+                        class="ico"></span></a><a
+                        href="#" class="next"><span class="ico"></span></a>
+
+                    <div id="timeline_navigator" unselectable="on"
+                         style="padding: 0px; position: relative; width: 4000px;">
+                    </div>
+                    <div id="timeline_navigator_loader" class="timeline_loader_1"></div>
+                    <div class="middle_check"></div>
+                </div>
+                <div class="scale-change-bar"><span>Масштаб:</span><a class="active-state state state-0" href="#month"
+                                                                      data-scale-size="MONTH">Месяц</a><a
+                        class="state state-1" href="#week" data-scale-size="WEEK">Неделя</a><a class="state state-2"
+                                                                                               href="#day"
+                                                                                               data-scale-size="DAY">День</a>
+                </div>
+                <div class="clear"></div>
+                <span class="bottom-shadow"></span></div>
+        </div>
+        <span class="timeline_article_cursor"></span>
+    </div>
+    <div class="story_timeline" style="margin-top: 0px;">
+        <div class="timeline">
+            <div class="timeline_video_data"></div>
+
+        </div>
+        <div id="story_timeline_loader" class="timeline_loader_1"></div>
+    </div>
+</div>
+
+
+<script type="text/javascript">
+
+
+    $(function () {
+        d = {};
+        $("#story_timeline_container")
+                .articles_timeline({
+                    "data":{
+                        "articles":[
+                            { "id":910894279, "date":new Date("11/16/2012 17:12"), "title":"Шойгу формирует комфортную для работы команду, считают в Думе", "announce":"Первый зампредседателя комитета Сергей Жигарев отметил, что министр обороны Сергей Шойгу \"оперативно подбирает команду, с которой ему комфортно и эффективно будет работать\".", "url":"/politics/20121115/910894279.html", "views":2584, "comments":0, "medias":{"announce_image":{"s120x83":{"title":"", "alt":"", "src":"http://img22.ria.ru/images/91082/77/910827751.jpg", "width":120, "height":83}}, "images":[], "video":[]}, "subscription":{"status":"unsubscribed"}},
+                            { "id":910844994, "date":new Date("11/15/2012 12:48"), "title":"Цаликов остался замом Шойгу - теперь в Минобороны", "announce":"Руслан Цаликов и Юрий Борисов назначены заместителями министра обороны РФ. В соответствии с указом президента РФ, этих должностей лишились Дмитрий Чушкин и Елена Козлова, сообщила в четверг пресс-служба Кремля.", "url":"/defense_safety/20121115/910844994.html", "views":4525, "comments":0, "medias":{"announce_image":{"s120x83":{"title":"", "alt":"", "src":"http://img22.ria.ru/images/91082/77/910827751.jpg", "width":120, "height":83}}, "images":[], "video":[]}, "subscription":{"status":"unsubscribed"}},
+                            { "id":910793668, "date":new Date("11/15/2012 02:27"), "title":"Назначение Сердюкова советником главы \"Ростехнологий\" обсуждается", "announce":"Официальное решение о назначении экс-министра обороны Анатолия Сердюкова советником гендиректора госкорпорации \"Ростехнологии\" пока не принято, сообщил РИА Новости источник, знакомый с ситуацией.", "url":"/politics/20121115/910793668.html", "views":153636, "comments":0, "medias":{"announce_image":{"s120x83":{"title":"", "alt":"", "src":"http://img22.ria.ru/images/90674/12/906741230.jpg", "width":120, "height":83}}, "images":[], "video":[]}, "subscription":{"status":"unsubscribed"}},
+                            { "id":910596236, "date":new Date("11/13/2012 14:52"), "title":"Полтавченко поддержал решение Шойгу о приостановке переезда ВМА", "announce":"Губернатор Петербурга Георгий Полтавченко считает правильным решение недавно назначенного главой Минобороны РФ Сергея Шойгу о приостановке переезда Военно-медицинской академии из центра города в пригород северной столицы Сестрорецк.", "url":"/defense_safety/20121113/910596236.html", "views":5320, "comments":0, "medias":{"announce_image":{"s120x83":{"title":"", "alt":"", "src":"http://img22.ria.ru/images/91008/58/910085873.jpg", "width":120, "height":83}}, "images":[], "video":[]}, "subscription":{"status":"unsubscribed"}},
+                            { "id":910169992, "date":new Date("11/09/2012 12:00"), "title":"Минобороны РФ после назначения Шойгу решило вернуть картины в КЦ ВС", "announce":"Полотна отечественных мастеров живописи, прежде выставленные в КЦ, несколько лет назад были перемещены в различные административные здания Минобороны.", "url":"/defense_safety/20121109/910169992.html", "views":4045, "comments":0, "medias":{"announce_image":{}, "images":[], "video":[]}, "subscription":{"status":"unsubscribed"}},
+                            { "id":910066807, "date":new Date("11/09/2012 11:35"), "title":"Биография Валерия Герасимова", "announce":"Президент РФ Путин на встрече с главой Минобороны 9 ноября 2012 года одобрил кандидатуру Валерия Герасимова на пост начальника Генштаба вместо Николая Макарова.", "url":"/spravka/20121109/910066807.html", "views":5719, "comments":0, "medias":{"announce_image":{"s120x83":{"title":"", "alt":"", "src":"http://img22.ria.ru/images/91016/60/910166065.jpg", "width":120, "height":83}}, "images":[], "video":[]}, "subscription":{"status":"unsubscribed"}},
+                            { "id":910105207, "date":new Date("11/08/2012 18:34"), "title":"Рогозин готов оказать Шойгу экспертную поддержку", "announce":"\"Ему надо войти в курс дела, поэтому сейчас пока мы его не терзаем, а, наоборот, я уже сказал Сергею Кужугетовичу о том, что он может рассчитывать на любую экспертную поддержку со стороны аппарата правительства и аппарата Военно-промышленной комиссии\",- сказал Рогозин журналистам.", "url":"/defense_safety/20121108/910105207.html", "views":1600, "comments":0, "medias":{"announce_image":{"s120x83":{"title":"", "alt":"", "src":"http://img22.ria.ru/images/90967/86/909678612.jpg", "width":120, "height":83}}, "images":[], "video":[]}, "subscription":{"status":"unsubscribed"}},
+                            { "id":910057697, "date":new Date("11/08/2012 14:55"), "title":"Биография Юрия Садовенко", "announce":"Сергей Шойгу, возглавивший 6 ноября 2012 года Министерство обороны РФ, назначил руководителем аппарата ведомства генерал-лейтенанта Юрия Садовенко, который ранее занимал пост главы администрации Подмосковья.", "url":"/spravka/20121108/910057697.html", "views":6420, "comments":0, "medias":{"announce_image":{"s120x83":{"title":"", "alt":"", "src":"http://img22.ria.ru/images/91006/45/910064526.jpg", "width":120, "height":83}}, "images":[], "video":[]}, "subscription":{"status":"unsubscribed"}},
+                            { "id":910049909, "date":new Date("11/08/2012 14:18"), "title":"Источник: Шойгу консультируется по кадровым перестановкам в Минобороны", "announce":"\"В ближайшие дни в министерстве обороны произойдет ряд кадровых изменений. В основном это коснется высшего командного состава. Как ожидается, своих должностей лишатся начальник Генерального штаба и ряд заместителей министра обороны\", - сообщил РИА Новости источник в министерстве.", "url":"/defense_safety/20121108/910049909.html", "views":28284, "comments":0, "medias":{"announce_image":{"s120x83":{"title":"", "alt":"", "src":"http://img22.ria.ru/images/90969/01/909690198.jpg", "width":120, "height":83}}, "images":[], "video":[]}, "subscription":{"status":"unsubscribed"}},
+                            { "id":910045432, "date":new Date("11/08/2012 13:48"), "title":"Шойгу назначил Садовенко руководителем своего аппарата", "announce":"В конце мая текущего года Шойгу, занимавший тогда пост губернатора Московской области, назначил Садовенко руководителем своей администрации. До этого, с октября 2011 года, он был директором аппарата главы МЧС РФ.", "url":"/defense_safety/20121108/910045432.html", "views":17417, "comments":0, "medias":{"announce_image":{"s120x83":{"title":"", "alt":"", "src":"http://img22.ria.ru/images/91006/45/910064526.jpg", "width":120, "height":83}}, "images":[], "video":[]}, "subscription":{"status":"unsubscribed"}},
+                            { "id":909984904, "date":new Date("11/08/2012 03:45"), "title":"Шойгу назначил главой аппарата Минобороны своего помощника Садовенко", "announce":"В конце мая текущего года Шойгу, занимавший пост губернатора Московской области, назначил Садовенко руководителем своей администрации. До этого, с октября 2011 года, он был директором аппарата главы МЧС РФ.", "url":"/defense_safety/20121108/909984904.html", "views":11960, "comments":0, "medias":{"announce_image":{"s120x83":{"title":"", "alt":"", "src":"http://img22.ria.ru/images/90969/01/909690198.jpg", "width":120, "height":83}}, "images":[], "video":[]}, "subscription":{"status":"unsubscribed"}},
+                            { "id":909931586, "date":new Date("11/07/2012 16:45"), "title":"Медведев прокомментировал отставку Сердюкова и переизбрание Обамы", "announce":"Премьер-министр РФ Дмитрий Медведев на встрече с журналистами в Ханое прокомментировал отставку министра обороны России Анатолия Сердюкова и переизбрание президента Барака Обамы на выборах в США.", "url":"/tv_politics/20121107/909931586.html", "views":8100, "comments":0, "medias":{"announce_image":{"s120x83":{"title":"", "alt":"", "src":"http://img22.ria.ru/images/90993/11/909931150.jpg", "width":120, "height":83}}, "images":[], "video":[
+                                {"video_preview":{"title":"", "alt":"", "src":"http://img22.ria.ru/images/90993/09/909930938.jpg", "width":640, "height":360}, "video_id":"item_video_909930935"}
+                            ]}, "subscription":{"status":"unsubscribed"}},
+                            { "id":909959680, "date":new Date("11/07/2012 16:22"), "title":"Шойгу обратил особое внимание на подготовку к параду Победы", "announce":"Шойгу указал на обязательное участие в этом параде воспитанников суворовских и нахимовских училищ.", "url":"/defense_safety/20121107/909959680.html", "views":641, "comments":0, "medias":{"announce_image":{"s120x83":{"title":"", "alt":"", "src":"http://img22.ria.ru/images/90969/01/909690198.jpg", "width":120, "height":83}}, "images":[], "video":[]}, "subscription":{"status":"unsubscribed"}},
+                            { "id":909909898, "date":new Date("11/07/2012 14:43"), "title":"Шойгу приступил к исполнению обязанностей министра обороны России", "announce":"О замене Анатолия Сердюкова бывшим главой МЧС и губернатором Подмосковья Сергеем Шойгу президент РФ Владимир Путин объявил во вторник. По его словам, этот шаг должен обеспечить объективное расследование деятельности Минобороны.", "url":"/politics/20121107/909909898.html", "views":8163, "comments":0, "medias":{"announce_image":{"s120x83":{"title":"", "alt":"", "src":"http://img22.ria.ru/images/90967/86/909678612.jpg", "width":120, "height":83}}, "images":[], "video":[]}, "subscription":{"status":"unsubscribed"}},
+                            { "id":909899397, "date":new Date("11/07/2012 13:35"), "title":"Медведев заявил, что у него нет и не было претензий к Сердюкову", "announce":"Отвечая в среду на вопросы журналистов, Медведев отметил, что Сердюков начал сложнейший процесс преобразований в армии и в целом его деятельность была эффективной.", "url":"/defense_safety/20121107/909899397.html", "views":3286, "comments":0, "medias":{"announce_image":{"s120x83":{"title":"", "alt":"", "src":"http://img22.ria.ru/images/90986/31/909863179.jpg", "width":120, "height":83}}, "images":[], "video":[]}, "subscription":{"status":"unsubscribed"}},
+                            { "id":909897336, "date":new Date("11/07/2012 13:15"), "title":"Медведев назвал кандидатуру Шойгу оптимальной на пост главы Минобороны", "announce":"Премьер-министр РФ Дмитрий Медведев считает, что Шойгу сможет до конца довести начатые предшественником Анатолием Сердюковым преобразования в армии.", "url":"/politics/20121107/909897336.html", "views":1378, "comments":0, "medias":{"announce_image":{"s120x83":{"title":"", "alt":"", "src":"http://img22.ria.ru/images/90967/32/909673260.jpg", "width":120, "height":83}}, "images":[], "video":[]}, "subscription":{"status":"unsubscribed"}},
+                            { "id":909894934, "date":new Date("11/07/2012 12:58"), "title":"Сердюков передал Шойгу \"ядерный чемодан\", сообщил источник", "announce":"\"Сергей Кужугетович (Шойгу) приступил к приему дел и должности министра обороны. В частности, вчера ему уже передано устройство связи с боевыми расчетами Ракетных войск стратегического назначения - так называемый \"ядерный чемодан\"\", - сообщил РИА Новости высокопоставленный источник в Минобороны.", "url":"/defense_safety/20121107/909894934.html", "views":11784, "comments":0, "medias":{"announce_image":{"s120x83":{"title":"", "alt":"", "src":"http://img22.ria.ru/images/90669/49/906694908.jpg", "width":120, "height":83}}, "images":[], "video":[]}, "subscription":{"status":"unsubscribed"}},
+                            { "id":909794673, "date":new Date("11/06/2012 19:38"), "title":"Глава МЧС поздравил Шойгу с назначением на должность министра обороны", "announce":"Пучков напомнил, что все вопросы Шойгу решал в интересах людей, находясь на различных должностях, в том числе и будучи губернатором Московской области.", "url":"/politics/20121106/909794673.html", "views":1833, "comments":0, "medias":{"announce_image":{"s120x83":{"title":"", "alt":"", "src":"http://img22.ria.ru/images/90969/01/909690198.jpg", "width":120, "height":83}}, "images":[], "video":[]}, "subscription":{"status":"unsubscribed"}},
+                            { "id":909793082, "date":new Date("11/06/2012 19:20"), "title":"Отставка Сердюкова и назначение Шойгу в постах блогеров и анекдотах", "announce":"Блогеры в целом положительно оценивают назначение на пост главы оборонного ведомства Сергея Шойгу и пытаются очертить круг проблем, с которыми столкнется экс-губернатор Подмосковья.", "url":"/society/20121106/909793082.html", "views":15797, "comments":0, "medias":{"announce_image":{"s120x83":{"title":"", "alt":"", "src":"http://img22.ria.ru/images/90969/49/909694917.jpg", "width":120, "height":83}}, "images":[], "video":[]}, "subscription":{"status":"unsubscribed"}},
+                            { "id":909791335, "date":new Date("01/01/2012 19:04"), "title":"Смена караула:  после ухода Сердюкова ждут нового главу Генштаба", "announce":"В ряде СМИ уже появлялась информация о скором уходе Макарова в отставку - вслед за покинувшим пост главы военного ведомства Сердюковым. Начальник Генштаба считается убежденным сторонником радикальных реформ, проводимых в российской армии последние четыре года.", "url":"/politics/20121106/909791335.html", "views":165006, "comments":0, "medias":{"announce_image":{"s120x83":{"title":"", "alt":"", "src":"http://img22.ria.ru/images/90968/53/909685303.jpg", "width":120, "height":83}}, "images":[], "video":[]}, "subscription":{"status":"unsubscribed"}}
+                        ],
+                        "statistic":[
+                            {"count":1, "date":"01/01/2012 11:00", "is_first":true},
+                            {"count":3, "date":"11/06/2012 12:00"},
+                            {"count":9, "date":"11/06/2012 13:00"},
+                            {"count":8, "date":"11/06/2012 14:00"},
+                            {"count":3, "date":"11/06/2012 15:00"},
+                            {"count":1, "date":"11/06/2012 16:00"},
+                            {"count":8, "date":"11/06/2012 17:00"},
+                            {"count":3, "date":"11/06/2012 19:00"},
+                            {"count":1, "date":"11/07/2012 12:00"},
+                            {"count":2, "date":"11/07/2012 13:00"},
+                            {"count":1, "date":"11/07/2012 14:00"},
+                            {"count":2, "date":"11/07/2012 16:00"},
+                            {"count":1, "date":"11/08/2012 03:00"},
+                            {"count":1, "date":"11/08/2012 13:00"},
+                            {"count":2, "date":"11/08/2012 14:00"},
+                            {"count":1, "date":"11/08/2012 18:00"},
+                            {"count":1, "date":"11/09/2012 11:00"},
+                            {"count":1, "date":"11/09/2012 12:00"},
+                            {"count":1, "date":"11/13/2012 14:00"},
+                            {"count":1, "date":"11/15/2012 02:00"},
+                            {"count":1, "date":"11/15/2012 12:00"},
+                            {"count":1, "date":"11/16/2012 17:00"}
+                        ]
+                    },
+                    "list":"shoygu_serdyukov_06112012"
+                });
+
+
+
+    });
+</script>
+
+<div id="log" style="position: fixed; bottom: 0; right: 0;  width: 300px; color: #00c100; background: #000; font-size: 9px;">
+
+    <div id="current_timestamp" style="position: fixed; bottom: 0; left: 0;  width: 100px; color: #00c100; background: #000; font-size: 9px;">
+
+    </div>
+</div>
+</body>
+</html>
