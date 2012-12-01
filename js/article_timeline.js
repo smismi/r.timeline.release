@@ -374,8 +374,9 @@
 					]
 				}
 			);
+//            myScroll = new iScroll('wrapper', { scrollbarClass: 'myScrollbar', hScroll: true, vScroll: false});
+
 //			this.graph.lockCrosshair();
-//			myScroll.refresh();
 		},
 		
 		"assembly"  :   function( data ){
@@ -854,11 +855,11 @@
 
 				if( item.hasClass("prev") ) {
 					scrolled_items = namespace.article_list.item.get.prev.apply( namespace.article_list, [ namespace.navigator.crosshair_position ] )
-					myScroll.scrollTo('-50px', 0, 2000, true);
+//					myScroll.scrollTo('-50px', 0, 2000, true);
 				}
 				else if( item.hasClass("next") ) {
 					scrolled_items = namespace.article_list.item.get.next.apply( namespace.article_list, [ namespace.navigator.crosshair_position ] )
-					myScroll.scrollTo('50px', 0, 2000, true);
+//					myScroll.scrollTo('50px', 0, 2000, true);
 				}
 				
 				if(scrolled_items.item){
