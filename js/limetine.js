@@ -106,7 +106,6 @@
 
             this.target = this.settings.target;
             this.loader = $("#timeline_navigator_loader", this.target);
-
             var namespace = this,
                 start_date,
                 end_date;
@@ -181,7 +180,7 @@
 
             myScroll = new iScroll('wrapper', { scrollbarClass: 'myScrollbar', hScroll: true, vScroll: false});
             namespace.graph.setCrosshair({"x" : end_date.getTime()});
-            this.scrollToSelectedRange(end_date.getTime());
+
         },  // INIT
         "plotInit"	:	function( date_range, plot_state ){
 
@@ -383,41 +382,266 @@
             data.sort(function(a,b){ return a[0] - b[0] });
 
             this.data.statistic_temp = data;
-        },
-
-        "scrollToSelectedRange" : function() {
-            namespace = this;
-            var graph = this.graph;
-            var coord = graph.getCrosshairPosition(),
-                offset = graph.c2p( coord );
-            namespace.scrollScroll(offset.x);
-            __(namespace.crosshair_position);
-
-        },
-        "scrollScroll" : function(timecheck) {
-            namespace = this;
-            var crosshair_position = new Date(this.crosshair_position);
-            var date_range = this.data.date_range;
-
-            var min_value = date_range.from.getTime(),
-                max_value = date_range.to.getTime();
-
-            var fix_timestamp = ({
-                "MONTH" : 31 * 24 * 60 * 60 * 1000, //12*60*60*1000
-                "WEEK" : 7 * 24 * 60 * 60 * 1000,
-                "DAY" : 3 * 24 * 60 * 60 * 1000 //30*60*1000
-            })[ namespace.scale_change.state.settings.state.settings.state ];
-
-            _w = 1000 * (max_value - min_value)  / fix_timestamp; //width_plot
-            _x = 1000 * (timecheck - min_value)  / fix_timestamp;
-
-            myScroll.scrollTo(-_x + 500, 0, 200);
-
-            $("#current_timestamp").html(crosshair_position.getFullYear() + ' ' +  crosshair_position.getMonth()  + ' ' +  crosshair_position.getDate())
-
         }
     };
 
+
+    var ArticleListTimeline = function(options){
+        this.init( options );
+    };
+
+    ArticleListTimeline.prototype = {
+        "constructor"	:	ArticleListTimeline,
+        "init"			:	function( options ){
+            var defaults = {
+                "target"	:	undefined,
+                "templates" :   DefaultTemplates
+            };
+            this.settings = $.extend( {}, defaults, options );
+
+            this.queries = [];
+
+            this.list = this.settings.list
+            this.target = this.settings.target;
+            this.element = $(".timeline", this.target);
+            this.templates = this.settings.templates;
+            this.articles = this.settings.articles;
+            this.articles = this.data.grouping.apply(this, [ this.articles ] );
+            this.articles.dates.sort(function(a,b){ return a - b });
+            this.loader = $("#story_timeline_loader", this.target)
+
+            this.video_container = $("<div class=\"timeline_video_data\" />").appendTo(this.element);
+            for( var key in  this.articles.content)
+                if( this.articles.content.hasOwnProperty( key ) )
+                    this.item.month.generate.apply(  this,  [ this.articles.content[ key ], this.element ]  );
+
+            this.articles.dates.sort(function(a,b){ return b - a });
+
+            this.active = {};
+            this.active.month = $(".timeline_month:first").addClass("active_month");
+            this.active.day = $(".timeline_day:first", this.active.month).addClass("active_day");
+            this.active.item = $("article:first", this.active.day).addClass("active_article");
+
+        },
+
+        "data"			:	{
+            "grouping"  :   function( data ){
+
+                data.sort( function( a,b ){ return b.date.getTime() - a.date.getTime(); } )
+
+                var content_data = { "dates" : [], "content" : {} };
+
+                for( var i = 0; i < data.length; i++ ){
+
+
+
+                    var article_date    =   data[i].date,
+                        day_date        =   new Date( article_date.getFullYear(), article_date.getMonth(), article_date.getDate() ),
+                        month_date      =   new Date( article_date.getFullYear(), article_date.getMonth() );
+
+
+                    data[i].content_template = this.settings.templates.article;
+                    data[i].type = "article";
+
+                    if( typeof( content_data.content[ month_date.getTime() ] ) == 'undefined' ){
+                        content_data.content[ month_date.getTime() ] = {
+                            "date"              :   month_date,
+                            "content"           :   {},
+                            "type"              :   "month",
+                            "content_template"  :   this.settings.templates.month,
+                            "dates"				:	[]
+                        }
+                        content_data.dates.push( month_date.getTime()  )
+                    }
+
+                    if( typeof( content_data.content[ month_date.getTime() ].content[ day_date.getTime() ] ) == 'undefined' ){
+                        content_data.content[ month_date.getTime() ].dates.push( day_date.getTime() );
+                        content_data.content[ month_date.getTime() ].content[ day_date.getTime() ] = {
+                            "type"      :   "day",
+                            "date"      :   day_date,
+                            "content"   :   [],
+                            "content_template"  :   this.settings.templates.day
+                        };
+                    }
+
+                    content_data.content[ month_date.getTime() ].content[ day_date.getTime() ].content.push( data[i] );
+                }
+
+                return content_data;
+            }//,
+//            "merge" :   function( content1, content2, parent ){
+//
+//                var namespace = this;
+//                for( var key in content2 ){
+//                    if( content1.hasOwnProperty( key ) ){
+//                        if( content1[ key ] instanceof Array && content2[ key ] instanceof Array ){
+//                            var array_content1 = content1[ key ],
+//                                array_content2 = content2[ key ];
+//                            for( var i = 0; i < array_content2.length; i++ )
+//                                for( var j = 0; j < array_content1.length; j++ )
+//                                    if( array_content2[i] == array_content1[j] )
+//                                        array_content2.splice(i,1)
+//                            content1[key] = array_content1.concat( array_content2 );
+//                        }else if( content1[ key ].constructor === Object )
+//                            content1[key] = namespace.data.merge.apply( namespace, [ content1[ key ], content2[ key ], content1 ] );
+//                    }
+//                    else{
+//                        var item = content2[ key ];
+//                        content1[ key ] = item;
+//                        if( item.type ){
+//                            switch( item.type ){
+//                                case "month"    :
+//										namespace.item[ item.type ].generate.apply( namespace, [ item, namespace.element ] );
+//                                    break;
+//                                default         :
+//										namespace.item[ item.type ].generate.apply( namespace, [ item, $("#" + parent.type + "-item-" + parent.date.getTime(), namespace.element ) ] );
+//                                    break;
+//                            }
+//                        }
+//                    }
+//                }
+//
+//                return content1;
+//            }
+        },
+
+
+        "item"		:	{
+            "get"		:	{
+                "next"	:	function( timestamp ){
+                    var date = new Date(timestamp),
+                        data = {}, temp_data = {}, data_item = [], i;
+
+                    date.month = new Date( date.getFullYear(), date.getMonth() );
+                    date.day = new Date( date.getFullYear(), date.getMonth(), date.getDate() );
+
+                    temp_data.month = (function(dates){
+                        for( i = dates.length - 1; i >= 0; i-- ){
+                            if( dates[i] >= date.month.getTime())
+                                return i;
+                        }
+                    })(this.articles.dates);
+                    data.month = this.articles.content[ this.articles.dates[ temp_data.month ] ];
+
+                    temp_data.day = (function(){
+                        for( i = data.month.dates.length; i > 0; i-- ){
+                            if( data.month.dates[i-1] > date.getTime() )
+                                return i;
+                        };})();
+                    data.day = data.month.content[ data.month.dates[ temp_data.day ] ];
+
+                    temp_data.item = (function(){
+                        if( data.day )
+                            for( i = data.day.content.length-1; i >= 0; i-- ){
+                                if( data.day.content[i].date.getTime() > date.getTime() )
+                                    return i;
+                            };
+                    })();
+                    if( typeof( temp_data.item ) == 'undefined' ){
+                        temp_data.day -= 1
+                        data.day = data.month.content[ data.month.dates[ temp_data.day ] ];
+                        if( data.day )
+                            temp_data.item = data.day.content.length - 1;
+                        else if( typeof( data.day ) == 'undefined' ){
+                            temp_data.month -= 1;
+                            data.month = this.articles.content[ this.articles.dates[ temp_data.month ] ];
+                            temp_data.day = data.month.dates.length - 1;
+                            data.day = data.month.content[ data.month.dates[ temp_data.day ] ];
+                            temp_data.item = data.day.content.length - 1;
+                        }
+                    }
+                    data.item = data.day.content[ temp_data.item ];
+
+                    return data;
+                },
+                "prev"	:	function( timestamp ){
+                    var date = new Date(timestamp),
+                        data = {}, temp_data = {}, data_item = [], i;
+
+                    date.month = new Date( date.getFullYear(), date.getMonth() );
+                    date.day = new Date( date.getFullYear(), date.getMonth(), date.getDate() );
+
+                    temp_data.month = (function(dates){
+                        for( i = 0; i < dates.length; i++ ){
+                            if( dates[i] < date.getTime())
+                                return i;
+                        };})(this.articles.dates);
+                    data.month = this.articles.content[ this.articles.dates[ temp_data.month ] ];
+
+                    temp_data.day = (function(){
+                        for( i = 0; i < data.month.dates.length; i++ ){
+                            if( data.month.dates[i] < date.getTime() )
+                                return i;
+                        };})();
+                    data.day = data.month.content[ data.month.dates[ temp_data.day ] ];
+
+                    temp_data.item = (function(){
+                        for( i = 0; i < data.day.content.length; i++ ){
+                            if( data.day.content[i].date.getTime() < date.getTime() )
+                                return i;
+                        };
+                    })();
+
+                    if( typeof( temp_data.item ) == 'undefined' ){
+                        temp_data.day += 1
+                        temp_data.item = 0;
+                        data.day = data.month.content[ data.month.dates[ temp_data.day ] ];
+                        if( typeof( data.day ) == 'undefined' ){
+                            temp_data.month += 1;
+                            temp_data.day = 0;
+                            data.month = this.articles.content[ this.articles.dates[ temp_data.month ] ];
+                            data.day = data.month.content[ data.month.dates[ temp_data.day ] ];
+                        }
+                    }
+
+                    data.item = data.day.content[ temp_data.item ];
+
+                    return data;
+                }
+            },
+
+            "addEvents"    :   function( data ){
+                var namespace = this;
+                $(".video_item", data).bind("click", function(e){
+                    e.preventDefault();
+                    var item = $(this),
+                        video = $("#video_content_" + item.attr("id").replace("item_video_" , ''), namespace.video_container);
+
+                    item.empty().append( video ).unbind("click");
+                })
+            },
+            "month"     :   {
+                "generate"  :   function( data, container ){
+                    var month = $.tmpl( this.settings.templates.month, data );
+                    this.item.addEvents.apply( this, [month] );
+                    if( month.length > 0 )
+                        month.appendTo( container );
+                }
+            },
+            "day"       :   {
+                "generate"  :   function ( data, container ){
+                    var day = $.tmpl( this.settings.templates.day, data );
+                    this.item.addEvents.apply( this, [day] );
+                    day.appendTo( container );
+                }
+            },
+            "article"		:	{
+                "generate"		:	function( data, container ){
+                    var articles = $.tmpl( this.settings.templates.article, data);
+                    this.item.addEvents.apply( this, [articles] );
+                    articles.appendTo( container );
+                },
+                "setActive"	:	function(article, scrollToActive){
+                    scrollToActive = scrollToActive || false;
+                    this.active.item.removeClass("active_article");
+                    this.active.item = article.addClass("active_article");
+                    if( scrollToActive )
+                        scrollTo( 0, article.position().top + $(".story_main_container", this).outerHeight() + 50 );
+                }
+            }
+        }
+
+    }
 
     var StoryTimeline = function( options ){
         this.init( options );
@@ -443,14 +667,17 @@
                     "data"		:	this.settings.data.statistic
                 });
 
-//            this.article_list =
-//                new ArticleListTimeline({
-//                    "target"	:	$(".story_timeline", this.target),
-//                    "articles"	:	this.settings.data.articles,
-//                    "list"		:	this.settings.list
-//                });
+            this.article_list =
+                new ArticleListTimeline({
+                    "target"	:	$(".story_timeline", this.target),
+                    "articles"	:	this.settings.data.articles,
+                    "list"		:	this.settings.list
+                });
 
-            //this.navigator.crosshair_position = this.article_list.active.item.data("timestamp");
+            this.navigator.crosshair_position = this.article_list.active.item.data("timestamp");
+
+
+
 
             this.story = {
                 "timeline"	:	$(".story_timeline", this.target),
@@ -467,7 +694,7 @@
                     namespace.navigator.graph.lockCrosshair();
                     namespace.navigator.crosshair_position = parseInt( data.x )
                     graph.setCrosshair({"x" : namespace.navigator.crosshair_position });
-                    namespace.navigator.scrollToSelectedRange();
+                    namespace.scrollToSelectedRange();
                 }
             })
 
@@ -490,7 +717,36 @@
             });
         },
 
-    }
+        "scrollToSelectedRange" : function() {
+            namespace = this;
+            var graph = namespace.navigator.graph;
+            var coord = graph.getCrosshairPosition(),
+                offset = graph.c2p( coord );
+            namespace.scrollScroll(offset.x);
+            __(namespace.crosshair_position);
+        },
+        "scrollScroll" : function(timecheck) {
+            namespace = this;
+            var crosshair_position = new Date(namespace.navigator.crosshair_position);
+            var date_range = namespace.navigator.data.date_range;
+
+            var min_value = date_range.from.getTime(),
+                max_value = date_range.to.getTime();
+
+            var fix_timestamp = ({
+                "MONTH" : 31 * 24 * 60 * 60 * 1000, //12*60*60*1000
+                "WEEK" : 7 * 24 * 60 * 60 * 1000,
+                "DAY" : 3 * 24 * 60 * 60 * 1000 //30*60*1000
+            })[ namespace.navigator.scale_change.state.settings.state.settings.state ];
+
+            _w = 1000 * (max_value - min_value)  / fix_timestamp; //width_plot
+            _x = 1000 * (timecheck - min_value)  / fix_timestamp;
+
+            myScroll.scrollTo(-_x + 500, 0, 200);
+
+            $("#current_timestamp").html(crosshair_position.getFullYear() + ' ' +  crosshair_position.getMonth()  + ' ' +  crosshair_position.getDate())
+         }
+    };
 
 
 
