@@ -95,12 +95,6 @@
             var defaults = {
                 "target"	:	undefined
             };
-            var plot_state = "MONTH";
-            var fix_time = ({
-                "MONTH" : 31 * 24 * 60 * 60 * 1000, //12*60*60*1000
-                "DAY" : 7 * 24 * 60 * 60 * 1000,
-                "HOUR" : 60 * 60 * 1000 //30*60*1000
-            })[plot_state];
 
             this.settings = $.extend( {}, defaults, options );
 
@@ -108,7 +102,8 @@
             this.loader = $("#timeline_navigator_loader", this.target);
             var namespace = this,
                 start_date,
-                end_date;
+                end_date,
+                plot_state;
 
             this.data = {
                 "statistic"			:	[],
@@ -131,12 +126,34 @@
             })();
             // тут считаем начало и конец реального периода
             start_date = ( statistic.length > 0 ) ? statistic[statistic.length - 1].date : new Date();
-            start_date = new Date( start_date.getFullYear(), start_date.getMonth(), start_date.getDate() - 1);
+            d_start_date = start_date.getTime();
+            r_start_date = new Date( start_date.getFullYear(), start_date.getMonth(), start_date.getDate() - 1);
 
             end_date  = ( statistic.length > 0 ) ? statistic[0].date  : new Date();
-            this.crosshair_position = ( statistic.length > 0 ) ? statistic[0].date  : new Date();
-            end_date = new Date( end_date.getFullYear(), end_date.getMonth(), end_date.getDate() + 2);
+            d_end_date = end_date.getTime();
+            r_end_date = new Date( end_date.getFullYear(), end_date.getMonth(), end_date.getDate() + 2);
 
+            var period = d_end_date - d_start_date;
+
+            switch( true ) {
+                case period < 24 * 60 * 60 * 1000:
+                    plot_state = "DAY"
+                    break;
+                case period < 7 * 24 * 60 * 60 * 1000:
+                    plot_state = "WEEK"
+                    break;
+                case period < 31 * 24 * 60 * 60 * 1000:
+                    plot_state = "MONTH"
+                    break;
+            }
+
+//            var fix_time = ({
+//                "MONTH" : 31 * 24 * 60 * 60 * 1000, //12*60*60*1000
+//                "DAY" : 7 * 24 * 60 * 60 * 1000,
+//                "HOUR" : 60 * 60 * 1000 //30*60*1000
+//            })[plot_state];
+
+            this.crosshair_position = ( statistic.length > 0 ) ? statistic[0].date  : new Date();
             this.data.date_range.from = start_date;
             this.data.date_range.to = end_date;
 
@@ -674,7 +691,7 @@
                     "list"		:	this.settings.list
                 });
 
-            this.navigator.crosshair_position = this.article_list.active.item.data("timestamp");
+       //     this.navigator.crosshair_position = this.article_list.active.item.data("timestamp");
 
 
 
@@ -688,6 +705,8 @@
 
             var graph = this.navigator.graph,
                 graph_container = graph.getPlaceholder();
+
+            namespace.scrollToSelectedRange();
 
             graph_container.bind("plotclick.graph_navigation", function(e, data, point){
                 if (!click_lock) {
