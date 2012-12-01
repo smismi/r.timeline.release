@@ -723,7 +723,15 @@
             var coord = graph.getCrosshairPosition(),
                 offset = graph.c2p( coord );
             namespace.scrollScroll(offset.x);
-            __(namespace.crosshair_position);
+
+
+            var active_article = namespace.get.nextArticleByTimestamp.apply(namespace, [ parseInt( offset.x ) ]);
+            if(active_article.length != 0){
+                scrollTo(0,active_article.offset().top - 200);
+                __(active_article.offset().top);
+            } else {
+                __('мимо')
+            }
         },
         "scrollScroll" : function(timecheck) {
             namespace = this;
@@ -745,7 +753,36 @@
             myScroll.scrollTo(-_x + 500, 0, 200);
 
             $("#current_timestamp").html(crosshair_position.getFullYear() + ' ' +  crosshair_position.getMonth()  + ' ' +  crosshair_position.getDate())
-         }
+        },
+        "get"	:	 {
+            "nextArticleByTimestamp"	:	function(timestamp){
+
+                var date = new Date(timestamp),
+                    dates = {
+                        "month"	:	new Date(date.getFullYear(), date.getMonth(), 1),
+                        "day"	:	new Date(date.getFullYear(), date.getMonth(), date.getDate())
+                    },
+                    active = {
+                        "month"	:	[],
+                        "day"	:	[],
+                        "article"	:	[]
+                    };
+
+                active.month = $("#month-item-" + dates.month.getTime(), this.article_list.target);
+                active.day = $("#day-item-" + dates.day.getTime(), active.month);
+
+                $("article", active.day).each(function(index, item){
+                    var item = $(this),
+                        item_timestamp = item.data("timestamp"),
+                        prev_item = item.prev("article");
+                    if( prev_item.length == 0 )
+                        active.article = item;
+                    else if( prev_item.data("timestamp") > timestamp && item_timestamp < timestamp )
+                        active.article = ( timestamp - prev_item.data("timestamp") >= item_timestamp - timestamp ) ? prev_item : item;
+                });
+                return active.article;
+            }
+        }
     };
 
 
