@@ -216,7 +216,9 @@
 
                 namespace.assemblyTempData.apply( namespace, [ date_range ] );
                 namespace.plotInit(date_range, scale_change_bar_state.settings.state.settings.state);
+                myScroll.refresh();
                 namespace.graph.setCrosshair({"x" : namespace.crosshair_position});
+
             })
 
             // graph init
@@ -231,7 +233,6 @@
                 "to"	:	new Date( this.data.date_range.to.getFullYear(), this.data.date_range.to.getMonth(), this.data.date_range.to.getDate() )
             };
             this.plotInit( plot_date_range, scale_change_bar_state.settings.state.settings.state); // todo porno name
-
             myScroll = new iScroll('wrapper', { scrollbarClass: 'myScrollbar', hScroll: true, vScroll: false});
             namespace.graph.setCrosshair({"x" : end_date.getTime()});
 
@@ -249,9 +250,12 @@
                 "DAY" : 3 * 24 * 60 * 60 * 1000 //30*60*1000
             })[ plot_state ];
 
+
             $("#timeline_navigator").css({
                 width: 1000 * (max_value - min_value)  / fix_timestamp // скотлько раз в тысяче ширины поместяться данные этого масштаба от-до
             })
+
+
             this.graph = $.plot(
                 $("#timeline_navigator", this.target),
                 [ { "data" : this.data.statistic_temp }, { "data" : this.data.statistic_temp, "xaxis" : 2 } ],
@@ -384,6 +388,8 @@
                     ]
                 }
             );
+
+//            myScroll.refresh()
         },
 
         "assembly"  :   function( data ){
@@ -783,7 +789,7 @@
 
             var active_article = namespace.get.nextArticleByTimestamp.apply(namespace, [ parseInt( offset.x ) ]);
             if(active_article.length != 0){
-                scrollTo(0,active_article.offset().top - 200);
+                //scrollTo(0,active_article.offset().top - 200);
                 __(active_article.offset().top);
             } else {
                 __('мимо')
@@ -806,7 +812,7 @@
             _w = 1000 * (max_value - min_value)  / fix_timestamp; //width_plot
             _x = 1000 * (timecheck - min_value)  / fix_timestamp;
 
-            myScroll.scrollTo(-_x + 500, 0, 200);
+//            myScroll.scrollTo(-_x + 500, 0, 200);
 
             $("#current_timestamp").html(crosshair_position.getFullYear() + ' ' +  crosshair_position.getMonth()  + ' ' +  crosshair_position.getDate())
         },
@@ -876,6 +882,7 @@
 
     }
 })(jQuery)
+//myScroll = new iScroll('wrapper', { scrollbarClass: 'myScrollbar', hScroll: true, vScroll: false, checkDOMChanges: false});
 
 function __(text) {
     $("#log").append("<div>" + text +"</div>");
