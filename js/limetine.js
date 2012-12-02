@@ -140,16 +140,16 @@
                 case period < 24 * 60 * 60 * 1000:
                     //plot_state = "DAY"
 
-                    start_date = new Date( start_date.getFullYear(), start_date.getMonth(), start_date.getDate() - 21);
-                    end_date = new Date( end_date.getFullYear(), end_date.getMonth(), end_date.getDate() + 20);
+                    start_date = new Date( start_date.getFullYear(), start_date.getMonth(), start_date.getDate());
+                    end_date = new Date( end_date.getFullYear(), end_date.getMonth(), end_date.getDate());
                     this.data.date_range.from = start_date;
                     this.data.date_range.to = end_date;
                     break;
                 case period < 7 * 24 * 60 * 60 * 1000:
 
 
-                    start_date = new Date( start_date.getFullYear(), start_date.getMonth(), start_date.getDate() - 21);
-                    end_date = new Date( end_date.getFullYear(), end_date.getMonth(), end_date.getDate() + 20);
+                    start_date = new Date( start_date.getFullYear(), start_date.getMonth(), start_date.getDate());
+                    end_date = new Date( end_date.getFullYear(), end_date.getMonth(), end_date.getDate());
                     this.data.date_range.from = start_date;
                     this.data.date_range.to = end_date;
 
@@ -161,8 +161,8 @@
                 default :
                     //plot_state = "MONTH";
 
-                    start_date = new Date( start_date.getFullYear(), start_date.getMonth(), start_date.getDate() - 21);
-                    end_date = new Date( end_date.getFullYear(), end_date.getMonth(), end_date.getDate() + 20);
+                    start_date = new Date( start_date.getFullYear(), start_date.getMonth(), start_date.getDate());
+                    end_date = new Date( end_date.getFullYear(), end_date.getMonth(), end_date.getDate());
                     this.data.date_range.from = start_date;
                     this.data.date_range.to = end_date;
             }
@@ -179,28 +179,45 @@
             var scale_change_bar = $(".scale-change-bar", this.target),
                 scale_change_bar_state = scale_change_bar.state({ "state_list" : SCALE_CHANGE_BAR_STATELIST });
 
-//            $("a", scale_change_bar).bind("click", function(e){
-//                e.preventDefault();
-//                scale_change_bar_state.set( $(this).data("scale-size") );
-//
-//            });
+            $("a", scale_change_bar).bind("click", function(e){
+                e.preventDefault();
+                scale_change_bar_state.set( $(this).data("scale-size") );
+
+            });
             this.scale_change = {
                 "bar"	:	scale_change_bar,
                 "state"	:	scale_change_bar_state
             };
 
-//            scale_change_bar.bind("state-change", function(e, state){   // байнд на смену стейтов
-//
-//
+            scale_change_bar.bind("state-change", function(e, state){   // байнд на смену стейтов
+
+
 //                var date_range = {
-//                    "from" 	: 	namespace.data.date_range.from
+//                    "from" 	: 	new Date((namespace.data.date_range.to).getTime() - 2 * 31 * 24 * 60 * 60 * 1000)
 //                    ,"to" 	:	namespace.data.date_range.to
 //                };
-//
-//                namespace.assemblyTempData.apply( namespace, [ namespace.data.date_range ] );
-//                namespace.plotInit(date_range, scale_change_bar_state.settings.state.settings.state);
-//                namespace.graph.setCrosshair({"x" : namespace.crosshair_position});
-//            })
+                var date_range = {
+                    "from" 	: 	namespace.data.date_range.from
+                    ,"to" 	:	namespace.data.date_range.to
+                };
+//                var date_range = { "from" : new Date( namespace.crosshair_position ), "to" :new Date( namespace.crosshair_position ) };
+//                switch( state.name ){
+//                    case "MONTH"    :
+//                    default         :
+//                        //date_range.from = new Date( date_range.to.setDate( date_range.to.getDate() - 31 ) );
+//                        break;
+//                    case "WEEK"     :
+//                        date_range.from = new Date( date_range.to.setDate( date_range.to.getDate() - 1 ) );
+//                        break;
+//                    case "DAY"      :
+//                        date_range.from = new Date( date_range.to.setDate( date_range.to.getDate() - 1 ) );
+//                        break;
+//                }
+
+                namespace.assemblyTempData.apply( namespace, [ date_range ] );
+                namespace.plotInit(date_range, scale_change_bar_state.settings.state.settings.state);
+                namespace.graph.setCrosshair({"x" : namespace.crosshair_position});
+            })
 
             // graph init
             this.assembly.apply( this, [ statistic ] );   // добавлает в data события по часам
