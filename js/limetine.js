@@ -216,7 +216,7 @@
 
                 namespace.assemblyTempData.apply( namespace, [ date_range ] );
                 namespace.plotInit(date_range, scale_change_bar_state.settings.state.settings.state);
-                myScroll.refresh();
+                //myScroll.refresh();
                 namespace.graph.setCrosshair({"x" : namespace.crosshair_position});
 
             })
@@ -233,7 +233,7 @@
                 "to"	:	new Date( this.data.date_range.to.getFullYear(), this.data.date_range.to.getMonth(), this.data.date_range.to.getDate() )
             };
             this.plotInit( plot_date_range, scale_change_bar_state.settings.state.settings.state); // todo porno name
-            myScroll = new iScroll('wrapper', { scrollbarClass: 'myScrollbar', hScroll: true, vScroll: false});
+            //myScroll = new iScroll('wrapper', { scrollbarClass: 'myScrollbar', hScroll: true, vScroll: false});
             namespace.graph.setCrosshair({"x" : end_date.getTime()});
 
         },  // INIT
@@ -287,7 +287,7 @@
                                             "from"	: axes.xaxis.ticks[ markings_counter  ].v + fix_timestamp,
                                             "to"	: axes.xaxis.ticks[ markings_counter - axes.xaxis.n ].v + fix_timestamp
                                         },
-                                        "color"		: ( markings_counter % 2 ) ? "#ffffff" : "#f7f7f7"
+                                        "color"		: ( markings_counter % 2 ) ? "#ffffff" : "#dddddd"
                                     });
                                 }
 
@@ -298,11 +298,11 @@
                         }
                     },
                     "series":	{
-                        /*"lines"		:	{
+                        "lines"		:	{
                          "lineWidth"		:	0,
                          "fill"			:	true,
                          "fillColor"		:	"#b7c1c4"
-                         },*/
+                        },
                         "bars"		:	{
                             "show"			:	true,
                             "lineWidth"		:	0,
@@ -362,7 +362,7 @@
                                         var month_count = (last_tick_date.getFullYear() - first_tick_date.getFullYear()) * 12 - first_tick_date.getMonth() + 1 + last_tick_date.getMonth()
                                         for( var i = 0; i < month_count; i++ ){
                                             var month_date_end = new Date( first_tick_date.getFullYear(), first_tick_date.getMonth() + i + 1, 0 ),
-                                                month_date_middle = new Date( month_date_end.getFullYear(), month_date_end.getMonth(), parseInt( month_date_end.getDate()/2 ));
+                                                month_date_middle = new Date( month_date_end.getFullYear(), month_date_end.getMonth(), parseInt( month_date_end.getDate() ));
                                             ticks.push( [ month_date_middle.getTime(), months_names.nominative[ month_date_middle.getMonth() ] + " " + month_date_middle.getFullYear() ] );
                                         }
                                     case 'WEEK' :
@@ -374,16 +374,19 @@
                                         }
                                         break;
                                     case 'DAY'  :
-                                        var day_date = new Date( namespace.crosshair_position ),
-                                            day_date_middle = new Date( day_date.getFullYear(), day_date.getMonth(), day_date.getDate(), 12 );
-                                        ticks.push( [ day_date_middle.getTime(), day_date_middle.getDate() + " " + months_names.genitive[ day_date_middle.getMonth() ] + " " + day_date_middle.getFullYear() ] );
+                                        var day_count = last_tick_date.getDate() - first_tick_date.getDate() + 1;
+                                        for( var i = 0; i < day_count; i++ ){
+                                            var day_date_end = new Date( first_tick_date.getFullYear(), first_tick_date.getMonth(), first_tick_date.getDate() + i ),
+                                                day_date_middle = new Date( day_date_end.getFullYear(), day_date_end.getMonth(), day_date_end.getDate(), 12 );
+                                            ticks.push( [ day_date_middle.getTime(), day_date_middle.getDate() + " " + months_names.nominative[ day_date_middle.getMonth() ] + " " + day_date_middle.getFullYear() ] );
+                                        }
                                         break;
                                 }
                                 return ticks;
                             },
                             "position"      :   "top",
-                            "labelHeight"   :   0,
-                            "tickColor"     :   "#ffffff"
+                            "labelHeight"   :   2,
+                            "tickColor"     :   "#000fff"
                         }
                     ]
                 }
