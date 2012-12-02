@@ -126,64 +126,84 @@
             })();
             // тут считаем начало и конец реального периода
             start_date = ( statistic.length > 0 ) ? statistic[statistic.length - 1].date : new Date();
-            d_start_date = start_date.getTime();
-            r_start_date = new Date( start_date.getFullYear(), start_date.getMonth(), start_date.getDate() - 1);
-
             end_date  = ( statistic.length > 0 ) ? statistic[0].date  : new Date();
-            d_end_date = end_date.getTime();
-            r_end_date = new Date( end_date.getFullYear(), end_date.getMonth(), end_date.getDate() + 2);
+
+            this.crosshair_position = ( statistic.length > 0 ) ? statistic[0].date  : new Date();
+
+            // в цифре
+            var d_start_date = start_date.getTime();
+            var d_end_date = end_date.getTime();
 
             var period = d_end_date - d_start_date;
 
             switch( true ) {
                 case period < 24 * 60 * 60 * 1000:
-                    plot_state = "DAY"
+                    //plot_state = "DAY"
+
+                    start_date = new Date( start_date.getFullYear(), start_date.getMonth(), start_date.getDate() - 21);
+                    end_date = new Date( end_date.getFullYear(), end_date.getMonth(), end_date.getDate() + 20);
+                    this.data.date_range.from = start_date;
+                    this.data.date_range.to = end_date;
                     break;
                 case period < 7 * 24 * 60 * 60 * 1000:
-                    plot_state = "WEEK"
+
+
+                    start_date = new Date( start_date.getFullYear(), start_date.getMonth(), start_date.getDate() - 21);
+                    end_date = new Date( end_date.getFullYear(), end_date.getMonth(), end_date.getDate() + 20);
+                    this.data.date_range.from = start_date;
+                    this.data.date_range.to = end_date;
+
+                    //plot_state = "WEEK"
                     break;
-                case period < 31 * 24 * 60 * 60 * 1000:
-                    plot_state = "MONTH"
-                    break;
+//                case period < 31 * 24 * 60 * 60 * 1000:
+//
+//                    break;
+                default :
+                    //plot_state = "MONTH";
+
+                    start_date = new Date( start_date.getFullYear(), start_date.getMonth(), start_date.getDate() - 21);
+                    end_date = new Date( end_date.getFullYear(), end_date.getMonth(), end_date.getDate() + 20);
+                    this.data.date_range.from = start_date;
+                    this.data.date_range.to = end_date;
             }
 
-//            var fix_time = ({
-//                "MONTH" : 31 * 24 * 60 * 60 * 1000, //12*60*60*1000
-//                "DAY" : 7 * 24 * 60 * 60 * 1000,
-//                "HOUR" : 60 * 60 * 1000 //30*60*1000
-//            })[plot_state];
+            var fix_time = ({
+                "MONTH" : 31 * 24 * 60 * 60 * 1000, //12*60*60*1000
+                "DAY" : 7 * 24 * 60 * 60 * 1000,
+                "HOUR" : 60 * 60 * 1000 //30*60*1000
+            })[plot_state];
 
-            this.crosshair_position = ( statistic.length > 0 ) ? statistic[0].date  : new Date();
-            this.data.date_range.from = start_date;
-            this.data.date_range.to = end_date;
+
 
             //scale bar init
             var scale_change_bar = $(".scale-change-bar", this.target),
                 scale_change_bar_state = scale_change_bar.state({ "state_list" : SCALE_CHANGE_BAR_STATELIST });
 
-            $("a", scale_change_bar).bind("click", function(e){
-                e.preventDefault();
-                scale_change_bar_state.set( $(this).data("scale-size") );
-
-            });
+//            $("a", scale_change_bar).bind("click", function(e){
+//                e.preventDefault();
+//                scale_change_bar_state.set( $(this).data("scale-size") );
+//
+//            });
             this.scale_change = {
                 "bar"	:	scale_change_bar,
                 "state"	:	scale_change_bar_state
             };
 
-            scale_change_bar.bind("state-change", function(e, state){   // байнд на смену стейтов
-                var date_range = {
-                    "from" 	: 	namespace.data.date_range.from
-                    ,"to" 	:	namespace.data.date_range.to
-                };
-
-                namespace.assemblyTempData.apply( namespace, [ namespace.data.date_range ] );
-                namespace.plotInit(date_range, scale_change_bar_state.settings.state.settings.state);
-                namespace.graph.setCrosshair({"x" : namespace.crosshair_position});
-            })
+//            scale_change_bar.bind("state-change", function(e, state){   // байнд на смену стейтов
+//
+//
+//                var date_range = {
+//                    "from" 	: 	namespace.data.date_range.from
+//                    ,"to" 	:	namespace.data.date_range.to
+//                };
+//
+//                namespace.assemblyTempData.apply( namespace, [ namespace.data.date_range ] );
+//                namespace.plotInit(date_range, scale_change_bar_state.settings.state.settings.state);
+//                namespace.graph.setCrosshair({"x" : namespace.crosshair_position});
+//            })
 
             // graph init
-            this.assembly.apply( this, [ statistic ] );
+            this.assembly.apply( this, [ statistic ] );   // добавлает в data события по часам
             this.assemblyTempData.apply( this, [ this.data.date_range ] );
 
             namespace.plot_crosshair_image = new Image();
@@ -398,7 +418,7 @@
             }
             data.sort(function(a,b){ return a[0] - b[0] });
 
-            this.data.statistic_temp = data;
+            this.data.statistic_temp = data;  //смотрит сколько разных дней и возвращает массив даже с пустыми днями что б правильно строить график
         }
     };
 
