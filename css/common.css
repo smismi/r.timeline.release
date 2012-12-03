@@ -5716,10 +5716,6 @@ a.more_mm_item_info_comments {
 	text-transform: uppercase;
 	white-space: nowrap;
 }
-.page_content_title h1 a {
-	color: #fff;
-	text-decoration: none;
-}
 .page_content_title .header_rss {
 	margin: 2px 7px 0 0;
 	text-indent: -9999px;
@@ -7042,7 +7038,6 @@ label.checkbox input {
 }
 
 .story_timeline_container {
-	margin-right: 280px;
 	float: left;
 }
 .story_timeline_container .timeline_video_data {
@@ -7282,21 +7277,28 @@ label.checkbox input {
 	z-index: 9;
 }
 
+.banner_content {
+	display: none;
+}
+
+.middle_check {
+	width: 2px;
+	height: 12px;
+	position: absolute;
+	left: 500px;
+	background: #f00;
+	top: 0;
+	z-index: 12;
+}
+
 .timeline_navigator_container {
 	border: 1px solid #ededed;
 	border-top: none;
 	border-bottom: none;
 	padding: 1px;
 }
-.timeline_navigator_container .timeline_navigator_controls {
-	padding: 0 20px;
-	position: relative;
-	border: 1px solid #ededed;
-	border-left: none;
-	border-right: none;
-}
-.timeline_navigator_container .timeline_navigator_controls a.prev,
-.timeline_navigator_container .timeline_navigator_controls a.next {
+.timeline_navigator_container a.prev,
+.timeline_navigator_container a.next {
 	display: block;
 	outline: none;
 	cursor: pointer;
@@ -7313,8 +7315,8 @@ label.checkbox input {
 	background: linear-gradient(top, #f3f6f9 0%, #e1e5e9 100%);
 	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#f3f6f9', endColorstr='#e1e5e9', GradientType=0 );
 }
-.timeline_navigator_container .timeline_navigator_controls a.prev .ico,
-.timeline_navigator_container .timeline_navigator_controls a.next .ico {
+.timeline_navigator_container a.prev .ico,
+.timeline_navigator_container a.next .ico {
 	width: 10px;
 	height: 12px;
 	margin: -6px auto 0;
@@ -7325,14 +7327,22 @@ label.checkbox input {
 	background: url('/i/icons/timeline/base.png') 0 0 no-repeat;
 	display: block;
 }
-.timeline_navigator_container .timeline_navigator_controls a.prev {
+.timeline_navigator_container a.prev {
 	left: 0;
 }
-.timeline_navigator_container .timeline_navigator_controls a.next {
+.timeline_navigator_container a.next {
 	right: 0;
 }
-.timeline_navigator_container .timeline_navigator_controls a.next .ico {
+.timeline_navigator_container a.next .ico {
 	background-position: 0 -12px;
+}
+.timeline_navigator_container .timeline_navigator_controls {
+	padding: 0 0px;
+	position: relative;
+	border: 1px solid #ededed;
+	border-left: none;
+	border-right: none;
+	overflow: auto;
 }
 .timeline_navigator_container #timeline_navigator_loader {
 	height: 100%;
@@ -7355,18 +7365,18 @@ label.checkbox input {
 	position: absolute;
 }
 .timeline_navigator_container #timeline_navigator .tickLabels .x1Axis {
-	border-top: 1px solid #b7c1c4;
+	border-top: 1px solid #c46900;
 	margin-top: 56px;
 }
 .timeline_navigator_container #timeline_navigator .tickLabels .x1Axis .tickLabel {
 	height: 3px;
-	border-right: 1px solid #b7c1c4;
+	border-right: 1px solid #0331c4;
 	color: #b7c1c4;
 	font-size: .8em;
 }
 .timeline_navigator_container #timeline_navigator .tickLabels .x2Axis .tickLabel {
 	top: 2px;
-	color: #b7c1c4;
+	color: #c43243;
 	font-size: .8em;
 }
 .timeline_navigator_container .scale-change-bar {
@@ -7454,11 +7464,9 @@ filter: progid:DXImageTransform.Microsoft.gradient(startColorstr=#FFEDEDED,endCo
 }
 .story_timeline_container.sticked_top_symmary .story_main_container {
 	position: fixed!important;
-	min-width: 240px;
 	max-width: 1000px;
 }
 .story_timeline_container.sticked_top_symmary .story_main_container .story_main {
-	margin-right: 280px;
 	background: #fff;
 }
 .story_timeline_container.sticked_top_symmary .story_main_container .story_main .story_summary_item h1 {
@@ -7470,11 +7478,9 @@ filter: progid:DXImageTransform.Microsoft.gradient(startColorstr=#FFEDEDED,endCo
 }
 .story_timeline_container.offset_bottom_summary .story_main_container {
 	position: absolute!important;
-	min-width: 240px;
 	max-width: 1000px;
 }
 .story_timeline_container.offset_bottom_summary .story_main_container .story_main {
-	margin-right: 280px;
 	background: #fff;
 }
 .story_timeline_container.offset_bottom_summary .story_main_container .story_main .story_summary_item h1 {
