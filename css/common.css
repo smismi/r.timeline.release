@@ -7457,8 +7457,8 @@ label.checkbox input {
 	border-left: none;
 	border-right: none;
 }
-.timeline_navigator_container .timeline_navigator_controls a.prev,
-.timeline_navigator_container .timeline_navigator_controls a.next {
+.timeline_navigator_container  a.prev,
+.timeline_navigator_container  a.next {
 	display: block;
 	outline: none;
 	cursor: pointer;
@@ -7488,13 +7488,13 @@ label.checkbox input {
 	background: url('../i/icons/timeline/base.png') 0 0 no-repeat;
 	display: block;
 }
-.timeline_navigator_container .timeline_navigator_controls a.prev {
+.timeline_navigator_container a.prev {
 	left: 0;
 }
-.timeline_navigator_container .timeline_navigator_controls a.next {
+.timeline_navigator_container  a.next {
 	right: 0;
 }
-.timeline_navigator_container .timeline_navigator_controls a.next .ico {
+.timeline_navigator_container  .ico {
 	background-position: 0 -12px;
 }
 .timeline_navigator_container #timeline_navigator_loader {
