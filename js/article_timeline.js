@@ -893,6 +893,8 @@
 			var graph = this.navigator.graph,
 				graph_container = graph.getPlaceholder();
 
+            namespace.scrollToSelectedRange();
+
 			function scrollToSelectedRange(){
 				var coord = graph.getCrosshairPosition(),
 					offset = graph.c2p( coord );
@@ -924,6 +926,32 @@
 			}
 
 
+            graph_container.bind("plotclick.graph_navigation", function(e, data, point){
+                if (!click_lock) {
+                    namespace.navigator.graph.lockCrosshair();
+                    namespace.navigator.crosshair_position = parseInt( data.x )
+                    graph.setCrosshair({"x" : namespace.navigator.crosshair_position });
+                    namespace.scrollToSelectedRange();
+                }
+            })
+
+            graph_container.bind("mousedown.graph_navigation", function(e){
+                e.preventDefault();
+                click_lock = false;
+//				namespace.navigator.graph.unlockCrosshair();
+//
+                graph_container.bind("mousemove.graph_navigation", function(){
+                    click_lock = true;
+                });
+                graph_container.bind("mouseup.graph_navigation", function(){
+
+                    graph_container
+                        .unbind("mousemove.graph_navigation")
+                        .unbind("mouseup.graph_navigation");
+                    namespace.navigator.graph.lockCrosshair();
+                });
+                return false;
+            });
 //			graph_container.bind("plotclick.graph_navigation", function(e, data, point){
 //				namespace.navigator.graph.lockCrosshair();
 //				namespace.navigator.crosshair_position = parseInt( data.x )
@@ -995,7 +1023,43 @@
 //				namespace.navigator.graph.setCrosshair({"x" : namespace.article_list.active.item.data("timestamp")});
 //			});
 		},
+        "scrollToSelectedRange" : function() {
+            namespace = this;
+            var graph = namespace.navigator.graph;
+            var coord = graph.getCrosshairPosition(),
+                offset = graph.c2p( coord );
+            namespace.scrollScroll(offset.x);
 
+
+            var active_article = namespace.get.nextArticleByTimestamp.apply(namespace, [ parseInt( offset.x ) ]);
+            if(active_article.length != 0){
+                //scrollTo(0,active_article.offset().top - 200);
+                __(active_article.offset().top);
+            } else {
+                __('мимо')
+            }
+        },
+        "scrollScroll" : function(timecheck) {
+            namespace = this;
+            var crosshair_position = new Date(namespace.navigator.crosshair_position);
+            var date_range = namespace.navigator.data.date_range;
+
+            var min_value = date_range.from.getTime(),
+                max_value = date_range.to.getTime();
+
+            var fix_timestamp = ({
+                "MONTH" : 31 * 24 * 60 * 60 * 1000, //12*60*60*1000
+                "WEEK" : 7 * 24 * 60 * 60 * 1000,
+                "DAY" : 3 * 24 * 60 * 60 * 1000 //30*60*1000
+            })[ namespace.navigator.scale_change.state.settings.state.settings.state ];
+
+            _w = 1000 * (max_value - min_value)  / fix_timestamp; //width_plot
+            _x = 1000 * (timecheck - min_value)  / fix_timestamp;
+
+            myScroll.scrollTo(-_x + 500, 0, 0);
+
+            $("#current_timestamp").html(crosshair_position.getFullYear() + ' ' +  crosshair_position.getMonth()  + ' ' +  crosshair_position.getDate())
+        },
 		"get"	:	{
 			"nextArticleByTimestamp"	:	function(timestamp){
 
