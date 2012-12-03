@@ -127,7 +127,7 @@
 
 
 			start_date = new Date( start_date.getFullYear(), start_date.getMonth(), start_date.getDate());
-			end_date = new Date( end_date.getFullYear(), end_date.getMonth(), end_date.getDate());
+			end_date = new Date( end_date.getFullYear(), end_date.getMonth(), end_date.getDate() + 1);
 			this.data.date_range.from = start_date;
 			this.data.date_range.to = end_date;
 
