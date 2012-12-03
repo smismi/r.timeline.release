@@ -176,8 +176,8 @@
 
 						break;
 				}
-//				namespace.assemblyTempData.apply( namespace, [ namespace.data.date_range ] );
-//				namespace.plotInit(namespace.data.date_range);
+				namespace.assemblyTempData.apply( namespace, [ namespace.data.date_range ] );
+				namespace.plotInit(namespace.data.date_range);
 //				namespace.graph.setCrosshair({"x" : namespace.crosshair_position});
 				namespace.plotInit( plot_date_range );
 
