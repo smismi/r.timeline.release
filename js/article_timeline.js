@@ -902,10 +902,10 @@
 				var active_article = namespace.get.nextArticleByTimestamp.apply(namespace, [ parseInt( offset.x ) ])
 
 				if(active_article.length != 0){
-					__(active_article.offset().top)
- 					myScroll3.scrollToElement("#" + active_article[0].id, 2000);
+
+ 					myScroll3.scrollToElement("#" + active_article[0].id, 5000);
 					namespace.scrollScroll(parseInt( offset.x ));
-//					scrollTo(0,active_article.offset().top - 200)
+
 				}else{
 
 					namespace.scrollScroll(parseInt( offset.x ));
@@ -1025,10 +1025,21 @@
 			_w = 1000 * (max_value - min_value)  / fix_timestamp; //width_plot
 			_x = 1000 * (timecheck - min_value)  / fix_timestamp;
 
-			__("scrollTO" + new Date(crosshair_position))
-			__("scrollTO" + timecheck)
 
-			myScroll.scrollTo(-_x + 500, 0, 200);
+			switch( true ){
+				case _x < 500    :
+					myScroll.scrollTo(0, 0, 200);
+					break;
+				case _x > (_w - 500)     :
+
+					myScroll.scrollTo(-_w + 1000, 0, 200);
+					break;
+				default :
+					myScroll.scrollTo(-_x + 500, 0, 200);
+
+			}
+
+
 		},
 		"get"	:	{
 			"nextArticleByTimestamp"	:	function(timestamp){
