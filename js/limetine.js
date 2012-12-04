@@ -756,6 +756,7 @@
 
             graph_container.bind("plotclick.graph_navigation", function(e, data, point){
                 if (!click_lock) {
+                    __("CLICK");
                     namespace.navigator.graph.lockCrosshair();
                     namespace.navigator.crosshair_position = parseInt( data.x )
                     graph.setCrosshair({"x" : namespace.navigator.crosshair_position });
@@ -766,13 +767,18 @@
             graph_container.bind("mousedown.graph_navigation", function(e){
                 e.preventDefault();
                 click_lock = false;
+
+                __("DOWN");
 //				namespace.navigator.graph.unlockCrosshair();
 //
                 graph_container.bind("mousemove.graph_navigation", function(){
                     click_lock = true;
+
+                    __("CLICK");
                 });
                 graph_container.bind("mouseup.graph_navigation", function(){
 
+                    __("UP");
                     graph_container
                         .unbind("mousemove.graph_navigation")
                         .unbind("mouseup.graph_navigation");
