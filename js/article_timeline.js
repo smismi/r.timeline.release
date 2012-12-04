@@ -276,7 +276,7 @@
 			namespace.fix_timestamp = ({
 				"MONTH" : 31*24*60*60*1000    * 1,
 				"WEEK" : 7*24*60*60*1000   * 1,
-				"DAY" : 24*60*60*1000    * 10
+				"DAY" : 24*60*60*1000    * 5
 			})[ namespace.scale_change.state.get().name ]
 
 			namespace._w = 1000 * (date_range.to.getTime() - date_range.from.getTime()) / namespace.fix_timestamp;
@@ -1026,10 +1026,12 @@
 					var item = $(this),
 						item_timestamp = item.data("timestamp"),
 						prev_item = item.prev("article");
-					if( prev_item.length == 0 )
+					if( prev_item.length == 0 ) {
 						active.article = item;
-					else if( prev_item.data("timestamp") > timestamp && item_timestamp < timestamp )
+                    }
+					else if( prev_item.data("timestamp") > timestamp && item_timestamp < timestamp ) {
 						active.article = ( timestamp - prev_item.data("timestamp") >= item_timestamp - timestamp ) ? prev_item : item;
+                    }
 				});
 				return active.article;
 			}
