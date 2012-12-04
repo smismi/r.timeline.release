@@ -152,12 +152,11 @@
 			};
 
 			scale_change_bar.bind("state-change", function(e, state){
+
 				var date_range = {
 					"from": namespace.data.date_range.from,
 					"to" : namespace.data.date_range.to
 				};
-
-
 				switch( state.name ){
 					case "MONTH"    :
 					default         :
@@ -166,20 +165,24 @@
 
 						break;
 					case "WEEK"     :
-//							date_range.to = new Date( date_range.to.setDate( date_range.to.getDate() + 7 ) );
-
-
+						new Date(namespace.crosshair_position)
+						var date_range = {
+							"from": new Date(namespace.crosshair_position - 7*24*60*60*1000), // по  неделе в каждую сторону
+							"to" : new Date(namespace.crosshair_position + 7*24*60*60*1000)
+						};
 						break;
 					case "DAY"      :
 //							date_range.to = new Date( date_range.to.setDate( date_range.to.getDate() + 1 ) );
-
-
+						var date_range = {
+							"from": new Date(namespace.crosshair_position - 12*60*60*1000), // по пол дня в каждую сторону
+							"to" : new Date(namespace.crosshair_position + 12*60*60*1000)
+						};
 						break;
 				}
 				namespace.assemblyTempData.apply( namespace, [ namespace.data.date_range ] );
 //				namespace.plotInit(namespace.data.date_range);
 //				namespace.graph.setCrosshair({"x" : namespace.crosshair_position});
-				namespace.plotInit( plot_date_range );
+				namespace.plotInit( date_range );
 				//		namespace.graph.setCrosshair({"x" : namespace.crosshair_position});
 				//	myScroll.scrollTo(- namespace._w + 1000, 150);
 				__('x_ch: ' + namespace.crosshair_position);
@@ -279,7 +282,7 @@
 			namespace.fix_timestamp = ({
 				"MONTH" : 31*24*60*60*1000    * 1,
 				"WEEK" : 7*24*60*60*1000   * 1,
-				"DAY" : 24*60*60*1000    * 5
+				"DAY" : 24*60*60*1000    * 1
 			})[ namespace.scale_change.state.get().name ]
 
 			namespace._w = 1000 * (date_range.to.getTime() - date_range.from.getTime()) / namespace.fix_timestamp;
@@ -911,8 +914,7 @@
 
 				if(active_article.length != 0){
 					__(active_article.offset().top)
-					active_article.css({"border": "1px solid red"})
-					myScroll3.scrollToElement("#" + active_article[0].id, 2000);
+ 					myScroll3.scrollToElement("#" + active_article[0].id, 2000);
 					namespace.scrollScroll(parseInt( offset.x ));
 //					scrollTo(0,active_article.offset().top - 200)
 				}else{
