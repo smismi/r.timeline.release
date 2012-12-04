@@ -132,7 +132,7 @@
 			this.data.date_range.to = _end_date;
 
 
-			this.crosshair_position = this.data.date_range.to.getTime();
+			this.crosshair_position = end_date.getTime();
 			//scale bar init
 			var scale_change_bar = $(".scale-change-bar", this.target),
 				scale_change_bar_state = scale_change_bar.state({ "state_list" : SCALE_CHANGE_BAR_STATELIST });
@@ -196,6 +196,7 @@
 
 		},
 		"load"			:	function( date_range ){
+
 			var date_string = {
 					"from"		:   date_range.from.getFullYear() + ( ( date_range.from.getMonth() < 9 ) ? '0' : '' ) + ( date_range.from.getMonth() + 1) + ( ( date_range.from.getDate() < 10 ) ? '0' : '' ) + date_range.from.getDate(),
 					"to"		:	date_range.to.getFullYear() + ( ( date_range.to.getMonth() < 9 ) ? '0' : '' ) + ( date_range.to.getMonth() + 1) + ( ( date_range.to.getDate() < 10 ) ? '0' : '' ) + date_range.to.getDate()
@@ -877,8 +878,7 @@
 					"list"		:	this.settings.list
 				});
 
-			this.navigator.crosshair_position = this.article_list.active.item.data("timestamp");
-			this.story = {
+ 			this.story = {
 				"timeline"	:	$(".story_timeline", this.target),
 				"container"	:	$(".story_main_container", this.target),
 				"dummy"		:	$(".timeline_article_cursor", this.target)
