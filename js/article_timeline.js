@@ -120,7 +120,7 @@
 				}
 				data.sort(function(a,b){ return b.date.getTime() - a.date.getTime(); });
 				return data
-			})()
+			})();
 			// тут считаем начало и конец реального периода
 			start_date = ( statistic.length > 0 ) ? statistic[statistic.length - 1].date : new Date();
 			end_date  = ( statistic.length > 0 ) ? statistic[0].date  : new Date();
@@ -131,13 +131,8 @@
 			this.data.date_range.from = _start_date;
 			this.data.date_range.to = _end_date;
 
-//			end_date = ( statistic.length > 0 ) ? statistic[0].date : new Date();
-//			end_date = new Date( end_date.getFullYear(), end_date.getMonth(), end_date.getDate() + 1);
 
-//			this.data.date_range.from = new Date( end_date.getFullYear(), end_date.getMonth(), end_date.getDate() - 31 );
-//			this.data.date_range.to = end_date;
-//
-			this.crosshair_position = this.data.date_range.from.getTime();
+			this.crosshair_position = this.data.date_range.to.getTime();
 			//scale bar init
 			var scale_change_bar = $(".scale-change-bar", this.target),
 				scale_change_bar_state = scale_change_bar.state({ "state_list" : SCALE_CHANGE_BAR_STATELIST });
@@ -151,60 +146,54 @@
 				"state"	:	scale_change_bar_state
 			};
 
-			scale_change_bar.bind("state-change", function(e, state){
+						scale_change_bar.bind("state-change", function(e, state){
 
-				var date_range = {
-					"from": namespace.data.date_range.from,
-					"to" : namespace.data.date_range.to
-				};
-				switch( state.name ){
-					case "MONTH"    :
-					default         :
-//							date_range.to = new Date( date_range.to.setDate( date_range.to.getDate() + 31 ) );
-
-
-						break;
-					case "WEEK"     :
-						new Date(namespace.crosshair_position)
-						var date_range = {
-							"from": new Date(namespace.crosshair_position - 7*24*60*60*1000), // по  неделе в каждую сторону
-							"to" : new Date(namespace.crosshair_position + 7*24*60*60*1000)
-						};
-						break;
-					case "DAY"      :
-//							date_range.to = new Date( date_range.to.setDate( date_range.to.getDate() + 1 ) );
-						var date_range = {
-							"from": new Date(namespace.crosshair_position - 12*60*60*1000), // по пол дня в каждую сторону
-							"to" : new Date(namespace.crosshair_position + 12*60*60*1000)
-						};
-						break;
-				}
-				namespace.assemblyTempData.apply( namespace, [ namespace.data.date_range ] );
-//				namespace.plotInit(namespace.data.date_range);
-//				namespace.graph.setCrosshair({"x" : namespace.crosshair_position});
-				namespace.plotInit( date_range );
-				//		namespace.graph.setCrosshair({"x" : namespace.crosshair_position});
-				//	myScroll.scrollTo(- namespace._w + 1000, 150);
-				__('x_ch: ' + namespace.crosshair_position);
-
-			})
+							var date_range = {
+								"from": namespace.data.date_range.from,
+								"to" : namespace.data.date_range.to
+							};
+							switch( state.name ){
+								case "MONTH"    :
+								default         :
+									date_range = {
+										"from": namespace.data.date_range.from,
+										"to" : namespace.data.date_range.to
+									};
+									break;
+								case "WEEK"     :
+									date_range = {
+										"from": namespace.data.date_range.from,
+										"to" : namespace.data.date_range.to
+									};
+									break;
+								case "DAY"      :
+									date_range = {
+										"from": namespace.data.date_range.from,
+										"to" : namespace.data.date_range.to
+									};
+									break;
+							}
+							namespace.assemblyTempData.apply( namespace, [ namespace.data.date_range ] );
+							namespace.plotInit( date_range );
+						})
 
 			// graph init
 			this.assembly.apply( this, [ statistic ] );
 			this.assemblyTempData.apply( this, [ this.data.date_range ] );
 
 			namespace.plot_crosshair_image = new Image();
-			namespace.plot_crosshair_image.src = "/i/icons/timeline/crosshair.png";
+			namespace.plot_crosshair_image.src = "http://ria.ru/i/icons/timeline/crosshair.png";
 
 			var plot_date_range = {
-				"from"	:	new Date( this.data.date_range.from.getFullYear(), this.data.date_range.from.getMonth(), this.data.date_range.from.getDate()-1 ),
-				"to"	:	new Date( this.data.date_range.to.getFullYear(), this.data.date_range.to.getMonth(), this.data.date_range.to.getDate()+1 )
+//				"from"	:	new Date( this.data.date_range.from.getFullYear(), this.data.date_range.from.getMonth(), this.data.date_range.from.getDate()-1 ),
+//				"to"	:	new Date( this.data.date_range.to.getFullYear(), this.data.date_range.to.getMonth(), this.data.date_range.to.getDate()+1 )
+
+				"from"	:	new Date( this.data.date_range.from ),
+				"to"	:	new Date( this.data.date_range.to )
 			};
 			this.plotInit( plot_date_range );
 			myScroll = new iScroll('timeline_navigator_controls', { scrollbarClass: 'myScrollbar', hScroll: true, vScroll: false, checkDOMChanges: true, desktopCompatibility:true});
-			//myScroll.scrollTo(- namespace._w + 1000, 150);
-			this.graph.setCrosshair({"x" : end_date.getTime()});
-			__('x: ' + end_date.getTime());
+
 		},
 		"load"			:	function( date_range ){
 			var date_string = {
@@ -282,9 +271,9 @@
 			namespace.fix_timestamp = ({
 				"MONTH" : 31*24*60*60*1000    * 1,
 				"WEEK" : 7*24*60*60*1000   * 1,
-				"DAY" : 24*60*60*1000    * 1
+				"DAY" : 24*60*60*1000    * 10
 			})[ namespace.scale_change.state.get().name ]
-
+			this.data.statistic_temp
 			namespace._w = 1000 * (date_range.to.getTime() - date_range.from.getTime()) / namespace.fix_timestamp;
 
 			__(namespace._w);
@@ -1030,7 +1019,7 @@
 			var fix_timestamp = ({
 				"MONTH" : 31 * 24 * 60 * 60 * 1000, //12*60*60*1000
 				"WEEK" : 7 * 24 * 60 * 60 * 1000,
-				"DAY" : 3 * 24 * 60 * 60 * 1000 //30*60*1000
+				"DAY" : 10 * 24 * 60 * 60 * 1000 //30*60*1000
 			})[ namespace.navigator.scale_change.state.settings.state.settings.state ];
 
 			_w = 1000 * (max_value - min_value)  / fix_timestamp; //width_plot
@@ -1039,7 +1028,7 @@
 			__("scrollTO" + new Date(crosshair_position))
 			__("scrollTO" + timecheck)
 
-//			myScroll.scrollTo(-_x + 500, 0, 200);
+			myScroll.scrollTo(-_x + 500, 0, 200);
 		},
 		"get"	:	{
 			"nextArticleByTimestamp"	:	function(timestamp){
