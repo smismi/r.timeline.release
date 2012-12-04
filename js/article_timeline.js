@@ -24,7 +24,7 @@
                                     {{tmpl( value ) content_template}}\n\
                                 {{/each}}\n\
                             </div>",
-			"article"   :   "<article data-timestamp=\"${date.getTime()}\">\n\
+			"article"   :   "<article id=\"article-item-${date.getTime()}\" data-timestamp=\"${date.getTime()}\">\n\
                                 <div class=\"announce\">\n\
                                     <div class=\"article-actions\">\n\
                                         <a class=\"comments_link\" href=\"${url}#comments\" target=\"_blank\">\n\
@@ -196,7 +196,7 @@
 				"to"	:	new Date( this.data.date_range.to.getFullYear(), this.data.date_range.to.getMonth(), this.data.date_range.to.getDate()+1 )
 			};
 			this.plotInit( plot_date_range );
-			myScroll = new iScroll('timeline_navigator_controls', { scrollbarClass: 'myScrollbar', hScroll: true, vScroll: false, checkDOMChanges: true});
+			myScroll = new iScroll('timeline_navigator_controls', { scrollbarClass: 'myScrollbar', hScroll: true, vScroll: false, checkDOMChanges: true, desktopCompatibility:true});
 			this.graph.setCrosshair({"x" : end_date.getTime()});
 
 		},
@@ -892,8 +892,9 @@
 
 			var graph = this.navigator.graph,
 				graph_container = graph.getPlaceholder();
+            myScroll3 = new iScroll('timeline_flow', { scrollbarClass: 'myScrollbar', hScroll: false, vScroll: true, checkDOMChanges: true, desktopCompatibility:true});
 
-			function scrollToSelectedRange(){
+            function scrollToSelectedRange(){
 				var coord = graph.getCrosshairPosition(),
 					offset = graph.c2p( coord );
 
@@ -902,6 +903,7 @@
 				if(active_article.length != 0){
                     __(active_article.offset().top)
                     active_article.css({"border": "1px solid red"})
+                    myScroll3.scrollToElement("#" + active_article[0].id, 2000);
 //					scrollTo(0,active_article.offset().top - 200)
 				}else{
 //					var load_date_range ={
