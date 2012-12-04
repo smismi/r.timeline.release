@@ -993,17 +993,43 @@
 					clearTimeout( scrollTimer );
 				});
 
+            $('#timeline_flow').mousewheel(function(event, delta){
+                event.preventDefault();
+
+                var scrolled_items;
+                if(delta>0){
+                    scrolled_items = namespace.article_list.item.get.next.apply( namespace.article_list, [ namespace.navigator.crosshair_position ] )
+
+//                    scrolled_items = namespace.article_list.item.get.next.apply( namespace.article_list, [ namespace.navigator.crosshair_position ] )
+
+                }else if(delta<0){
+                    scrolled_items = namespace.article_list.item.get.prev.apply( namespace.article_list, [ namespace.navigator.crosshair_position ] )
+
+                }
+//                if(scrolled_items.item){
+//                    var month = $("#month-item-" + scrolled_items.month.date.getTime(), namespace.article_list.target),
+//                        day = $("#day-item-" + scrolled_items.day.date.getTime(), month),
+//                        article = $("article[data-timestamp=" + scrolled_items.item.date.getTime() + "]", day);
+//
+//					scrollTo(0,article.offset().top - namespace.story.container.outerHeight())
+//                }
+                myScroll3.scrollToElement("#" + namespace.article_list.active.item[0].id, 1000);
+
+                namespace.navigator.graph.setCrosshair({"x" : namespace.article_list.active.item.data("timestamp")});
+            });
+
 
 //			$(window).bind("scroll", function(e){
+//                __(1);
 //				namespace.story.scrollTop = $(window).scrollTop()
 //
 //				namespace.scrollEvents.update.header.apply( namespace );
 //
-//                namespace.story.dummy.position_top = namespace.story.scrollTop + namespace.story.dummy.position().top + namespace.story.dummy.outerHeight()/2;
+////                namespace.story.dummy.position_top = namespace.story.scrollTop + namespace.story.dummy.position().top + namespace.story.dummy.outerHeight()/2;
 //				namespace.scrollEvents.update.objects.activate.apply(namespace);
-//				namespace.scrollEvents.update.statistic.upload.apply(namespace);
-//				namespace.scrollEvents.update.objects.upload.apply(namespace);
-//				namespace.scrollEvents.update.statistic.redraw.apply(namespace);
+////				namespace.scrollEvents.update.statistic.upload.apply(namespace);
+////				namespace.scrollEvents.update.objects.upload.apply(namespace);
+////				namespace.scrollEvents.update.statistic.redraw.apply(namespace);
 //
 //				namespace.navigator.graph.setCrosshair({"x" : namespace.article_list.active.item.data("timestamp")});
 //			});
