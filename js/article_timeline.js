@@ -175,6 +175,8 @@
 							}
 							namespace.assemblyTempData.apply( namespace, [ namespace.data.date_range ] );
 							namespace.plotInit( date_range );
+							__(new Date(namespace.crosshair_position));
+
 						})
 
 			// graph init
@@ -193,7 +195,7 @@
 			};
 			this.plotInit( plot_date_range );
 			myScroll = new iScroll('timeline_navigator_controls', { scrollbarClass: 'myScrollbar', hScroll: true, vScroll: false, checkDOMChanges: true, desktopCompatibility:true});
-
+			__(new Date(namespace.crosshair_position));
 		},
 		"load"			:	function( date_range ){
 
@@ -956,14 +958,14 @@
 					graph_container
 						.unbind("mousemove.graph_navigation")
 						.unbind("mouseup.graph_navigation");
-//					namespace.navigator.graph.lockCrosshair();
+					namespace.navigator.graph.lockCrosshair();
 				});
 				return false;
 			});
 
 
 			var scrollTimer = 0;
-			$(".timeline_navigator_controls a.prev,.timeline_navigator_controls a.next", this.target).bind("click", function(e){
+			$("a.prev, a.next", this.target).bind("click", function(e){
 				e.preventDefault();
 
 				var item = $(this),
@@ -1010,9 +1012,8 @@
 		},
 		scrollScroll : function(timecheck) {
 			namespace = this;
-			var crosshair_position = new Date(namespace.navigator.crosshair_position);
-			var date_range = namespace.navigator.data.date_range;
-
+ 			var date_range = namespace.navigator.data.date_range;
+			namespace.navigator.graph.setCrosshair({"x" : namespace.navigator.crosshair_position});
 			var min_value = date_range.from.getTime(),
 				max_value = date_range.to.getTime();
 
@@ -1059,14 +1060,17 @@
 				active.day = $("#day-item-" + dates.day.getTime(), active.month);
 
 				$("article", active.day).each(function(index, item){
+
 					var item = $(this),
 						item_timestamp = item.data("timestamp"),
 						prev_item = item.prev("article");
 					if( prev_item.length == 0 ) {
 						active.article = item;
+						__('_' + index);
 					}
 					else if( prev_item.data("timestamp") > timestamp && item_timestamp < timestamp ) {
 						active.article = ( timestamp - prev_item.data("timestamp") >= item_timestamp - timestamp ) ? prev_item : item;
+						__(index);
 					}
 				});
 				return active.article;
