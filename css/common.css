@@ -7303,7 +7303,7 @@ label.checkbox input {
 	outline: none;
 	cursor: pointer;
 	position: absolute;
-	top: 1px;
+	top: -50px;
 	width: 20px;
 	height: 70px;
 	background: #f3f6f9 url(/i/accordion_bg.png) 0 100% repeat-x;
@@ -7342,7 +7342,7 @@ label.checkbox input {
 	border: 1px solid #ededed;
 	border-left: none;
 	border-right: none;
-	overflow: auto;
+	overflow: visible;
 }
 .timeline_navigator_container #timeline_navigator_loader {
 	height: 100%;

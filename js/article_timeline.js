@@ -147,10 +147,6 @@
 			};
 			scale_change_bar.bind("state-change", function(e, state){
 
-				var date_range = {
-					"from": namespace.data.date_range.from,
-					"to" : namespace.data.date_range.to
-				};
 				switch( state.name ){
 					case "MONTH"    :
 					default         :
@@ -161,21 +157,21 @@
 						break;
 					case "WEEK"     :
 						date_range = {
-							"from": namespace.data.date_range.from,
-							"to" : namespace.data.date_range.to
+							"from": new Date(namespace.crosshair_position - 14 * 24 * 60 * 60 * 1000),
+							"to" : new Date(namespace.crosshair_position + 14 * 24 * 60 * 60 * 1000)
 						};
 						break;
 					case "DAY"      :
 						date_range = {
-							"from": namespace.data.date_range.from,
-							"to" : namespace.data.date_range.to
+							"from": new Date(namespace.crosshair_position - 1 * 24 * 60 * 60 * 1000),
+							"to" : new Date(namespace.crosshair_position + 1 * 24 * 60 * 60 * 1000)
 						};
 						break;
 				}
 				namespace.assemblyTempData.apply( namespace, [ namespace.data.date_range ] );
 				namespace.plotInit( date_range );
-				myScroll = new iScroll('timeline_navigator_controls', { scrollbarClass: 'myScrollbar', hScroll: true, vScroll: false, checkDOMChanges: true, desktopCompatibility:true});
-				__(new Date(namespace.crosshair_position));
+				myScroll.refresh();
+				__('x:' + new Date(namespace.crosshair_position));
 				namespace.graph.setCrosshair({"x" : namespace.crosshair_position});
 
 			})
@@ -271,19 +267,19 @@
 				min_value = date_range.from.getTime(),
 				max_value = date_range.to.getTime();
 			namespace.fix_timestamp = ({
-				"MONTH" : 31*24*60*60*1000    * 1,
-				"WEEK" : 7*24*60*60*1000   * 2,
-				"DAY" : 24*60*60*1000    * 10
+				"MONTH" : 31*24*60*60*1000 * 1,
+				"WEEK" : 7*24*60*60*1000 * 2,
+				"DAY" : 24*60*60*1000  * 1
 			})[ namespace.scale_change.state.get().name ];
 
-			this.data.statistic_temp
 			namespace._w = 680 * (date_range.to.getTime() - date_range.from.getTime()) / namespace.fix_timestamp;
 
 			__(namespace._w);
 
 			$("#timeline_navigator").css({
-				width: namespace._w // todo скотлько раз в тысяче ширины поместяться данные этого масштаба от-до
+				width: namespace._w
 			});
+
 
 			this.graph = $.plot(
 				$("#timeline_navigator", this.target),
@@ -514,6 +510,37 @@
 			data.sort(function(a,b){ return a[0] - b[0] });
 
 			this.data.statistic_temp = data;
+		},
+		scrollScrollR : function(timecheck) {
+			namespace = this;
+			__(timecheck);
+			var date_range = namespace.navigator.data.date_range;
+			namespace.navigator.graph.setCrosshair({"x" : namespace.navigator.crosshair_position});
+			var min_value = date_range.from.getTime(),
+				max_value = date_range.to.getTime();
+
+			var fix_timestamp = ({
+				"MONTH" : 31 * 24 * 60 * 60 * 1000, //12*60*60*1000
+				"WEEK" : 14 * 24 * 60 * 60 * 1000,
+				"DAY" : 1 * 24 * 60 * 60 * 1000 //30*60*1000
+			})[ namespace.navigator.scale_change.state.settings.state.settings.state ];
+
+			_w = 680 * (max_value - min_value)  / fix_timestamp; //width_plot
+			_x = 680 * (timecheck - min_value)  / fix_timestamp;
+
+
+			switch( true ){
+				case _x < 340    :
+					myScroll.scrollTo(0, 0, 500);
+					break;
+				case _x > (_w - 340)     :
+
+					myScroll.scrollTo(-_w + 680, 0, 500);
+					break;
+				default :
+					myScroll.scrollTo(-_x + 340, 0, 500);
+
+			}
 		}
 
 	};
@@ -926,7 +953,12 @@
 
 				}
 			}
-
+//			graph_container.bind("plotclick", function (event, pos, item) {
+//				if (item) {
+//					$("#log").text("You clicked point " + item.dataIndex + " in " + item.series.label + ".");
+//					graph.highlight(item.series, item.datapoint);
+//				}
+//			});
 
 //			graph_container.bind("plotclick.graph_navigation", function(e, data, point){
 //				namespace.navigator.graph.lockCrosshair();
@@ -934,13 +966,19 @@
 //				graph.setCrosshair({"x" : namespace.navigator.crosshair_position });
 //				scrollToSelectedRange()
 //			})
-			graph_container.bind("plotclick.graph_navigation", function(e, data, point){
-				if (!click_lock) {
-					namespace.navigator.crosshair_position = parseInt( data.x )
-					graph.setCrosshair({"x" : namespace.navigator.crosshair_position });
-					scrollToSelectedRange()
-				}
-			})
+														graph_container.bind("plotclick.graph_navigation", function(e, data, item){
+															if (!click_lock) {
+
+																namespace.navigator.crosshair_position = parseInt( data.x )
+																graph.setCrosshair({"x" : namespace.navigator.crosshair_position });
+																scrollToSelectedRange()
+																if (item) {
+																	__("You clicked point " + item.dataIndex + " in " + item.series.label + ".");
+																	graph.unhighlight();
+																	graph.highlight(item.series, item.datapoint);
+																}
+															}
+														})
 //			graph_container.bind("mousedown.graph_navigation", function(e){
 //				e.preventDefault();
 //				namespace.navigator.graph.unlockCrosshair();
@@ -1010,50 +1048,27 @@
 					clearTimeout( scrollTimer );
 				});
 
-            $('#timeline_flow').mousewheel(function(event, delta){
-                event.preventDefault();
-
-                var scrolled_items;
-                if(delta>0){
-                    scrolled_items = namespace.article_list.item.get.next.apply( namespace.article_list, [ namespace.navigator.crosshair_position ] )
-
-//                    scrolled_items = namespace.article_list.item.get.next.apply( namespace.article_list, [ namespace.navigator.crosshair_position ] )
-
-                }else if(delta<0){
-                    scrolled_items = namespace.article_list.item.get.prev.apply( namespace.article_list, [ namespace.navigator.crosshair_position ] )
-
-                }
-//                if(scrolled_items.item){
-//                    var month = $("#month-item-" + scrolled_items.month.date.getTime(), namespace.article_list.target),
-//                        day = $("#day-item-" + scrolled_items.day.date.getTime(), month),
-//                        article = $("article[data-timestamp=" + scrolled_items.item.date.getTime() + "]", day);
-//
-//					scrollTo(0,article.offset().top - namespace.story.container.outerHeight())
-//                }
-                myScroll3.scrollToElement("#" + namespace.article_list.active.item[0].id, 1000);
-
-                namespace.navigator.graph.setCrosshair({"x" : namespace.article_list.active.item.data("timestamp")});
-            });
-
 
 //			$(window).bind("scroll", function(e){
-//                __(1);
 //				namespace.story.scrollTop = $(window).scrollTop()
 //
 //				namespace.scrollEvents.update.header.apply( namespace );
 //
-////                namespace.story.dummy.position_top = namespace.story.scrollTop + namespace.story.dummy.position().top + namespace.story.dummy.outerHeight()/2;
+//                namespace.story.dummy.position_top = namespace.story.scrollTop + namespace.story.dummy.position().top + namespace.story.dummy.outerHeight()/2;
 //				namespace.scrollEvents.update.objects.activate.apply(namespace);
-////				namespace.scrollEvents.update.statistic.upload.apply(namespace);
-////				namespace.scrollEvents.update.objects.upload.apply(namespace);
-////				namespace.scrollEvents.update.statistic.redraw.apply(namespace);
+//				namespace.scrollEvents.update.statistic.upload.apply(namespace);
+//				namespace.scrollEvents.update.objects.upload.apply(namespace);
+//				namespace.scrollEvents.update.statistic.redraw.apply(namespace);
 //
 //				namespace.navigator.graph.setCrosshair({"x" : namespace.article_list.active.item.data("timestamp")});
 //			});
 		},
 
 		scrollScroll : function(timecheck) {
+			__("\RETURM");
+			return;
 			namespace = this;
+			__(timecheck);
 			var date_range = namespace.navigator.data.date_range;
 			namespace.navigator.graph.setCrosshair({"x" : namespace.navigator.crosshair_position});
 			var min_value = date_range.from.getTime(),
@@ -1062,7 +1077,7 @@
 			var fix_timestamp = ({
 				"MONTH" : 31 * 24 * 60 * 60 * 1000, //12*60*60*1000
 				"WEEK" : 14 * 24 * 60 * 60 * 1000,
-				"DAY" : 10 * 24 * 60 * 60 * 1000 //30*60*1000
+				"DAY" : 1 * 24 * 60 * 60 * 1000 //30*60*1000
 			})[ namespace.navigator.scale_change.state.settings.state.settings.state ];
 
 			_w = 680 * (max_value - min_value)  / fix_timestamp; //width_plot
@@ -1070,10 +1085,10 @@
 
 
 			switch( true ){
-				case _x < 500    :
+				case _x < 340    :
 					myScroll.scrollTo(0, 0, 500);
 					break;
-				case _x > (_w - 500)     :
+				case _x > (_w - 340)     :
 
 					myScroll.scrollTo(-_w + 680, 0, 500);
 					break;
@@ -1081,9 +1096,6 @@
 					myScroll.scrollTo(-_x + 340, 0, 500);
 
 			}
-
-
-
 		},
 		scrollScrollNext : function() {
 			namespace = this;
