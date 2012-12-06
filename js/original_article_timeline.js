@@ -678,6 +678,7 @@
 					data.item = data.day.content[ temp_data.item ];
 
 					return data;
+
 				}
 			},
 

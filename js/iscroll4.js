@@ -666,39 +666,45 @@
                 return;
             }
 
+            //line 639 in my version (2 added lines are commented by me)
             if (that.options.wheelAction == 'zoom') {
-                deltaScale = that.scale * Math.pow(2, 1/3 * (wheelDeltaY ? wheelDeltaY / Math.abs(wheelDeltaY) : 0));
-                if (deltaScale < that.options.zoomMin) deltaScale = that.options.zoomMin;
-                if (deltaScale > that.options.zoomMax) deltaScale = that.options.zoomMax;
+                deltaScale = that.scale * Math.pow(2, 1/3 * (wheelDeltaY ?
+                    wheelDeltaY / Math.abs(wheelDeltaY) : 0));
+                if (deltaScale < that.options.zoomMin) deltaScale =
+                    that.options.zoomMin;
+                if (deltaScale > that.options.zoomMax) deltaScale =
+                    that.options.zoomMax;
 
                 if (deltaScale != that.scale) {
-                    if (!that.wheelZoomCount && that.options.onZoomStart) that.options.onZoomStart.call(that, e);
+                    if (!that.wheelZoomCount && that.options.onZoomStart)
+                        that.options.onZoomStart.call(that, e);
                     that.wheelZoomCount++;
 
                     that.zoom(e.pageX, e.pageY, deltaScale, 400);
 
                     setTimeout(function() {
                         that.wheelZoomCount--;
-                        if (!that.wheelZoomCount && that.options.onZoomEnd) that.options.onZoomEnd.call(that, e);
+                        if (!that.wheelZoomCount && that.options.onZoomEnd)
+                            that.options.onZoomEnd.call(that, e);
                     }, 400);
                 }
 
                 return;
             }
+            else if (that.options.wheelAction == 'scroll'){ //this line is new
+                deltaX = that.x + wheelDeltaX;
+                deltaY = that.y + wheelDeltaY;
 
-            deltaX = that.x + wheelDeltaX;
-            deltaY = that.y + wheelDeltaY;
+                if (deltaX > 0) deltaX = 0;
+                else if (deltaX < that.maxScrollX) deltaX = that.maxScrollX;
 
-            if (deltaX > 0) deltaX = 0;
-            else if (deltaX < that.maxScrollX) deltaX = that.maxScrollX;
+                if (deltaY > that.minScrollY) deltaY = that.minScrollY;
+                else if (deltaY < that.maxScrollY) deltaY = that.maxScrollY;
 
-            if (deltaY > that.minScrollY) deltaY = that.minScrollY;
-            else if (deltaY < that.maxScrollY) deltaY = that.maxScrollY;
-
-            if (that.maxScrollY < 0) {
                 that.scrollTo(deltaX, deltaY, 0);
-            }
+            } //this line is new
         },
+        //end of code change
 
         _transitionEnd: function (e) {
             var that = this;

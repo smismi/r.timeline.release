@@ -371,7 +371,7 @@ a.logo {
 	display: block;
 	float: left;
 	margin: 34px 0 0 18px;
-	font: normal 13px "DINCondensedWeb", "Arial Narrow", Arial;
+	font: normal 13px Arial;
 	color: #2e699b;
 	text-transform: uppercase;
 	text-decoration: none;
@@ -435,7 +435,7 @@ a.logo img {
 	left: 19px;
 	top: 10px;
 	padding: 7px 4px 0 0;
-	font: normal 13px "DINCondensedWeb", "Arial Narrow", Arial;
+	font: normal 13px Arial;
 	color: #fff;
 }
 @media only screen and (max-width: 719px) {
@@ -454,7 +454,7 @@ a.logo img {
 	top: 36px;
 	left: 275px;
 	color: #000;
-	font: normal 12px "DINCondensedWeb", "Arial Narrow", Arial;
+	font: normal 12px Arial;
 	text-shadow: 0 1px 0 rgba(255, 255, 255, 0.3);
 	-webkit-transition: top, left 0.3s;
 	-moz-transition: top, left 0.3s;
@@ -693,7 +693,7 @@ a.logo img {
 	top: 8px;
 	right: 21px;
 	height: 30px;
-	font: normal 14px "DINCondensedWeb", "Arial Narrow", Arial;
+	font: normal 14px Arial;
 	color: #fff;
 }
 .weather a {
@@ -851,7 +851,7 @@ a.logo img {
 	height: 25px;
 	border: 1px solid #808080;
 	border-width: 0 1px;
-	font: normal 14px "DINCondensedWeb", "Arial Narrow", Arial;
+	font: normal 14px Arial;
 }
 @media only screen and (max-width: 719px) {
 	.fluid .lang {
@@ -962,7 +962,7 @@ a.logo img {
 	padding-left: 10px;
 	border-right: 1px solid #fff;
 	background: #2f373d;
-	font: normal 17px "DINCondensedWeb", "Arial Narrow", Arial;
+	font: normal 17px Arial;
 	text-transform: uppercase;
 	color: #d3e2ee;
 	cursor: pointer;
@@ -1057,7 +1057,7 @@ a.navigator_top_item_title {
 	display: inline-block;
 	height: 30px;
 	padding: 0 19px;
-	font: normal 17px/32px "DINCondensedWeb", "Arial Narrow", Arial;
+	font: normal 17px/32px Arial;
 	text-transform: uppercase;
 	text-decoration: none;
 	color: #d3e2ee;
@@ -1514,7 +1514,7 @@ a.navigator_top_item_title {
 	padding: 5px 10px 4px;
 	background: #000;
 	color: #fff;
-	font: normal 17px "DINCondensedWeb", "Arial Narrow", Arial;
+	font: normal 17px Arial;
 	text-transform: uppercase;
 	white-space: nowrap;
 }
@@ -1585,7 +1585,7 @@ a.navigator_top_item_title {
 	padding: 5px 10px 4px;
 	background: #3d484e;
 	color: #fff;
-	font: normal 17px "DINCondensedWeb", "Arial Narrow", Arial;
+	font: normal 17px Arial;
 	text-transform: uppercase;
 	white-space: nowrap;
 }
@@ -1658,7 +1658,7 @@ a.navigator_top_item_title {
 	height: 25px;
 	padding: 5px 2% 0;
 	background: #2f373d;
-	font: normal 17px "DINCondensedWeb", "Arial Narrow", Arial;
+	font: normal 17px Arial;
 	text-transform: uppercase;
 	color: #d3e2ee;
 	white-space: nowrap;
@@ -1906,7 +1906,7 @@ a.navigator_top_item_title {
 .userpanel ul li ul.menu li a {
 	display: block;
 	padding: 8px 10px;
-	background: url("/i/userpanel/menu-separator.gif") no-repeat 10px 0%;
+	/*background: url("/i/userpanel/menu-separator.gif") no-repeat 10px 0%;*/
 }
 .userpanel ul li ul.menu li a:hover {
 	background: #4f575d;
@@ -1968,7 +1968,7 @@ a.navigator_top_item_title {
 	float: left;
 	width: 16px;
 	height: 16px;
-	background: url("/i/userpanel/icon_settings.png") no-repeat 50% 50%;
+	/*background: url("/i/userpanel/icon_settings.png") no-repeat 50% 50%;*/
 }
 .userpanel ul li a.allfeed {
 	display: inline-block;
@@ -1978,10 +1978,10 @@ a.navigator_top_item_title {
 	text-decoration: underline !important;
 }
 .userpanel a.settings {
-	background: url("/i/userpanel/icon_settings.png") no-repeat 50% 50%;
+	/*background: url("/i/userpanel/icon_settings.png") no-repeat 50% 50%;*/
 }
 .userpanel a.logout {
-	background: url("/i/userpanel/icon_logout.png") no-repeat 50% 50%;
+	/*background: url("/i/userpanel/icon_logout.png") no-repeat 50% 50%;*/
 }
 .userpanel a.updates {
 	padding: 5px;
@@ -2312,7 +2312,7 @@ a.navigator_top_item_title {
 	margin: 0 auto;
 	border: 2px solid #e0e0e2;
 	background: #edeef0;
-	font: normal 14px "DINCondensedWeb", "Arial Narrow", Arial;
+	font: normal 14px Arial;
 	text-transform: uppercase;
 	text-align: center;
 	color: #63686c;
@@ -2509,7 +2509,7 @@ a.navigator_top_item_title {
 	padding: 5px 10px 4px;
 	background: #f3f4f4;
 	color: #000;
-	font: normal 17px "DINCondensedWeb", "Arial Narrow", Arial;
+	font: normal 17px Arial;
 	text-transform: uppercase;
 	white-space: nowrap;
 }
@@ -2586,7 +2586,7 @@ a.navigator_top_item_title {
 .submit_button_gray, .submit_button_grey {
 	border: 2px solid #78828a;
 	background: #858f97;
-	font: normal 14px "DINCondensedWeb", "Arial Narrow", Arial;
+	font: normal 14px Arial;
 	text-transform: uppercase;
 	text-align: center;
 	color: #fff;
@@ -2958,7 +2958,7 @@ td {
 	padding: 5px 0 4px 10px;
 	background: #2f373d;
 	color: #fff;
-	font: normal 17px "DINCondensedWeb", "Arial Narrow", Arial;
+	font: normal 17px Arial;
 	white-space: nowrap;
 }
 .theme_summary_header h3 {
@@ -2971,7 +2971,7 @@ td {
 	margin: 2px 7px 0 7px;
 }
 .theme_summary_header .page_content_title_header_watch.unsubscribed {
-	background: url('/i/icons/ico-s0995708cf8.png') no-repeat;
+	/*background: url('/i/icons/ico-s0995708cf8.png') no-repeat;*/
 	background-position: 7px -2937px;
 	background-color: #fff;
 }
@@ -3069,7 +3069,7 @@ td {
 	padding: 4px 0 0 8px;
 	margin: 0 1px;
 	border-bottom: 1px solid #2f373d;
-	font: normal 17px "DINCondensedWeb", "Arial Narrow", Arial;
+	font: normal 17px Arial;
 	text-transform: uppercase;
 }
 @media only screen and (max-width: 719px) {
@@ -3237,7 +3237,7 @@ td {
 	padding: 5px 10px 4px;
 	background: #000;
 	color: #fff;
-	font: normal 17px "DINCondensedWeb", "Arial Narrow", Arial;
+	font: normal 17px Arial;
 	text-transform: uppercase;
 }
 
@@ -3818,7 +3818,7 @@ td {
 	margin: 0 auto;
 	border: 2px solid #e0e0e2;
 	background: #edeef0;
-	font: normal 14px "DINCondensedWeb", "Arial Narrow", Arial;
+	font: normal 14px Arial;
 	text-transform: uppercase;
 	text-align: center;
 	color: #63686c;
@@ -3852,7 +3852,7 @@ td {
 	padding: 5px 10px 4px;
 	background: #f80;
 	color: #fff;
-	font: normal 17px "DINCondensedWeb", "Arial Narrow", Arial;
+	font: normal 17px Arial;
 	text-transform: uppercase;
 	white-space: nowrap;
 }
@@ -3865,7 +3865,7 @@ td {
 	float: right;
 	margin: 0;
 	padding: 4px 10px 4px 3px;
-	font: normal 14px "DINCondensedWeb", "Arial Narrow", Arial;
+	font: normal 14px Arial;
 	text-transform: uppercase;
 	color: #fff;
 }
@@ -3940,7 +3940,7 @@ td {
 	margin: 0;
 	padding: 4px 3px;
 	border-bottom: 1px solid #ededed;
-	font: normal 14px "DINCondensedWeb", "Arial Narrow", Arial;
+	font: normal 14px Arial;
 	text-transform: uppercase;
 	color: #069;
 }
@@ -4200,7 +4200,7 @@ td {
 	padding: 5px 7px 4px 10px;
 	background: #edeef0;
 	color: #000;
-	font: normal 17px "DINCondensedWeb", "Arial Narrow", Arial;
+	font: normal 17px Arial;
 	white-space: nowrap;
 	overflow: hidden;
 }
@@ -4488,7 +4488,7 @@ td {
 	padding: 5px 10px 4px;
 	background: #2f373d;
 	color: #fff;
-	font: normal 17px "DINCondensedWeb", "Arial Narrow", Arial;
+	font: normal 17px Arial;
 	text-transform: uppercase;
 	white-space: nowrap;
 	display: block;
@@ -4512,7 +4512,7 @@ td {
 .more_mm_rubric_header_title {
 	background: #edeef0;
 	color: #010101;
-	font: normal 17px "DINCondensedWeb", "Arial Narrow", Arial;
+	font: normal 17px Arial;
 	text-transform: uppercase;
 	white-space: nowrap;
 	display: inline;
@@ -4844,7 +4844,7 @@ a.more_mm_item_info_comments {
 	padding: 5px 10px 4px;
 	background: #000;
 	color: #fff;
-	font: normal 17px "DINCondensedWeb", "Arial Narrow", Arial;
+	font: normal 17px Arial;
 	text-transform: uppercase;
 	white-space: nowrap;
 }
@@ -4858,7 +4858,7 @@ a.more_mm_item_info_comments {
 	padding: 5px 10px 4px;
 	background: #858f97;
 	color: #fff;
-	font: normal 17px "DINCondensedWeb", "Arial Narrow", Arial;
+	font: normal 17px Arial;
 	text-transform: uppercase;
 	white-space: nowrap;
 }
@@ -5008,7 +5008,7 @@ a.more_mm_item_info_comments {
 	padding: 5px 10px 4px;
 	background: #858f97;
 	color: #fff;
-	font: normal 17px "DINCondensedWeb", "Arial Narrow", Arial;
+	font: normal 17px Arial;
 	text-transform: uppercase;
 	white-space: nowrap;
 }
@@ -5069,7 +5069,7 @@ a.more_mm_item_info_comments {
 	padding: 5px 10px 4px;
 	background: #2f373d;
 	color: #fff;
-	font: normal 17px "DINCondensedWeb", "Arial Narrow", Arial;
+	font: normal 17px Arial;
 	text-transform: uppercase;
 	white-space: nowrap;
 	position: relative;
@@ -5251,7 +5251,7 @@ a.more_mm_item_info_comments {
 	margin: 0 10px 0 0;
 	border: 2px solid #78828a;
 	background: #858f97;
-	font: normal 14px "DINCondensedWeb", "Arial Narrow", Arial;
+	font: normal 14px Arial;
 	text-transform: uppercase;
 	text-align: center;
 	color: #fff;
@@ -5328,7 +5328,7 @@ a.more_mm_item_info_comments {
 	padding: 3px 10px;
 	border: 2px solid #78828a;
 	background: #858f97;
-	font: normal 14px "DINCondensedWeb", "Arial Narrow", Arial;
+	font: normal 14px Arial;
 	text-transform: uppercase;
 	text-align: center;
 	color: #fff;
@@ -5684,7 +5684,7 @@ a.more_mm_item_info_comments {
 	margin: 0 10px 0 0;
 	border: 4px solid #78828a;
 	background: #858f97;
-	font: normal 14px "DINCondensedWeb", "Arial Narrow", Arial;
+	font: normal 14px Arial;
 	text-transform: uppercase;
 	text-decoration: none;
 	text-align: center;
@@ -5697,7 +5697,7 @@ a.more_mm_item_info_comments {
 	width: 10px;
 	height: 11px;
 	margin-right: 6px;
-	background: url("/i/comments/addcomment-icon.png") no-repeat 0% 0%;
+	/*background: url("/i/comments/addcomment-icon.png") no-repeat 0% 0%;*/
 }
 
 .page_content_title {
@@ -5712,7 +5712,7 @@ a.more_mm_item_info_comments {
 	margin-left: 10px;
 	display: inline;
 	color: #fff;
-	font: normal 17px "DINCondensedWeb", "Arial Narrow", Arial;
+	font: normal 17px Arial;
 	text-transform: uppercase;
 	white-space: nowrap;
 }
@@ -5749,7 +5749,7 @@ a.more_mm_item_info_comments {
 	display: inline;
 	text-decoration: none;
 	color: #fff;
-	font: normal 17px "DINCondensedWeb", "Arial Narrow", Arial;
+	font: normal 17px Arial;
 	text-transform: uppercase;
 	white-space: nowrap;
 }
@@ -5824,7 +5824,7 @@ a.more_mm_item_info_comments {
 	padding: 5px 10px 4px;
 	background: #000;
 	color: #fff;
-	font: normal 17px "DINCondensedWeb", "Arial Narrow", Arial;
+	font: normal 17px Arial;
 	text-transform: uppercase;
 	white-space: nowrap;
 }
@@ -5859,7 +5859,7 @@ a.more_mm_item_info_comments {
 	margin: 0 13px;
 	display: inline-block;
 	color: #000;
-	font: normal 15px "DINCondensedWeb", "Arial Narrow", Arial;
+	font: normal 15px Arial;
 	text-transform: uppercase;
 	white-space: nowrap;
 	text-decoration: none;
@@ -5963,7 +5963,7 @@ a.more_mm_item_info_comments {
 	padding: 5px 0 4px;
 	background: #2f373d;
 	color: #fff;
-	font: normal 17px "DINCondensedWeb", "Arial Narrow", Arial;
+	font: normal 17px Arial;
 	text-transform: uppercase;
 	white-space: nowrap;
 }
@@ -6163,7 +6163,7 @@ a.more_mm_item_info_comments {
 	padding: 5px 10px 4px;
 	background: #000;
 	color: #fff;
-	font: normal 17px "DINCondensedWeb", "Arial Narrow", Arial;
+	font: normal 17px Arial;
 	text-transform: uppercase;
 	white-space: nowrap;
 }
@@ -6177,7 +6177,7 @@ a.more_mm_item_info_comments {
 	padding: 5px 10px 4px;
 	background: #858f97;
 	color: #fff;
-	font: normal 17px "DINCondensedWeb", "Arial Narrow", Arial;
+	font: normal 17px Arial;
 	text-transform: uppercase;
 	white-space: nowrap;
 }
@@ -6331,7 +6331,7 @@ a.more_mm_item_info_comments {
 	padding: 5px 0 4px;
 	background: #2f373d;
 	color: #fff;
-	font: normal 17px "DINCondensedWeb", "Arial Narrow", Arial;
+	font: normal 17px Arial;
 	text-transform: uppercase;
 	white-space: nowrap;
 }
@@ -6466,7 +6466,7 @@ a.more_mm_item_info_comments {
 	padding: 5px 10px 4px;
 	background: #000;
 	color: #fff;
-	font: normal 17px "DINCondensedWeb", "Arial Narrow", Arial;
+	font: normal 17px Arial;
 	text-transform: uppercase;
 	white-space: nowrap;
 }
@@ -6528,7 +6528,7 @@ a.more_mm_item_info_comments {
 	margin: 0 18px 20px;
 	border: 2px solid #78828a;
 	background: #858f97;
-	font: normal 14px "DINCondensedWeb", "Arial Narrow", Arial;
+	font: normal 14px Arial;
 	text-transform: uppercase;
 	text-align: center;
 	color: #fff;
@@ -6631,7 +6631,7 @@ label.checkbox input {
 	padding: 5px 10px 4px;
 	background: #858f97;
 	color: #fff;
-	font: normal 17px "DINCondensedWeb", "Arial Narrow", Arial;
+	font: normal 17px Arial;
 	text-transform: uppercase;
 	white-space: nowrap;
 }
@@ -6641,7 +6641,7 @@ label.checkbox input {
 	padding: 5px 10px 4px;
 	background: #858f97;
 	color: #fff;
-	font: normal 17px "DINCondensedWeb", "Arial Narrow", Arial;
+	font: normal 17px Arial;
 	text-transform: uppercase;
 	white-space: nowrap;
 }
@@ -6838,7 +6838,7 @@ label.checkbox input {
 	padding: 5px 10px 4px;
 	background: #858f97;
 	color: #fff;
-	font: normal 17px "DINCondensedWeb", "Arial Narrow", Arial;
+	font: normal 17px Arial;
 	text-transform: uppercase;
 	white-space: nowrap;
 }
@@ -6980,7 +6980,7 @@ label.checkbox input {
 	padding: 5px 10px 4px;
 	background: #2f373d;
 	color: #fff;
-	font: normal 17px "DINCondensedWeb", "Arial Narrow", Arial;
+	font: normal 17px Arial;
 	text-transform: uppercase;
 	white-space: nowrap;
 }
@@ -7100,7 +7100,7 @@ label.checkbox input {
 	text-transform: uppercase;
 	background: #2f373d;
 	color: #fff;
-	font: normal 14px/29px "DINCondensedWeb", "Arial Narrow", Arial;
+	font: normal 14px/29px Arial;
 	height: 29px;
 	padding: 0 10px;
 	display: block;
@@ -7748,7 +7748,7 @@ filter: progid:DXImageTransform.Microsoft.gradient(startColorstr=#FFEDEDED,endCo
 	padding: 5px 10px 4px;
 	background: #858f97;
 	color: white;
-	font: normal 17px "DINCondensedWeb", "Arial Narrow", Arial;
+	font: normal 17px Arial;
 	text-transform: uppercase;
 	white-space: nowrap;
 }
@@ -7857,7 +7857,7 @@ filter: progid:DXImageTransform.Microsoft.gradient(startColorstr=#FFEDEDED,endCo
 	padding: 5px 0 4px 10px;
 	background: #2f373d;
 	color: #fff;
-	font: normal 17px "DINCondensedWeb", "Arial Narrow", Arial;
+	font: normal 17px Arial;
 	white-space: nowrap;
 }
 .story_summary_header h3 {
@@ -8360,7 +8360,7 @@ filter: progid:DXImageTransform.Microsoft.gradient(startColorstr=#FFEDEDED,endCo
 	margin: 0 auto;
 	border: 2px solid #e0e1e3;
 	background: #edeef0;
-	font: normal 14px "DINCondensedWeb", "Arial Narrow", Arial;
+	font: normal 14px Arial;
 	text-transform: uppercase;
 	text-align: center;
 	text-decoration: none;
