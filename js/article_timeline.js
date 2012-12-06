@@ -126,10 +126,10 @@
 			start_date = ( statistic.length > 0 ) ? statistic[statistic.length - 1].date : new Date();
 			end_date  = ( statistic.length > 0 ) ? statistic[0].date  : new Date();
 
-			_start_date = new Date( start_date.getFullYear(), start_date.getMonth(), start_date.getDate());
-			_end_date = new Date( end_date.getFullYear(), end_date.getMonth(), end_date.getDate() + 1);
-			this.data.date_range.from = _start_date;
-			this.data.date_range.to = _end_date;
+			this._start_date = new Date( start_date.getFullYear(), start_date.getMonth(), start_date.getDate());
+			this._end_date = new Date( end_date.getFullYear(), end_date.getMonth(), end_date.getDate() + 1);
+			this.data.date_range.from = this._start_date;
+			this.data.date_range.to = this._end_date;
 
 
 			this.crosshair_position = end_date.getTime();
@@ -150,26 +150,21 @@
 				switch( state.name ){
 					case "MONTH"    :
 					default         :
-						date_range = {
-							"from": namespace.data.date_range.from,
-							"to" : namespace.data.date_range.to
-						};
+						namespace.data.date_range.from = namespace._start_date;
+						namespace.data.date_range.to = namespace._end_date;
 						break;
 					case "WEEK"     :
-						date_range = {
-							"from": new Date(namespace.crosshair_position - 14 * 24 * 60 * 60 * 1000),
-							"to" : new Date(namespace.crosshair_position + 14 * 24 * 60 * 60 * 1000)
-						};
+						namespace.data.date_range.from = new Date(namespace.crosshair_position - 14 * 24 * 60 * 60 * 1000);
+						namespace.data.date_range.to = new Date(namespace.crosshair_position + 14 * 24 * 60 * 60 * 1000);
 						break;
 					case "DAY"      :
-						date_range = {
-							"from": new Date(namespace.crosshair_position - 1 * 24 * 60 * 60 * 1000),
-							"to" : new Date(namespace.crosshair_position + 1 * 24 * 60 * 60 * 1000)
-						};
+
+						namespace.data.date_range.from = new Date(namespace.crosshair_position - 1 * 24 * 60 * 60 * 1000);
+						namespace.data.date_range.to = new Date(namespace.crosshair_position + 1 * 24 * 60 * 60 * 1000);
 						break;
 				}
 				namespace.assemblyTempData.apply( namespace, [ namespace.data.date_range ] );
-				namespace.plotInit( date_range );
+				namespace.plotInit( namespace.data.date_range );
 				myScroll.refresh();
 				__('x:' + new Date(namespace.crosshair_position));
 				namespace.graph.setCrosshair({"x" : namespace.crosshair_position});
@@ -1065,8 +1060,7 @@
 		},
 
 		scrollScroll : function(timecheck) {
-			__("\RETURM");
-			return;
+
 			namespace = this;
 			__(timecheck);
 			var date_range = namespace.navigator.data.date_range;
