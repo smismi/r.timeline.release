@@ -122,7 +122,7 @@
 				return data
 			})()
 
-			// тут считаем начало и конец реального периода из объекта
+			// тут считаем нача  ло и конец реального периода из объекта
 			start_date = ( statistic.length > 0 ) ? statistic[statistic.length - 1].date : new Date();
 			end_date  = ( statistic.length > 0 ) ? statistic[0].date  : new Date();
 
@@ -1045,7 +1045,8 @@
 					clearTimeout( scrollTimer );
 				});
 
-            var scrollTimer = 0;
+            var scroll_lock = false;
+            var timoutScroll = 0;
 
             $('#timeline_flow').mousewheel(function(event, delta){
                 event.preventDefault();
@@ -1056,71 +1057,23 @@
                 }else if(delta<0){
                     scrolled_items = namespace.article_list.item.get.prev.apply( namespace.article_list, [ namespace.navigator.crosshair_position ] );
                 }
+				if(!scroll_lock) {
 
-//
-//
-//                var limitExecByInterval = function(fn, time) {
-//                    var lock, execOnUnlock, args;
-//                    return function() {
-//                        args = arguments;
-//                        if (!lock) {
-//                            lock = true;
-//                            var scope = this;
-//                            setTimeout(function(){
-//                                lock = false;
-//                                if (execOnUnlock) {
-//                                    args.callee.apply(scope, args);
-//                                    execOnUnlock = false;
-//                                }
-//                            }, time);
-//                            return fn.apply(this, args);
-//                        } else execOnUnlock = true;
-//                    }
-//
-//
-//                }
+					if(scrolled_items.item){
+						var month = $("#month-item-" + scrolled_items.month.date.getTime(), namespace.article_list.target),
+							day = $("#day-item-" + scrolled_items.day.date.getTime(), month),
+							article = $("article[data-timestamp=" + scrolled_items.item.date.getTime() + "]", day);
+
+						myScroll3.scrollToElement("#" + article[0].id, 1000)
+						namespace.navigator.crosshair_position = scrolled_items.item.date.getTime();
+//						scroll_lock = true;
+						namespace.scrollScroll(namespace.navigator.crosshair_position);
+					}
+				}
 
 
 
-                if(scrolled_items.item){
-                    var month = $("#month-item-" + scrolled_items.month.date.getTime(), namespace.article_list.target),
-                        day = $("#day-item-" + scrolled_items.day.date.getTime(), month),
-                        article = $("article[data-timestamp=" + scrolled_items.item.date.getTime() + "]", day);
-
-
-//                    var myFunc = function() {
-
-                        myScroll3.scrollToElement("#" + article[0].id, 1000)
-                        namespace.navigator.crosshair_position = scrolled_items.item.date.getTime();
-//                    }
-
-//                    var myLimitedFunc = limitExecByInterval(myFunc, 2000);
-
-//                     myFunc();
-
-                }
-
-
-//                myScroll3.scrollToElement("#" + namespace.article_list.active.item[0].id, 1000);
-
-//                namespace.navigator.graph.setCrosshair({"x" : namespace.article_list.active.item.data("timestamp")});
             });
-
-
-
-//			$(window).bind("scroll", function(e){
-//				namespace.story.scrollTop = $(window).scrollTop()
-//
-//				namespace.scrollEvents.update.header.apply( namespace );
-//
-//                namespace.story.dummy.position_top = namespace.story.scrollTop + namespace.story.dummy.position().top + namespace.story.dummy.outerHeight()/2;
-//				namespace.scrollEvents.update.objects.activate.apply(namespace);
-//				namespace.scrollEvents.update.statistic.upload.apply(namespace);
-//				namespace.scrollEvents.update.objects.upload.apply(namespace);
-//				namespace.scrollEvents.update.statistic.redraw.apply(namespace);
-//
-//				namespace.navigator.graph.setCrosshair({"x" : namespace.article_list.active.item.data("timestamp")});
-//			});
 		},
 
 		scrollScroll : function(timecheck) {
