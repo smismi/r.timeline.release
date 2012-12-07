@@ -1046,7 +1046,6 @@
 				});
 
             var scroll_lock = false;
-            var timoutScroll = 0;
 
             $('#timeline_flow').mousewheel(function(event, delta){
                 event.preventDefault();
@@ -1057,16 +1056,20 @@
                 }else if(delta<0){
                     scrolled_items = namespace.article_list.item.get.prev.apply( namespace.article_list, [ namespace.navigator.crosshair_position ] );
                 }
+
 				if(!scroll_lock) {
 
 					if(scrolled_items.item){
 						var month = $("#month-item-" + scrolled_items.month.date.getTime(), namespace.article_list.target),
 							day = $("#day-item-" + scrolled_items.day.date.getTime(), month),
 							article = $("article[data-timestamp=" + scrolled_items.item.date.getTime() + "]", day);
+ 							$('article').removeClass("active_article");
+ 							article.addClass("active_article");
 
-						myScroll3.scrollToElement("#" + article[0].id, 1000)
+						myScroll3.scrollToElement("#" + article[0].id, 1000);
 						namespace.navigator.crosshair_position = scrolled_items.item.date.getTime();
-//						scroll_lock = true;
+						scroll_lock = true;
+						ST = setTimeout(function(){ scroll_lock = false; }, 140);
 						namespace.scrollScroll(namespace.navigator.crosshair_position);
 					}
 				}
