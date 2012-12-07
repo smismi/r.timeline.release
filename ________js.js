@@ -166,8 +166,8 @@
 				namespace.assemblyTempData.apply( namespace, [ namespace.data.date_range ] );
 				namespace.plotInit( namespace.data.date_range );
 				myScroll.refresh();
-                namespace.scrollScrollR(namespace.crosshair_position);
-                __('x:' + new Date(namespace.crosshair_position));
+				namespace.scrollScrollR(namespace.crosshair_position);
+				__('x:' + new Date(namespace.crosshair_position));
 				namespace.graph.setCrosshair({"x" : namespace.crosshair_position});
 
 			})
@@ -189,8 +189,8 @@
 
 
 			myScroll = new iScroll('timeline_navigator_controls', { scrollbarClass: 'myScrollbar', hScroll: true, vScroll: false, checkDOMChanges: true, desktopCompatibility:true});
-            this.scrollScrollR(namespace.crosshair_position);
-            this.graph.setCrosshair({"x" : end_date.getTime()});
+			this.scrollScrollR(namespace.crosshair_position)
+			this.graph.setCrosshair({"x" : end_date.getTime()});
 
 		},
 		"load"			:	function( date_range ){
@@ -260,7 +260,7 @@
 
 		"plotInit"	:	function( date_range ){
 			__('plotInit');
-			$("#timeline_navigator_controls").css({"border": "1px solid red", width: 680});
+			$("#timeline_navigator_controls").css({width: 680});
 
 			var namespace = this,
 				min_value = date_range.from.getTime(),
@@ -511,33 +511,33 @@
 			this.data.statistic_temp = data;
 		},
 		scrollScrollR : function(timecheck) {
-            namespace = this;
-            var date_range = namespace.data.date_range;
-            var min_value = date_range.from.getTime(),
-                max_value = date_range.to.getTime();
+			namespace = this;
+			var date_range = namespace.data.date_range;
+			var min_value = date_range.from.getTime(),
+				max_value = date_range.to.getTime();
 
-            var fix_timestamp = ({
-                "MONTH" : 31 * 24 * 60 * 60 * 1000, //12*60*60*1000
-                "WEEK" : 14 * 24 * 60 * 60 * 1000,
-                "DAY" : 1 * 24 * 60 * 60 * 1000 //30*60*1000
-            })[ namespace.scale_change.state.settings.state.settings.state ];
+			var fix_timestamp = ({
+				"MONTH" : 31 * 24 * 60 * 60 * 1000, //12*60*60*1000
+				"WEEK" : 14 * 24 * 60 * 60 * 1000,
+				"DAY" : 1 * 24 * 60 * 60 * 1000 //30*60*1000
+			})[ namespace.scale_change.state.settings.state.settings.state ];
 
-            _w = 680 * (max_value - min_value)  / fix_timestamp; //width_plot
-            _x = 680 * (timecheck - min_value)  / fix_timestamp;
+			_w = 680 * (max_value - min_value)  / fix_timestamp; //width_plot
+			_x = 680 * (timecheck - min_value)  / fix_timestamp;
 
 
-            switch( true ){
-                case _x < 340    :
-                    myScroll.scrollTo(0, 0, 0);
-                    break;
-                case _x > (_w - 340)     :
+			switch( true ){
+				case _x < 340    :
+					myScroll.scrollTo(0, 0, 0);
+					break;
+				case _x > (_w - 340)     :
 
-                    myScroll.scrollTo(-_w + 680, 0, 0);
-                    break;
-                default :
-                    myScroll.scrollTo(-_x + 340, 0, 0);
+					myScroll.scrollTo(-_w + 680, 0, 0);
+					break;
+				default :
+					myScroll.scrollTo(-_x + 340, 0, 0);
 
-            }
+			}
 		}
 
 	};
@@ -963,19 +963,19 @@
 //				graph.setCrosshair({"x" : namespace.navigator.crosshair_position });
 //				scrollToSelectedRange()
 //			})
-														graph_container.bind("plotclick.graph_navigation", function(e, data, item){
-															if (!click_lock) {
+			graph_container.bind("plotclick.graph_navigation", function(e, data, item){
+				if (!click_lock) {
 
-																namespace.navigator.crosshair_position = parseInt( data.x )
-																graph.setCrosshair({"x" : namespace.navigator.crosshair_position });
-																scrollToSelectedRange()
-																if (item) {
-																	__("You clicked point " + item.dataIndex + " in " + item.series.label + ".");
-																	graph.unhighlight();
-																	graph.highlight(item.series, item.datapoint);
-																}
-															}
-														})
+					namespace.navigator.crosshair_position = parseInt( data.x )
+					graph.setCrosshair({"x" : namespace.navigator.crosshair_position });
+					scrollToSelectedRange()
+					if (item) {
+						__("You clicked point " + item.dataIndex + " in " + item.series.label + ".");
+						graph.unhighlight();
+						graph.highlight(item.series, item.datapoint);
+					}
+				}
+			})
 //			graph_container.bind("mousedown.graph_navigation", function(e){
 //				e.preventDefault();
 //				namespace.navigator.graph.unlockCrosshair();
@@ -1045,17 +1045,17 @@
 					clearTimeout( scrollTimer );
 				});
 
-            var scroll_lock = false;
+			var scroll_lock = false;
 
-            $('#timeline_flow').mousewheel(function(event, delta){
-                event.preventDefault();
+			$('#timeline_flow').mousewheel(function(event, delta){
+				event.preventDefault();
 
-                var scrolled_items;
-                if(delta>0){
-                    scrolled_items = namespace.article_list.item.get.next.apply( namespace.article_list, [ namespace.navigator.crosshair_position ] );
-                }else if(delta<0){
-                    scrolled_items = namespace.article_list.item.get.prev.apply( namespace.article_list, [ namespace.navigator.crosshair_position ] );
-                }
+				var scrolled_items;
+				if(delta>0){
+					scrolled_items = namespace.article_list.item.get.next.apply( namespace.article_list, [ namespace.navigator.crosshair_position ] );
+				}else if(delta<0){
+					scrolled_items = namespace.article_list.item.get.prev.apply( namespace.article_list, [ namespace.navigator.crosshair_position ] );
+				}
 
 				if(!scroll_lock) {
 
@@ -1063,8 +1063,6 @@
 						var month = $("#month-item-" + scrolled_items.month.date.getTime(), namespace.article_list.target),
 							day = $("#day-item-" + scrolled_items.day.date.getTime(), month),
 							article = $("article[data-timestamp=" + scrolled_items.item.date.getTime() + "]", day);
- 							$('article').removeClass("active_article");
- 							article.addClass("active_article");
 
 						myScroll3.scrollToElement("#" + article[0].id, 1000);
 						namespace.navigator.crosshair_position = scrolled_items.item.date.getTime();
@@ -1076,7 +1074,7 @@
 
 
 
-            });
+			});
 		},
 
 		scrollScroll : function(timecheck) {
@@ -1130,25 +1128,25 @@
 				myScroll.scrollTo(0, 0, 500);
 			}
 		},
-        delayScroll : function(fn, time) {
-            var lock, execOnUnlock, args;
-            return function() {
-                args = arguments;
-                if (!lock) {
-                    lock = true;
-                    var scope = this;
-                    setTimeout(function(){
-                        lock = false;
-                        if (execOnUnlock) {
-                            args.callee.apply(scope, args);
-                            execOnUnlock = false;
-                        }
-                    }, time);
-                    return fn.apply(this, args);
-                } else execOnUnlock = true;
-            }
-        }
-        ,
+		delayScroll : function(fn, time) {
+			var lock, execOnUnlock, args;
+			return function() {
+				args = arguments;
+				if (!lock) {
+					lock = true;
+					var scope = this;
+					setTimeout(function(){
+						lock = false;
+						if (execOnUnlock) {
+							args.callee.apply(scope, args);
+							execOnUnlock = false;
+						}
+					}, time);
+					return fn.apply(this, args);
+				} else execOnUnlock = true;
+			}
+		}
+		,
 		"get"	:	{
 			"nextArticleByTimestamp"	:	function(timestamp){
 
