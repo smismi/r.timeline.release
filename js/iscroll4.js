@@ -126,7 +126,7 @@
 
                 // Events
                 onRefresh: null,
-                onBeforeScrollStart: function (e) { e.preventDefault(); },
+                onBeforeScrollStart: null,
                 onScrollStart: null,
                 onBeforeScrollMove: null,
                 onScrollMove: null,

@@ -200,8 +200,14 @@
 			};
 			this.plotInit( plot_date_range );
 			this.graph.setCrosshair({"x" : end_date.getTime()});
-			myScroll = new iScroll('timeline_navigator_controls', { scrollbarClass: 'myScrollbar', hScroll: true, vScroll: false, checkDOMChanges: true, desktopCompatibility:true});
-			this.scrollScrollR(end_date.getTime());
+            myScroll = new iScroll('timeline_navigator_controls',
+                {
+                    scrollbarClass: 'myScrollbar',
+                    hScroll: true,
+                    vScroll: false,
+                    checkDOMChanges: true
+                });
+            this.scrollScrollR(end_date.getTime());
 		},
 		"load"			:	function( date_range ){
 			var date_string = {
@@ -920,8 +926,47 @@
 			var graph = this.navigator.graph,
 				graph_container = graph.getPlaceholder();
 
+            var scroll_lock = false;
+            myScroll3 = new iScroll(
+                'timeline_flow',
+                { scrollbarClass: 'myScrollbar',
+                    hScroll: false,
+                    vScroll: true,
+                    onBeforeScrollMove: function (e) { e.preventDefault(); },
+                    onScrollMove: function (e) {
 
-//			myScroll3 = new iScroll('timeline_flow', { scrollbarClass: 'myScrollbar', hScroll: false, vScroll: true, checkDOMChanges: true, wheelAction : 'none'});
+
+                        var scrolled_items;
+                        if ( this.dirY < 0 ){
+                            scrolled_items = namespace.article_list.item.get.next.apply( namespace.article_list, [ namespace.navigator.crosshair_position ] );
+                        } else if ( this.dirY > 0) {
+                            scrolled_items = namespace.article_list.item.get.prev.apply( namespace.article_list, [ namespace.navigator.crosshair_position ] );
+                        }
+
+
+
+
+                        if(!scroll_lock) {
+
+                            if(scrolled_items.item){
+                                var month = $("#month-item-" + scrolled_items.month.date.getTime(), namespace.article_list.target),
+                                    day = $("#day-item-" + scrolled_items.day.date.getTime(), month),
+                                    article = $("article[data-timestamp=" + scrolled_items.item.date.getTime() + "]", day);
+                                $('article').removeClass("active_article");
+                                article.addClass("active_article");
+
+                                myScroll3.scrollToElement("#" + article[0].id, 1000);
+                                namespace.navigator.crosshair_position = scrolled_items.item.date.getTime();
+                                scroll_lock = true;
+                                ST = setTimeout(function(){ scroll_lock = false; }, 540);
+                                namespace.scrollScroll(namespace.navigator.crosshair_position);
+                            }
+                        }
+
+                    },
+
+                    wheelAction: 'none'
+                });
 
 
 //			function scrollToSelectedRange(){
@@ -960,7 +1005,7 @@
 				var active_article = namespace.get.nextArticleByTimestamp.apply(namespace, [ parseInt( offset.x ) ]);
 
 				if(active_article.length != 0){
-//					myScroll3.scrollToElement("#" + active_article[0].id, 500);
+					myScroll3.scrollToElement("#" + active_article[0].id, 500);
 					namespace.scrollScroll(parseInt( offset.x ));
 					namespace.scrollEvents.update.objects.activate.apply(namespace);
 
@@ -1076,6 +1121,7 @@
 			var scroll_lock = false;
 
 			$('#timeline_flow').mousewheel(function(event, delta){
+                __("scroll");
 				event.preventDefault();
 
 				var scrolled_items;
@@ -1094,7 +1140,7 @@
 						$('article').removeClass("active_article");
 						article.addClass("active_article");
 
-//						myScroll3.scrollToElement("#" + article[0].id, 1000);
+						myScroll3.scrollToElement("#" + article[0].id, 1000);
 						namespace.navigator.crosshair_position = scrolled_items.item.date.getTime();
 						scroll_lock = true;
 						ST = setTimeout(function(){ scroll_lock = false; }, 140);

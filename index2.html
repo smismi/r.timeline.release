@@ -2,11 +2,11 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>Назначение Шойгу и отставка Сердюкова | РИА Новости</title>
+    <title>!!!!11111!!!!Назначение Шойгу и отставка Сердюкова | РИА Новости</title>
 
 
     <link rel="stylesheet" type="text/css" href="css/common.css">
-    <link rel="stylesheet" type="text/css" href="css/scrollbar.css">
+    <!--<link rel="stylesheet" type="text/css" href="css/scrollbar.css">-->
 
     <script type="text/javascript" src="js/jquery.min.js"></script>
     <script type="text/javascript" src="js/jquery.state.js?"></script>
@@ -14,8 +14,19 @@
     <script type="text/javascript" src="js/jquery.flot.js?"></script>
     <script type="text/javascript" src="js/jquery.flot.crosshair.js?"></script>
     <script type="text/javascript" src="js/jquery.flot.navigate.js?"></script>
-    <script type="text/javascript" src="js/limetine.js"></script>
+    <!--<script type="text/javascript" src="js/original_article_timeline.js"></script>-->
+    <script type="text/javascript" src="js/last_.js"></script>
+    <!--<script type="text/javascript" src="js/article_timeline.js"></script>-->
     <script type="text/javascript" src="js/iscroll4.js"></script>
+    <script type="text/javascript" src="js/jquery.mousewheel.js"></script>
+    <style type="text/css">
+        #timeline_flow {
+            border: 1px solid red;
+            width: 680px;
+            height:500px;
+            overflow: scroll;
+        }
+    </style>
 </head>
 <body>
 
@@ -36,16 +47,16 @@
                 </div>
             </div>
             <div class="timeline_navigator_container">
-                <a href="#" class="prev"><span class="ico"></span></a>
-                <a href="#" class="next"><span class="ico"></span></a>
+                <div id="timeline_navigator_controls" class="timeline_navigator_controls" style="width:1000px; overflow: auto">
 
-                <div id="wrapper" class="timeline_navigator_controls" style="width:1000px; overflow: auto">
-
-                    <div id="timeline_navigator" unselectable="on"
+                    <div id="timeline_navigator"
                          style="padding: 0px; position: relative;">
                     </div>
                     <div id="timeline_navigator_loader" class="timeline_loader_1"></div>
                     <div class="middle_check"></div>
+
+                    <a href="#" class="prev"><span class="ico"></span></a>
+                    <a href="#" class="next"><span class="ico"></span></a>
                 </div>
                 <div class="scale-change-bar"><span>Масштаб:</span><a class="active-state state state-0" href="#month"
                                                                       data-scale-size="MONTH">Месяц</a><a
@@ -58,8 +69,8 @@
         </div>
         <span class="timeline_article_cursor"></span>
     </div>
-    <div class="story_timeline" style="margin-top: 0px;">
-        <div class="timeline">
+    <div class="story_timeline" id="timeline_flow">
+        <div class="timeline"  >
             <div class="timeline_video_data"></div>
 
         </div>
@@ -69,75 +80,96 @@
 
 
 <script type="text/javascript">
-
-
-    $(function () {
-        d = {};
+    $(function(){
         $("#story_timeline_container")
                 .articles_timeline({
-                    "data":{
-                        "articles":[
-                            { "id":910894279, "date":new Date("11/16/2012 17:12"), "title":"Шойгу формирует комфортную для работы команду, считают в Думе", "announce":"Первый зампредседателя комитета Сергей Жигарев отметил, что министр обороны Сергей Шойгу \"оперативно подбирает команду, с которой ему комфортно и эффективно будет работать\".", "url":"/politics/20121115/910894279.html", "views":2584, "comments":0, "medias":{"announce_image":{"s120x83":{"title":"", "alt":"", "src":"http://img22.ria.ru/images/91082/77/910827751.jpg", "width":120, "height":83}}, "images":[], "video":[]}, "subscription":{"status":"unsubscribed"}},
-                            { "id":910844994, "date":new Date("11/15/2012 12:48"), "title":"Цаликов остался замом Шойгу - теперь в Минобороны", "announce":"Руслан Цаликов и Юрий Борисов назначены заместителями министра обороны РФ. В соответствии с указом президента РФ, этих должностей лишились Дмитрий Чушкин и Елена Козлова, сообщила в четверг пресс-служба Кремля.", "url":"/defense_safety/20121115/910844994.html", "views":4525, "comments":0, "medias":{"announce_image":{"s120x83":{"title":"", "alt":"", "src":"http://img22.ria.ru/images/91082/77/910827751.jpg", "width":120, "height":83}}, "images":[], "video":[]}, "subscription":{"status":"unsubscribed"}},
-                            { "id":910793668, "date":new Date("11/15/2012 02:27"), "title":"Назначение Сердюкова советником главы \"Ростехнологий\" обсуждается", "announce":"Официальное решение о назначении экс-министра обороны Анатолия Сердюкова советником гендиректора госкорпорации \"Ростехнологии\" пока не принято, сообщил РИА Новости источник, знакомый с ситуацией.", "url":"/politics/20121115/910793668.html", "views":153636, "comments":0, "medias":{"announce_image":{"s120x83":{"title":"", "alt":"", "src":"http://img22.ria.ru/images/90674/12/906741230.jpg", "width":120, "height":83}}, "images":[], "video":[]}, "subscription":{"status":"unsubscribed"}},
-                            { "id":910596236, "date":new Date("11/13/2012 14:52"), "title":"Полтавченко поддержал решение Шойгу о приостановке переезда ВМА", "announce":"Губернатор Петербурга Георгий Полтавченко считает правильным решение недавно назначенного главой Минобороны РФ Сергея Шойгу о приостановке переезда Военно-медицинской академии из центра города в пригород северной столицы Сестрорецк.", "url":"/defense_safety/20121113/910596236.html", "views":5320, "comments":0, "medias":{"announce_image":{"s120x83":{"title":"", "alt":"", "src":"http://img22.ria.ru/images/91008/58/910085873.jpg", "width":120, "height":83}}, "images":[], "video":[]}, "subscription":{"status":"unsubscribed"}},
-                            { "id":910169992, "date":new Date("11/09/2012 12:00"), "title":"Минобороны РФ после назначения Шойгу решило вернуть картины в КЦ ВС", "announce":"Полотна отечественных мастеров живописи, прежде выставленные в КЦ, несколько лет назад были перемещены в различные административные здания Минобороны.", "url":"/defense_safety/20121109/910169992.html", "views":4045, "comments":0, "medias":{"announce_image":{}, "images":[], "video":[]}, "subscription":{"status":"unsubscribed"}},
-                            { "id":910066807, "date":new Date("11/09/2012 11:35"), "title":"Биография Валерия Герасимова", "announce":"Президент РФ Путин на встрече с главой Минобороны 9 ноября 2012 года одобрил кандидатуру Валерия Герасимова на пост начальника Генштаба вместо Николая Макарова.", "url":"/spravka/20121109/910066807.html", "views":5719, "comments":0, "medias":{"announce_image":{"s120x83":{"title":"", "alt":"", "src":"http://img22.ria.ru/images/91016/60/910166065.jpg", "width":120, "height":83}}, "images":[], "video":[]}, "subscription":{"status":"unsubscribed"}},
-                            { "id":910105207, "date":new Date("11/08/2012 18:34"), "title":"Рогозин готов оказать Шойгу экспертную поддержку", "announce":"\"Ему надо войти в курс дела, поэтому сейчас пока мы его не терзаем, а, наоборот, я уже сказал Сергею Кужугетовичу о том, что он может рассчитывать на любую экспертную поддержку со стороны аппарата правительства и аппарата Военно-промышленной комиссии\",- сказал Рогозин журналистам.", "url":"/defense_safety/20121108/910105207.html", "views":1600, "comments":0, "medias":{"announce_image":{"s120x83":{"title":"", "alt":"", "src":"http://img22.ria.ru/images/90967/86/909678612.jpg", "width":120, "height":83}}, "images":[], "video":[]}, "subscription":{"status":"unsubscribed"}},
-                            { "id":910057697, "date":new Date("11/08/2012 14:55"), "title":"Биография Юрия Садовенко", "announce":"Сергей Шойгу, возглавивший 6 ноября 2012 года Министерство обороны РФ, назначил руководителем аппарата ведомства генерал-лейтенанта Юрия Садовенко, который ранее занимал пост главы администрации Подмосковья.", "url":"/spravka/20121108/910057697.html", "views":6420, "comments":0, "medias":{"announce_image":{"s120x83":{"title":"", "alt":"", "src":"http://img22.ria.ru/images/91006/45/910064526.jpg", "width":120, "height":83}}, "images":[], "video":[]}, "subscription":{"status":"unsubscribed"}},
-                            { "id":910049909, "date":new Date("11/08/2012 14:18"), "title":"Источник: Шойгу консультируется по кадровым перестановкам в Минобороны", "announce":"\"В ближайшие дни в министерстве обороны произойдет ряд кадровых изменений. В основном это коснется высшего командного состава. Как ожидается, своих должностей лишатся начальник Генерального штаба и ряд заместителей министра обороны\", - сообщил РИА Новости источник в министерстве.", "url":"/defense_safety/20121108/910049909.html", "views":28284, "comments":0, "medias":{"announce_image":{"s120x83":{"title":"", "alt":"", "src":"http://img22.ria.ru/images/90969/01/909690198.jpg", "width":120, "height":83}}, "images":[], "video":[]}, "subscription":{"status":"unsubscribed"}},
-                            { "id":910045432, "date":new Date("11/08/2012 13:48"), "title":"Шойгу назначил Садовенко руководителем своего аппарата", "announce":"В конце мая текущего года Шойгу, занимавший тогда пост губернатора Московской области, назначил Садовенко руководителем своей администрации. До этого, с октября 2011 года, он был директором аппарата главы МЧС РФ.", "url":"/defense_safety/20121108/910045432.html", "views":17417, "comments":0, "medias":{"announce_image":{"s120x83":{"title":"", "alt":"", "src":"http://img22.ria.ru/images/91006/45/910064526.jpg", "width":120, "height":83}}, "images":[], "video":[]}, "subscription":{"status":"unsubscribed"}},
-                            { "id":909984904, "date":new Date("11/08/2012 03:45"), "title":"Шойгу назначил главой аппарата Минобороны своего помощника Садовенко", "announce":"В конце мая текущего года Шойгу, занимавший пост губернатора Московской области, назначил Садовенко руководителем своей администрации. До этого, с октября 2011 года, он был директором аппарата главы МЧС РФ.", "url":"/defense_safety/20121108/909984904.html", "views":11960, "comments":0, "medias":{"announce_image":{"s120x83":{"title":"", "alt":"", "src":"http://img22.ria.ru/images/90969/01/909690198.jpg", "width":120, "height":83}}, "images":[], "video":[]}, "subscription":{"status":"unsubscribed"}},
-                            { "id":909931586, "date":new Date("11/07/2012 16:45"), "title":"Медведев прокомментировал отставку Сердюкова и переизбрание Обамы", "announce":"Премьер-министр РФ Дмитрий Медведев на встрече с журналистами в Ханое прокомментировал отставку министра обороны России Анатолия Сердюкова и переизбрание президента Барака Обамы на выборах в США.", "url":"/tv_politics/20121107/909931586.html", "views":8100, "comments":0, "medias":{"announce_image":{"s120x83":{"title":"", "alt":"", "src":"http://img22.ria.ru/images/90993/11/909931150.jpg", "width":120, "height":83}}, "images":[], "video":[
-                                {"video_preview":{"title":"", "alt":"", "src":"http://img22.ria.ru/images/90993/09/909930938.jpg", "width":640, "height":360}, "video_id":"item_video_909930935"}
-                            ]}, "subscription":{"status":"unsubscribed"}},
-                            { "id":909959680, "date":new Date("11/07/2012 16:22"), "title":"Шойгу обратил особое внимание на подготовку к параду Победы", "announce":"Шойгу указал на обязательное участие в этом параде воспитанников суворовских и нахимовских училищ.", "url":"/defense_safety/20121107/909959680.html", "views":641, "comments":0, "medias":{"announce_image":{"s120x83":{"title":"", "alt":"", "src":"http://img22.ria.ru/images/90969/01/909690198.jpg", "width":120, "height":83}}, "images":[], "video":[]}, "subscription":{"status":"unsubscribed"}},
-                            { "id":909909898, "date":new Date("11/07/2012 14:43"), "title":"Шойгу приступил к исполнению обязанностей министра обороны России", "announce":"О замене Анатолия Сердюкова бывшим главой МЧС и губернатором Подмосковья Сергеем Шойгу президент РФ Владимир Путин объявил во вторник. По его словам, этот шаг должен обеспечить объективное расследование деятельности Минобороны.", "url":"/politics/20121107/909909898.html", "views":8163, "comments":0, "medias":{"announce_image":{"s120x83":{"title":"", "alt":"", "src":"http://img22.ria.ru/images/90967/86/909678612.jpg", "width":120, "height":83}}, "images":[], "video":[]}, "subscription":{"status":"unsubscribed"}},
-                            { "id":909899397, "date":new Date("11/07/2012 13:35"), "title":"Медведев заявил, что у него нет и не было претензий к Сердюкову", "announce":"Отвечая в среду на вопросы журналистов, Медведев отметил, что Сердюков начал сложнейший процесс преобразований в армии и в целом его деятельность была эффективной.", "url":"/defense_safety/20121107/909899397.html", "views":3286, "comments":0, "medias":{"announce_image":{"s120x83":{"title":"", "alt":"", "src":"http://img22.ria.ru/images/90986/31/909863179.jpg", "width":120, "height":83}}, "images":[], "video":[]}, "subscription":{"status":"unsubscribed"}},
-                            { "id":909897336, "date":new Date("11/07/2012 13:15"), "title":"Медведев назвал кандидатуру Шойгу оптимальной на пост главы Минобороны", "announce":"Премьер-министр РФ Дмитрий Медведев считает, что Шойгу сможет до конца довести начатые предшественником Анатолием Сердюковым преобразования в армии.", "url":"/politics/20121107/909897336.html", "views":1378, "comments":0, "medias":{"announce_image":{"s120x83":{"title":"", "alt":"", "src":"http://img22.ria.ru/images/90967/32/909673260.jpg", "width":120, "height":83}}, "images":[], "video":[]}, "subscription":{"status":"unsubscribed"}},
-                            { "id":909894934, "date":new Date("11/07/2012 12:58"), "title":"Сердюков передал Шойгу \"ядерный чемодан\", сообщил источник", "announce":"\"Сергей Кужугетович (Шойгу) приступил к приему дел и должности министра обороны. В частности, вчера ему уже передано устройство связи с боевыми расчетами Ракетных войск стратегического назначения - так называемый \"ядерный чемодан\"\", - сообщил РИА Новости высокопоставленный источник в Минобороны.", "url":"/defense_safety/20121107/909894934.html", "views":11784, "comments":0, "medias":{"announce_image":{"s120x83":{"title":"", "alt":"", "src":"http://img22.ria.ru/images/90669/49/906694908.jpg", "width":120, "height":83}}, "images":[], "video":[]}, "subscription":{"status":"unsubscribed"}},
-                            { "id":909794673, "date":new Date("11/06/2012 19:38"), "title":"Глава МЧС поздравил Шойгу с назначением на должность министра обороны", "announce":"Пучков напомнил, что все вопросы Шойгу решал в интересах людей, находясь на различных должностях, в том числе и будучи губернатором Московской области.", "url":"/politics/20121106/909794673.html", "views":1833, "comments":0, "medias":{"announce_image":{"s120x83":{"title":"", "alt":"", "src":"http://img22.ria.ru/images/90969/01/909690198.jpg", "width":120, "height":83}}, "images":[], "video":[]}, "subscription":{"status":"unsubscribed"}},
-                            { "id":909793082, "date":new Date("11/06/2012 19:20"), "title":"Отставка Сердюкова и назначение Шойгу в постах блогеров и анекдотах", "announce":"Блогеры в целом положительно оценивают назначение на пост главы оборонного ведомства Сергея Шойгу и пытаются очертить круг проблем, с которыми столкнется экс-губернатор Подмосковья.", "url":"/society/20121106/909793082.html", "views":15797, "comments":0, "medias":{"announce_image":{"s120x83":{"title":"", "alt":"", "src":"http://img22.ria.ru/images/90969/49/909694917.jpg", "width":120, "height":83}}, "images":[], "video":[]}, "subscription":{"status":"unsubscribed"}},
-                            { "id":909791335, "date":new Date("11/06/2012 19:04"), "title":"Смена караула:  после ухода Сердюкова ждут нового главу Генштаба", "announce":"В ряде СМИ уже появлялась информация о скором уходе Макарова в отставку - вслед за покинувшим пост главы военного ведомства Сердюковым. Начальник Генштаба считается убежденным сторонником радикальных реформ, проводимых в российской армии последние четыре года.", "url":"/politics/20121106/909791335.html", "views":165006, "comments":0, "medias":{"announce_image":{"s120x83":{"title":"", "alt":"", "src":"http://img22.ria.ru/images/90968/53/909685303.jpg", "width":120, "height":83}}, "images":[], "video":[]}, "subscription":{"status":"unsubscribed"}}
+                    "data": {
+                        "articles": [
+                            { "id": 913765319, "date": new Date("12/07/2012 05:37"), "title": "Минобороны намерено оспорить 10 эпизодов продажи имущества - СМИ", "announce": "Сергей Шойгу поручил проработать вопрос о возвращении министерству проданных с нарушениями объектов. По словам директора департамента имущественных отношений министерства Дмитрия Куракина, ведомство прорабатывает возможность подачи исков о расторжении соответствующих сделок.", "url": "/defense_safety/20121207/913765319.html", "views": 373, "comments": 0, "medias": {"announce_image": {"s120x83": {"title": "", "alt": "", "src": "http://img22.ria.ru/images/91276/74/912767431.jpg", "width": 120, "height": 83}}, "images": [], "video": []}, "subscription": {"status": "unsubscribed"}},
+                            { "id": 913736489, "date": new Date("12/06/2012 20:21"), "title": "Арест фигуранта дела \"Оборонсервиса\" Закутайло продлен до февраля", "announce": "Суд таким образом удовлетворил соответствующее ходатайство следствия. Ранее в тот же день суд продлил также до 10 февраля срок ареста другой фигурантке дела - экс-главе \"Центра правовой поддержки \"Эксперт\", супруге Закутайло, Екатерине Сметановой.", "url": "/investigation/20121206/913736489.html", "views": 121, "comments": 0, "medias": {"announce_image": {"s120x83": {"title": "", "alt": "", "src": "http://img22.ria.ru/images/91377/50/913775002.jpg", "width": 120, "height": 83}}, "images": [], "video": []}, "subscription": {"status": "unsubscribed"}},
+                            { "id": 913722781, "date": new Date("12/06/2012 18:26"), "title": "Арест фигурантки дела \"Оборонсервиса\" Сметановой продлен до 10 февраля", "announce": "Хамовнический суд Москвы в четверг продлил до 10 февраля срок ареста фигурантки дела \"Оборонсервиса\" экс-главы \"Центра правовой поддержки \"Эксперт\" Екатерины Сметановой, сообщили РАПСИ в суде.", "url": "/investigation/20121206/913722781.html", "views": 859, "comments": 0, "medias": {"announce_image": {"s120x83": {"title": "", "alt": "", "src": "http://img22.ria.ru/images/91371/70/913717040.jpg", "width": 120, "height": 83}}, "images": [], "video": []}, "subscription": {"status": "unsubscribed"}},
+                            { "id": 913714455, "date": new Date("12/06/2012 17:41"), "title": "Фигурантка \"дела Оборонсервиса\" Сметанова дала признательные показания", "announce": "\"Я прошу освободить меня из-под стражи. Я дала следствию признательные показания, поэтому у меня нет оснований, после признания вины, препятствовать следствию\", - сказала Сметанова.", "url": "/investigation/20121206/913714455.html", "views": 24151, "comments": 0, "medias": {"announce_image": {"s120x83": {"title": "", "alt": "", "src": "http://img22.ria.ru/images/91377/12/913771200.jpg", "width": 120, "height": 83}}, "images": [], "video": []}, "subscription": {"status": "unsubscribed"}},
+                            { "id": 913691696, "date": new Date("12/06/2012 15:54"), "title": "Минобороны думает, как вернуть утраченное", "announce": "Ведомство планирует вернуть под свой контроль ряд военных объектов, проданных с нарушением законодательства. Эксперты считают, что надо возвращать то имущество, от которого зависит безопасность страны и боеготовность армии.", "url": "/defense_safety/20121206/913691696.html", "views": 4834, "comments": 0, "medias": {"announce_image": {"s120x83": {"title": "", "alt": "", "src": "http://img22.ria.ru/images/91017/11/910171194.jpg", "width": 120, "height": 83}}, "images": [], "video": []}, "subscription": {"status": "unsubscribed"}},
+                            { "id": 913660763, "date": new Date("12/06/2012 13:19"), "title": "Департамент МО содействует следствию по делу \"Оборонсервиса\"", "announce": "\"Мы оказываем полное содействие в проведении следственных действий правоохранительным структурам\", - сказал руководитель департамента имущественных отношений Минобороны Дмитрий Куракин.", "url": "/incidents/20121206/913660763.html", "views": 308, "comments": 0, "medias": {"announce_image": {"s120x83": {"title": "", "alt": "", "src": "http://img22.ria.ru/images/91276/74/912767431.jpg", "width": 120, "height": 83}}, "images": [], "video": []}, "subscription": {"status": "unsubscribed"}},
+                            { "id": 913632747, "date": new Date("12/06/2012 11:08"), "title": "Подведомственная Минобороны компания \"Славянка\" сменила гендиректора", "announce": "Ранее Утин занимал в \"Славянке\" должность заместителя генерального директора по эксплуатации. ОАО \"Славянка\" является субхолдингом компании \"Оборонсервис\", подведомственной Минобороны РФ.", "url": "/defense_safety/20121206/913632747.html", "views": 591, "comments": 0, "medias": {"announce_image": {"s120x83": {"title": "", "alt": "", "src": "http://img22.ria.ru/images/91101/14/911011447.jpg", "width": 120, "height": 83}}, "images": [], "video": []}, "subscription": {"status": "unsubscribed"}},
+                            { "id": 913529605, "date": new Date("12/05/2012 16:13"), "title": "Продукты оставленной под домашним арестом Васильевой привозит адвокат", "announce": "Васильевой было предъявлено обвинение в мошенничестве в особо крупных размерах по делу \"Оборонсервиса\". Она заключена под домашний арест. Ей запрещено пользоваться интернетом, почтой, родным и знакомым посещать ее также нельзя.", "url": "/incidents/20121205/913529605.html", "views": 590, "comments": 0, "medias": {"announce_image": {"s120x83": {"title": "", "alt": "", "src": "http://img22.ria.ru/images/91238/02/912380274.jpg", "width": 120, "height": 83}}, "images": [], "video": []}, "subscription": {"status": "unsubscribed"}},
+                            { "id": 913386050, "date": new Date("12/04/2012 17:55"), "title": "Следствие просит продлить арест фигурантов дела \"Оборонсервиса\"", "announce": "\"В суд поступило ходатайство следствия о продлении обвиняемым меры пресечения в виде содержания под стражей еще на два месяца\", - сказала пресс-секретарь Хамовнического суда.", "url": "/incidents/20121204/913386050.html", "views": 578, "comments": 0, "medias": {"announce_image": {"s120x83": {"title": "", "alt": "", "src": "http://img22.ria.ru/images/90866/76/908667632.jpg", "width": 120, "height": 83}}, "images": [], "video": []}, "subscription": {"status": "unsubscribed"}},
+                            { "id": 913326708, "date": new Date("12/04/2012 12:39"), "title": "Защита не уверена, что Сметанова дала показания против фигурантов дела", "announce": "\"Я еще официально не вступил в дело, поэтому ничего не могу сказать. Однако появившаяся информация имеет сомнительное содержание\", - сказал адвокат Руслан Закалюжный.", "url": "/incidents/20121204/913326708.html", "views": 802, "comments": 0, "medias": {"announce_image": {"s120x83": {"title": "", "alt": "", "src": "http://img22.ria.ru/images/90881/22/908812217.jpg", "width": 120, "height": 83}}, "images": [], "video": []}, "subscription": {"status": "unsubscribed"}},
+                            { "id": 913280512, "date": new Date("12/04/2012 02:53"), "title": "Фигурантка дела \"Оборонсервиса\" заключила сделку со следствием - СМИ", "announce": "Обвиняемая по скандальному уголовному делу о хищениях имущества Минобороны Екатерина Сметанова дала показания против других обвиняемых, поэтому теперь рассчитывает на снисхождение, в том числе и по мере пресечения.", "url": "/investigation/20121204/913280512.html", "views": 8322, "comments": 0, "medias": {"announce_image": {"s120x83": {"title": "", "alt": "", "src": "http://img22.ria.ru/images/90881/22/908812217.jpg", "width": 120, "height": 83}}, "images": [], "video": []}, "subscription": {"status": "unsubscribed"}},
+                            { "id": 913219365, "date": new Date("12/03/2012 15:45"), "title": "Мосгорсуд подтвердил законность ареста Елькина", "announce": "Мосгорсуд в понедельник признал законным арест гендиректора ОАО \"Славянка\" Александра Елькина, обвиняемого по делу о хищении 52 миллионов рублей при реализации госконтрактов по содержанию военных городков.", "url": "/incidents/20121203/913219365.html", "views": 900, "comments": 0, "medias": {"announce_image": {"s120x83": {"title": "", "alt": "", "src": "http://img22.ria.ru/images/91105/59/911055919.jpg", "width": 120, "height": 83}}, "images": [], "video": []}, "subscription": {"status": "unsubscribed"}},
+                            { "id": 912687183, "date": new Date("11/29/2012 06:59"), "title": "Дело \"Оборонсервиса\" насчитывает уже девять эпизодов — Ъ", "announce": "Всего в рамках расследования дела \"Оборонсервиса\" возбуждено семь уголовных дел, сообщил в среду руководитель Главного военного следственного управления генерал-полковник юстиции Александр Сорочкин. По данным СМИ, в деле появились еще два эпизода.", "url": "/incidents/20121129/912687183.html", "views": 2382, "comments": 0, "medias": {"announce_image": {"s120x83": {"title": "", "alt": "", "src": "http://img22.ria.ru/images/91017/11/910171194.jpg", "width": 120, "height": 83}}, "images": [], "video": []}, "subscription": {"status": "unsubscribed"}},
+                            { "id": 912640658, "date": new Date("11/28/2012 18:43"), "title": "Фигурант дела \"Оборонсервиса\" не жалуется на здоровье", "announce": "Ранее СМИ со ссылкой на мать Митяева сообщили, что его, несмотря на серьезное заболевание сердца, перевели из следственного изолятора \"Лефортово\" в Бутырскую тюрьму, где нет возможности оказать больному квалифицированную помощь.", "url": "/incidents/20121128/912640658.html", "views": 919, "comments": 0, "medias": {"announce_image": {"s120x83": {"title": "", "alt": "", "src": "http://img22.ria.ru/images/36409/77/364097775.jpg", "width": 120, "height": 83}}, "images": [], "video": []}, "subscription": {"status": "unsubscribed"}},
+                            { "id": 912628427, "date": new Date("11/28/2012 17:12"), "title": "Стоимость здания Мосвоенторга при продаже была занижена на 25 млн руб", "announce": "Следствие возбудило уголовное дело о махинациях при продаже здания Мосвоенторга в отношении должностных лиц департамента имущественных отношений Минобороны, а также дочерних предприятий, в том числе \"Оборонсервиса\".", "url": "/incidents/20121128/912628427.html", "views": 627, "comments": 0, "medias": {"announce_image": {}, "images": [], "video": []}, "subscription": {"status": "unsubscribed"}},
+                            { "id": 912624468, "date": new Date("11/28/2012 16:44"), "title": "Возбуждено уголовное дело о махинациях при продаже здания Мосвоенторга", "announce": "\"Дело возбуждено в отношении должностных лиц департамента имущественных отношений Минобороны, а также дочерних предприятий, в том числе \"Оборонсервиса\", - сказал он.", "url": "/investigation/20121128/912624468.html", "views": 531, "comments": 0, "medias": {"announce_image": {}, "images": [], "video": []}, "subscription": {"status": "unsubscribed"}},
+                            { "id": 912616207, "date": new Date("11/28/2012 16:16"), "title": "Скандалы вокруг Минобороны РФ набирают миллиарды", "announce": "История с разоблачениями в Минобороны РФ набирает обороты. Следствие сообщило о задержании третьего подозреваемого по делу о мошенничестве в подконтрольной министерству \"Славянке\" и озвучило новые данные об общем ущербе по уголовным делам \"Оборонсервиса\" - он превысил 4 миллиарда рублей.", "url": "/incidents/20121128/912616207.html", "views": 8399, "comments": 0, "medias": {"announce_image": {"s120x83": {"title": "", "alt": "", "src": "http://img22.ria.ru/images/90664/73/906647330.jpg", "width": 120, "height": 83}}, "images": [], "video": []}, "subscription": {"status": "unsubscribed"}},
+                            { "id": 912593538, "date": new Date("11/28/2012 14:22"), "title": "Ущерб по делу \"Оборонсервиса\" составил более 4 млрд руб", "announce": "\"За девять месяцев текущего года этот показатель превысил прошлогодний более чем на 30% и составил 1,35 миллиарда рублей. И это без учета уголовных дел \"Оборонсервиса\", ущерб по которому, согласно предварительным данным, превышает 4 миллиарда рублей\", - уточнил Сорочкин.", "url": "/incidents/20121128/912593538.html", "views": 3013, "comments": 0, "medias": {"announce_image": {"s120x83": {"title": "", "alt": "", "src": "http://img22.ria.ru/images/91057/13/910571369.jpg", "width": 120, "height": 83}}, "images": [], "video": []}, "subscription": {"status": "unsubscribed"}},
+                            { "id": 912575692, "date": new Date("11/28/2012 12:52"), "title": "По фактам мошенничества в \"Оборонсервисе\" могут возбудить еще ряд дел", "announce": "\"Вполне возможно, что эти дела будут возбуждены и соединены в одно производство, или расследоваться будут отдельно. Все это покажут результаты доследственной проверки\", - сообщил заместитель председателя СК РФ Александр Сорочкин.", "url": "/incidents/20121128/912575692.html", "views": 1759, "comments": 0, "medias": {"announce_image": {"s120x83": {"title": "", "alt": "", "src": "http://img22.ria.ru/images/90664/73/906647330.jpg", "width": 120, "height": 83}}, "images": [], "video": []}, "subscription": {"status": "unsubscribed"}},
+                            { "id": 912569211, "date": new Date("11/28/2012 12:20"), "title": "Сердюков может быть допрошен, когда у следствия будут основания", "announce": "\"Бывший министр, он такой же гражданин, закон говорит, что ограничений для него быть не должно. Но хотелось бы, чтобы наши следственные действия, приглашение к следователю на допрос, не прошли вхолостую, придет время, будут основания, мы спросим бывшего министра\", - сказал руководитель Главного военного следственного управления Александр Сорочкин.", "url": "/incidents/20121128/912569211.html", "views": 1250, "comments": 0, "medias": {"announce_image": {"s120x83": {"title": "", "alt": "", "src": "http://img22.ria.ru/images/90674/12/906741230.jpg", "width": 120, "height": 83}}, "images": [], "video": []}, "subscription": {"status": "unsubscribed"}}
                         ],
-                        "statistic":[
-                            {"count":1, "date":"11/06/2012 11:00", "is_first":true},
-                            {"count":3, "date":"11/06/2012 12:00"},
-                            {"count":9, "date":"11/06/2012 13:00"},
-                            {"count":8, "date":"11/06/2012 14:00"},
-                            {"count":3, "date":"11/06/2012 15:00"},
-                            {"count":1, "date":"11/06/2012 16:00"},
-                            {"count":8, "date":"11/06/2012 17:00"},
-                            {"count":3, "date":"11/06/2012 19:00"},
-                            {"count":1, "date":"11/07/2012 12:00"},
-                            {"count":2, "date":"11/07/2012 13:00"},
-                            {"count":1, "date":"11/07/2012 14:00"},
-                            {"count":2, "date":"11/07/2012 16:00"},
-                            {"count":1, "date":"11/08/2012 03:00"},
-                            {"count":1, "date":"11/08/2012 13:00"},
-                            {"count":2, "date":"11/08/2012 14:00"},
-                            {"count":1, "date":"11/08/2012 18:00"},
-                            {"count":1, "date":"11/09/2012 11:00"},
-                            {"count":1, "date":"11/09/2012 12:00"},
-                            {"count":1, "date":"11/13/2012 14:00"},
-                            {"count":1, "date":"11/15/2012 02:00"},
-                            {"count":1, "date":"11/15/2012 12:00"},
-                            {"count":1, "date":"11/16/2012 17:00"}
+                        "statistic": [
+                            {"count": 1, "date": "11/06/2012 16:00"},
+                            {"count": 1, "date": "11/06/2012 18:00"},
+                            {"count": 1, "date": "11/07/2012 10:00"},
+                            {"count": 1, "date": "11/07/2012 11:00"},
+                            {"count": 1, "date": "11/07/2012 12:00"},
+                            {"count": 1, "date": "11/07/2012 14:00"},
+                            {"count": 1, "date": "11/07/2012 18:00"},
+                            {"count": 1, "date": "11/08/2012 06:00"},
+                            {"count": 1, "date": "11/08/2012 11:00"},
+                            {"count": 1, "date": "11/08/2012 18:00"},
+                            {"count": 1, "date": "11/09/2012 11:00"},
+                            {"count": 1, "date": "11/09/2012 13:00"},
+                            {"count": 1, "date": "11/13/2012 12:00"},
+                            {"count": 1, "date": "11/13/2012 17:00"},
+                            {"count": 1, "date": "11/19/2012 16:00"},
+                            {"count": 1, "date": "11/20/2012 09:00"},
+                            {"count": 1, "date": "11/20/2012 13:00"},
+                            {"count": 1, "date": "11/20/2012 21:00"},
+                            {"count": 1, "date": "11/21/2012 01:00"},
+                            {"count": 2, "date": "11/21/2012 15:00"},
+                            {"count": 1, "date": "11/23/2012 15:00"},
+                            {"count": 4, "date": "11/23/2012 16:00"},
+                            {"count": 1, "date": "11/23/2012 17:00"},
+                            {"count": 2, "date": "11/23/2012 18:00"},
+                            {"count": 2, "date": "11/23/2012 19:00"},
+                            {"count": 1, "date": "11/25/2012 15:00"},
+                            {"count": 1, "date": "11/26/2012 00:00"},
+                            {"count": 1, "date": "11/26/2012 11:00"},
+                            {"count": 1, "date": "11/26/2012 15:00"},
+                            {"count": 1, "date": "11/26/2012 16:00"},
+                            {"count": 1, "date": "11/26/2012 19:00"},
+                            {"count": 1, "date": "11/27/2012 10:00"},
+                            {"count": 1, "date": "11/28/2012 05:00"},
+                            {"count": 2, "date": "11/28/2012 11:00"},
+                            {"count": 2, "date": "11/28/2012 12:00"},
+                            {"count": 1, "date": "11/28/2012 14:00"},
+                            {"count": 2, "date": "11/28/2012 16:00"},
+                            {"count": 1, "date": "11/28/2012 17:00"},
+                            {"count": 1, "date": "11/28/2012 18:00"},
+                            {"count": 1, "date": "11/29/2012 06:00"},
+                            {"count": 1, "date": "12/03/2012 15:00"},
+                            {"count": 1, "date": "12/04/2012 02:00"},
+                            {"count": 1, "date": "12/04/2012 12:00"},
+                            {"count": 1, "date": "12/04/2012 17:00"},
+                            {"count": 1, "date": "12/05/2012 16:00"},
+                            {"count": 1, "date": "12/06/2012 11:00"},
+                            {"count": 1, "date": "12/06/2012 13:00"},
+                            {"count": 1, "date": "12/06/2012 15:00"},
+                            {"count": 1, "date": "12/06/2012 17:00"},
+                            {"count": 1, "date": "12/06/2012 18:00"},
+                            {"count": 1, "date": "12/06/2012 20:00"},
+                            {"count": 1, "date": "12/07/2012 05:00"}
                         ]
                     },
-                    "list":"shoygu_serdyukov_06112012"
+                    "list": "search_Ministry_defense_holding_company_25102012"
                 });
-
-
-
-    });
+    })
 </script>
 
-<div id="log" style="position: fixed; bottom: 0; right: 0;  width: 300px; color: #00c100; background: #000; font-size: 9px;">
+<div id="log" style="position: fixed; bottom: 0; right: 0;  width: 300px; color: #00c100; background: #000; font-size: 9px;"></div>
 
-    <div id="current_timestamp" style="position: fixed; bottom: 0; left: 0;  width: 100px; color: #00c100; background: #000; font-size: 9px;">
+<div id="current_timestamp" style="position: fixed; bottom: 0; left: 0;  width: 100px; color: #00c100; background: #000; font-size: 9px;">
 
-    </div>
 </div>
 </body>
 </html>
