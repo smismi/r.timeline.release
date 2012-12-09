@@ -104,7 +104,7 @@
                 topOffset: 0,
                 checkDOMChanges: false,		// Experimental
                 handleClick: false,
-
+                desktopDisable: false,
                 // Scrollbar
                 hScrollbar: true,
                 vScrollbar: false,
@@ -203,7 +203,8 @@
             var that = this;
             switch(e.type) {
                 case START_EV:
-                    if (!hasTouch && e.button !== 0) return;
+                    if (!hasTouch && e.button !== 0 && this.options.desktopDisable) return;
+                    if (!hasTouch && this.options.desktopDisable) return;
                     that._start(e);
                     break;
                 case MOVE_EV: that._move(e); break;

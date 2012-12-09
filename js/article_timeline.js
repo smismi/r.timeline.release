@@ -921,33 +921,16 @@
 			function scrollToSelectedRange(){
 				var coord = graph.getCrosshairPosition(),
 					offset = graph.c2p( coord );
-
 				var active_article = namespace.get.nextArticleByTimestamp.apply(namespace, [ parseInt( offset.x ) ]);
-
-
-
-
-
 				if(active_article.length != 0){
-
-
-
 					myScroll3.scrollToElement("#" + active_article[0].id, 500);
 					namespace.scrollScroll(parseInt( offset.x ));
 					namespace.scrollEvents.update.objects.activate.apply(namespace);
-
 					$("article").removeClass("active_article");
 					active_article.addClass("active_article");
-
 				}else{
-
-
-
 					namespace.scrollEvents.update.objects.activate.apply(namespace);
 					namespace.scrollScroll(parseInt( offset.x ));
-
-
-
 				}
 			}
 //			graph_container.bind("plotclick", function (event, pos, item) {

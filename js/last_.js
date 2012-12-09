@@ -132,7 +132,7 @@
 //			this.data.date_range.from = new Date( end_date.getFullYear(), end_date.getMonth(), end_date.getDate() - 31 );
 //			this.data.date_range.to = end_date;
 			this.plot_crosshair_image = new Image();
-			this.plot_crosshair_image.src = "/i/icons/timeline/crosshair.png";
+			this.plot_crosshair_image.src = "http://ria.ru/i/icons/timeline/crosshair.png";
 
 			this._start_date = new Date( start_date.getFullYear(), start_date.getMonth(), start_date.getDate());
 			this._end_date = new Date( end_date.getFullYear(), end_date.getMonth(), end_date.getDate() + 1);
@@ -935,7 +935,6 @@
                     onBeforeScrollMove: function (e) { e.preventDefault(); },
                     onScrollMove: function (e) {
 
-
                         var scrolled_items;
                         if ( this.dirY < 0 ){
                             scrolled_items = namespace.article_list.item.get.next.apply( namespace.article_list, [ namespace.navigator.crosshair_position ] );
@@ -966,7 +965,10 @@
                     },
 
                     wheelAction: 'none'
+                    ,desktopDisable: true
                 });
+
+
 
 
 //			function scrollToSelectedRange(){
@@ -1004,9 +1006,10 @@
 					offset = graph.c2p( coord );
 				var active_article = namespace.get.nextArticleByTimestamp.apply(namespace, [ parseInt( offset.x ) ]);
 
+                namespace.scrollScroll(parseInt( offset.x ));
 				if(active_article.length != 0){
 					myScroll3.scrollToElement("#" + active_article[0].id, 500);
-					namespace.scrollScroll(parseInt( offset.x ));
+
 					namespace.scrollEvents.update.objects.activate.apply(namespace);
 
 					$("article").removeClass("active_article");
@@ -1015,26 +1018,24 @@
 				}else{
 
 
-
-					var load_date_range ={
-						"from"	:	undefined,
-						"to"	:	undefined
-					}
-
-					var last_loaded = { "month" : namespace.article_list.articles.content[ namespace.article_list.articles.dates[namespace.article_list.articles.dates.length - 1] ] }
-					last_loaded.day = last_loaded.month.content[ last_loaded.month.dates[last_loaded.month.dates.length - 1] ];
-
-					var prev_day_date = namespace.navigator.get.hour.prev.apply( namespace.navigator, [ last_loaded.day.date ] );
-					if( typeof( prev_day_date ) != 'undefined' )
-						load_date_range.to = new Date( prev_day_date.getFullYear(), prev_day_date.getMonth(), prev_day_date.getDate() )
-
-					var selected_date = new Date( parseInt( offset.x ) );
-					load_date_range.from = new Date( selected_date.getFullYear(), selected_date.getMonth(), selected_date.getDate() );
-
-					namespace.article_list.load(load_date_range);
-					namespace.article_list.element.bind("items.loaded", function(){
-						scrollToSelectedRange();
-					})
+////					var load_date_range ={
+////						"from"	:	undefined,
+////						"to"	:	undefined
+////					}
+////
+////					var last_loaded = { "month" : namespace.article_list.articles.content[ namespace.article_list.articles.dates[namespace.article_list.articles.dates.length - 1] ] }
+////					last_loaded.day = last_loaded.month.content[ last_loaded.month.dates[last_loaded.month.dates.length - 1] ];
+////
+////					var prev_day_date = namespace.navigator.get.hour.prev.apply( namespace.navigator, [ last_loaded.day.date ] );
+////					if( typeof( prev_day_date ) != 'undefined' )
+////						load_date_range.to = new Date( prev_day_date.getFullYear(), prev_day_date.getMonth(), prev_day_date.getDate() )
+////
+////					var selected_date = new Date( parseInt( offset.x ) );
+////					load_date_range.from = new Date( selected_date.getFullYear(), selected_date.getMonth(), selected_date.getDate() );
+//					namespace.article_list.load(load_date_range);
+//					namespace.article_list.element.bind("items.loaded", function(){
+//						scrollToSelectedRange();
+//					})
 
 				}
 
@@ -1057,21 +1058,21 @@
 				}
 
 
-				var item = $(this),
-					scrolled_items;
-
-				if( item.hasClass("prev") )
-					scrolled_items = namespace.article_list.item.get.prev.apply( namespace.article_list, [ namespace.navigator.crosshair_position ] )
-				else if( item.hasClass("next") )
-					scrolled_items = namespace.article_list.item.get.next.apply( namespace.article_list, [ namespace.navigator.crosshair_position ] )
-
-				if(scrolled_items.item){
-					var month = $("#month-item-" + scrolled_items.month.date.getTime(), namespace.article_list.target),
-						day = $("#day-item-" + scrolled_items.day.date.getTime(), month),
-						article = $("article[data-timestamp=" + scrolled_items.item.date.getTime() + "]", day);
-
-					scrollTo(0,article.offset().top - namespace.story.container.outerHeight())
-				}
+//				var item = $(this),
+//					scrolled_items;
+//
+//				if( item.hasClass("prev") )
+//					scrolled_items = namespace.article_list.item.get.prev.apply( namespace.article_list, [ namespace.navigator.crosshair_position ] )
+//				else if( item.hasClass("next") )
+//					scrolled_items = namespace.article_list.item.get.next.apply( namespace.article_list, [ namespace.navigator.crosshair_position ] )
+//
+//				if(scrolled_items.item){
+//					var month = $("#month-item-" + scrolled_items.month.date.getTime(), namespace.article_list.target),
+//						day = $("#day-item-" + scrolled_items.day.date.getTime(), month),
+//						article = $("article[data-timestamp=" + scrolled_items.item.date.getTime() + "]", day);
+//
+//					scrollTo(0,article.offset().top - namespace.story.container.outerHeight())
+//				}
 			})
 
 			graph_container.bind("mousedown.graph_navigation", function(e){
