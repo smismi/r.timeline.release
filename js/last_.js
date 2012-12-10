@@ -1035,8 +1035,8 @@
 
 
 					var load_date_range ={
-						"from"	:	undefined,
-						"to"	:	undefined
+						"from"	:	namespace.navigator._start_date,
+						"to"	:	namespace.navigator._end_date
 					}
 
 					var last_loaded = { "month" : namespace.article_list.articles.content[ namespace.article_list.articles.dates[namespace.article_list.articles.dates.length - 1] ] }
