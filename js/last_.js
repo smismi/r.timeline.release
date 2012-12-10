@@ -698,6 +698,7 @@
 					var date = new Date(timestamp),
 						data = {}, temp_data = {}, data_item = [], i;
 
+
 					date.month = new Date( date.getFullYear(), date.getMonth() );
 					date.day = new Date( date.getFullYear(), date.getMonth(), date.getDate() );
 
@@ -728,8 +729,10 @@
 						data.day = data.month.content[ data.month.dates[ temp_data.day ] ];
 						if( data.day )
 							temp_data.item = data.day.content.length - 1;
-						else if( typeof( data.day ) == 'undefined' ){
-							temp_data.month -= 1;
+						else if( typeof( data.day ) == 'undefined'){
+//                            if (temp_data.month) { temp_data.month -= 1 } else { return };
+
+
 							data.month = this.articles.content[ this.articles.dates[ temp_data.month ] ];
 							temp_data.day = data.month.dates.length - 1;
 							data.day = data.month.content[ data.month.dates[ temp_data.day ] ];
@@ -737,7 +740,7 @@
 						}
 					}
 					data.item = data.day.content[ temp_data.item ];
-
+                    __(data)
 					return data;
 				},
 				"prev"	:	function( timestamp ){
@@ -773,7 +776,7 @@
 						temp_data.item = 0;
 						data.day = data.month.content[ data.month.dates[ temp_data.day ] ];
 						if( typeof( data.day ) == 'undefined' ){
-							temp_data.month += 1;
+//                            if (temp_data.month) { temp_data.month += 1 } else { __("A")};
 							temp_data.day = 0;
 							data.month = this.articles.content[ this.articles.dates[ temp_data.month ] ];
 							data.day = data.month.content[ data.month.dates[ temp_data.day ] ];
@@ -1237,15 +1240,22 @@
 
 				active.month = $("#month-item-" + dates.month.getTime(), this.article_list.target);
 				active.day = $("#day-item-" + dates.day.getTime(), active.month);
-
+                var diff = 0;
+                var _diff = 24 * 60 * 60 * 1000;
 				$("article", active.day).each(function(index, item){
 					var item = $(this),
-						item_timestamp = item.data("timestamp"),
-						prev_item = item.prev("article");
-					if( prev_item.length == 0 )
-						active.article = item;
-					else if( prev_item.data("timestamp") > timestamp && item_timestamp < timestamp )
-						active.article = ( timestamp - prev_item.data("timestamp") >= item_timestamp - timestamp ) ? prev_item : item;
+						item_timestamp = item.data("timestamp");
+                    diff = Math.abs(timestamp - item_timestamp);
+
+                        if (diff < _diff)  {
+                            active.article = item;
+                            _diff = diff;
+
+                        }
+
+
+
+
 				});
 				return active.article;
 			}
