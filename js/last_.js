@@ -99,6 +99,9 @@
 			this.target = this.settings.target;
 			this.loader = $("#timeline_navigator_loader", this.target);
 
+			this.plot_crosshair_image = new Image();
+			this.plot_crosshair_image.src = "/i/icons/timeline/crosshair.png";
+
 			var namespace = this,
 				start_date,
 				end_date;
@@ -123,22 +126,14 @@
 				return data
 			})()
 
-//			end_date = ( statistic.length > 0 ) ? statistic[0].date : new Date();
-//			end_date = new Date( end_date.getFullYear(), end_date.getMonth(), end_date.getDate() + 1);
-
-			// тут считаем нача  ло и конец реального периода из объекта
 			start_date = ( statistic.length > 0 ) ? statistic[statistic.length - 1].date : new Date();
 			end_date  = ( statistic.length > 0 ) ? statistic[0].date  : new Date();
-
-
 
 			if((end_date.getTime() - start_date.getTime()) < 31 * 24 * 60 * 60 * 1000) {
 				start_date = new Date(end_date.getTime() - 31 * 24 * 60 * 60 * 1000);
 			}
 
 
-			this.plot_crosshair_image = new Image();
-			this.plot_crosshair_image.src = "/i/icons/timeline/crosshair.png";
 
 			this._start_date = new Date( start_date.getFullYear(), start_date.getMonth(), start_date.getDate());
 			this._end_date = new Date( end_date.getFullYear(), end_date.getMonth(), end_date.getDate() + 1);
@@ -177,8 +172,7 @@
 					"to": namespace.data.date_range.to
 				};
 
-				//
-				//
+
 				switch( state.name ){
 					//					case "MONTH"    :
 					//					default         :
@@ -201,7 +195,6 @@
 				namespace.plotInit( namespace.data.temp_date_range );
 				myScroll.refresh();
 				namespace.scrollScrollR(namespace.crosshair_position);
-//														__('x:' + new Date(namespace.crosshair_position));
 				namespace.graph.setCrosshair({"x" : namespace.crosshair_position});
 			})
 
@@ -292,7 +285,6 @@
 		"plotInit"	:	function( date_range ){
 
 
-			$("#timeline_navigator_controls").css({width: 680});
 
 			var namespace = this,
 				min_value = date_range.from.getTime(),
@@ -304,20 +296,17 @@
 				"DAY" : 24*60*60*1000  * 1
 			})[ namespace.scale_change.state.get().name ];
 
+			$("#timeline_navigator_controls").css({width: 680});
 			namespace._w = 680 * (date_range.to.getTime() - date_range.from.getTime()) / namespace.fix_timestamp;
-
-
 			$("#timeline_navigator").css({
 				width: namespace._w
 			});
-
-			__(namespace._w);
 
 			this.graph = $.plot(
 				$("#timeline_navigator", this.target),
 				[ { "data" : this.data.statistic_temp }, { "data" : this.data.statistic_temp, "xaxis" : 2 } ],
 				{
-					"crosshair" :   { "mode" : "x" },
+					"crosshair" :   { "mode" : "x", "image" : this.plot_crosshair_image },
 					"grid"		:	{
 						"clickable"     :   true,
 						"hoverable"     :   true,
@@ -730,7 +719,7 @@
 						if( data.day )
 							temp_data.item = data.day.content.length - 1;
 						else if( typeof( data.day ) == 'undefined'){
-//                            if (temp_data.month) { temp_data.month -= 1 } else { return };
+							temp_data.month -= 1
 
 
 							data.month = this.articles.content[ this.articles.dates[ temp_data.month ] ];
@@ -740,7 +729,6 @@
 						}
 					}
 					data.item = data.day.content[ temp_data.item ];
-                    __(data)
 					return data;
 				},
 				"prev"	:	function( timestamp ){
@@ -776,7 +764,7 @@
 						temp_data.item = 0;
 						data.day = data.month.content[ data.month.dates[ temp_data.day ] ];
 						if( typeof( data.day ) == 'undefined' ){
-//                            if (temp_data.month) { temp_data.month += 1 } else { __("A")};
+							temp_data.month += 1
 							temp_data.day = 0;
 							data.month = this.articles.content[ this.articles.dates[ temp_data.month ] ];
 							data.day = data.month.content[ data.month.dates[ temp_data.day ] ];
@@ -825,7 +813,7 @@
 					scrollToActive = scrollToActive || false;
 					this.active.item.removeClass("active_article");
 					this.active.item = article.addClass("active_article");
-					if( scrollToActive )    __("set_active");
+//					if( scrollToActive )    __("set_active");
 //						scrollTo( 0, article.position().top + $(".story_main_container", this).outerHeight() + 50 );
 				}
 			}
@@ -1019,11 +1007,15 @@
 //				}
 //			}
 
-			function scrollToSelectedRange(){
+			function scrollToSelectedRange(f){
 				var coord = graph.getCrosshairPosition(),
 					offset = graph.c2p( coord );
-				var active_article = namespace.get.nextArticleByTimestamp.apply(namespace, [ parseInt( offset.x ) ]);
-
+				if (!f) {
+					var active_article = namespace.get.nextArticleByTimestamp.apply(namespace, [ parseInt(offset.x) ]);
+				}
+				else {
+					var active_article = namespace.get.closestArticleByTimestamp.apply(namespace, [ parseInt(offset.x) ]);
+				}
 				namespace.scrollScroll(parseInt( offset.x ));
 				if(active_article.length != 0){
 					myScroll3.refresh();
@@ -1034,8 +1026,7 @@
 					$("article").removeClass("active_article");
 					active_article.addClass("active_article");
 
-				}else{
-
+				}else {
 
 					var load_date_range ={
 						"from"	:	namespace.navigator._start_date,
@@ -1044,18 +1035,18 @@
 
 					var last_loaded = { "month" : namespace.article_list.articles.content[ namespace.article_list.articles.dates[namespace.article_list.articles.dates.length - 1] ] }
 					last_loaded.day = last_loaded.month.content[ last_loaded.month.dates[last_loaded.month.dates.length - 1] ];
-
+//
 					var prev_day_date = namespace.navigator.get.hour.prev.apply( namespace.navigator, [ last_loaded.day.date ] );
 					if( typeof( prev_day_date ) != 'undefined' )
 						load_date_range.to = new Date( prev_day_date.getFullYear(), prev_day_date.getMonth(), prev_day_date.getDate() )
-
+//
 					var selected_date = new Date( parseInt( offset.x ) );
+
 					load_date_range.from = new Date( selected_date.getFullYear(), selected_date.getMonth(), selected_date.getDate() );
 					namespace.article_list.load(load_date_range);
 					namespace.article_list.element.bind("items.loaded", function(){
 						myScroll3.refresh();
-//						myScroll3.scrollToElement("#" + active_article[0].id, 500);
-						scrollToSelectedRange();
+						scrollToSelectedRange(true);
 					})
 
 				}
@@ -1070,12 +1061,7 @@
 
 					namespace.navigator.crosshair_position = parseInt( data.x )
 					graph.setCrosshair({"x" : namespace.navigator.crosshair_position });
-					scrollToSelectedRange()
-					if (item) {
-						__("You clicked point " + item.dataIndex + " in " + item.series.label + ".");
-						graph.unhighlight();
-						graph.highlight(item.series, item.datapoint);
-					}
+					scrollToSelectedRange(false)
 				}
 
 
@@ -1145,7 +1131,7 @@
 			var scroll_lock = false;
 
 			$('#timeline_flow').mousewheel(function(event, delta){
-				__("scroll");
+
 				event.preventDefault();
 
 				var scrolled_items;
@@ -1176,7 +1162,6 @@
 		scrollScroll : function(timecheck) {
 
 			namespace = this;
-			__(timecheck);
 			var date_range = namespace.navigator.data.temp_date_range;
 			namespace.navigator.graph.setCrosshair({"x" : namespace.navigator.crosshair_position});
 			var min_value = date_range.from.getTime(),
@@ -1240,18 +1225,54 @@
 
 				active.month = $("#month-item-" + dates.month.getTime(), this.article_list.target);
 				active.day = $("#day-item-" + dates.day.getTime(), active.month);
-                var diff = 0;
-                var _diff = 24 * 60 * 60 * 1000;
+				if (!active.day) { return false }
+				var diff = 0;
+				var _diff = 24 * 60 * 60 * 1000;
 				$("article", active.day).each(function(index, item){
 					var item = $(this),
 						item_timestamp = item.data("timestamp");
-                    diff = Math.abs(timestamp - item_timestamp);
+					diff = Math.abs(timestamp - item_timestamp);
 
-                        if (diff < _diff)  {
-                            active.article = item;
-                            _diff = diff;
+					if (diff < _diff)  {
+						active.article = item;
+						_diff = diff;
 
-                        }
+					}
+
+
+
+
+				});
+				return active.article;
+			},
+			"closestArticleByTimestamp"	:	function(timestamp){
+
+				var date = new Date(timestamp),
+					dates = {
+						"month"	:	new Date(date.getFullYear(), date.getMonth(), 1),
+						"day"	:	new Date(date.getFullYear(), date.getMonth(), date.getDate())
+					},
+					active = {
+						"month"	:	[],
+						"day"	:	[],
+						"article"	:	[]
+					};
+
+				active.month = $("#month-item-" + dates.month.getTime(), this.article_list.target);
+				active.day = $("#day-item-" + dates.day.getTime(), active.month);
+				if (!active.day) { return false }
+				var diff = 0;
+				var _diff = 31 * 24 * 60 * 60 * 1000;
+				$("article", active.month).each(function(index, item){
+					var item = $(this),
+						item_timestamp = item.data("timestamp");
+					diff = Math.abs(timestamp - item_timestamp);
+
+					if (diff < _diff)  {
+						active.article = item;
+						_diff = diff;
+
+					}
 
 
 
@@ -1463,7 +1484,3 @@
 
 	}
 })(jQuery)
-
-function __(text) {
-	$("#log").append("<div>" + text +"</div>");
-}
