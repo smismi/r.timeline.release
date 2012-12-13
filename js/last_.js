@@ -99,9 +99,6 @@
 			this.target = this.settings.target;
 			this.loader = $("#timeline_navigator_loader", this.target);
 
-			this.plot_crosshair_image = new Image();
-			this.plot_crosshair_image.src = "http://ria.ru/i/icons/timeline/crosshair.png";
-
 			var namespace = this,
 				start_date,
 				end_date;
@@ -124,10 +121,10 @@
 				}
 				data.sort(function(a,b){ return b.date.getTime() - a.date.getTime(); });
 				return data
-			})();
+			})()
 
 			start_date = ( statistic.length > 0 ) ? statistic[statistic.length - 1].date : new Date();
-			end_date  = ( statistic.length > 0 ) ? statistic[0].date  : new Date();
+			end_date = ( statistic.length > 0 ) ? statistic[0].date : new Date();
 
 			if((end_date.getTime() - start_date.getTime()) < 31 * 24 * 60 * 60 * 1000) {
 				start_date = new Date(end_date.getTime() - 31 * 24 * 60 * 60 * 1000);
@@ -159,48 +156,31 @@
 				"state"	:	scale_change_bar_state
 			};
 
-
-
 			scale_change_bar.bind("state-change", function(e, state){
-				var date_range = {
-					"from": new Date(namespace.crosshair_position),
-					"to": new Date(namespace.crosshair_position)
-				};
-
-				namespace.data.temp_date_range = {
-					"from": namespace.data.date_range.from,
-					"to": namespace.data.date_range.to
-				};
-
-
+				var date_range = { "from" : new Date( namespace.crosshair_position ), "to" :new Date( namespace.crosshair_position ) };
 				switch( state.name ){
-//					case "MONTH"    :
-//					default         :
-//						date_range.to = new Date( date_range.to.setDate( date_range.to.getDate() + 31 ) );
-//						break;
+					case "MONTH"    :
+					default         :
+						date_range.to = new Date( date_range.to.setDate( date_range.to.getDate() + 31 ) );
+						break;
 					case "WEEK"     :
-
-						namespace.data.temp_date_range.from = new Date( date_range.from.setDate( date_range.from.getDate() - 35) );
-						namespace.data.temp_date_range.to = new Date( date_range.to.setDate( date_range.to.getDate() + 7) );																break;
-
+						date_range.to = new Date( date_range.to.setDate( date_range.to.getDate() + 7 ) );
+						break;
 					case "DAY"      :
-
-						namespace.data.temp_date_range.from = new Date( date_range.from.setDate( date_range.from.getDate() - 10) );
-						namespace.data.temp_date_range.to = new Date( date_range.to.setDate( date_range.to.getDate() + 1) );
+						date_range.to = new Date( date_range.to.setDate( date_range.to.getDate() + 1 ) );
 						break;
 				}
-
-
 				namespace.assemblyTempData.apply( namespace, [ namespace.data.date_range ] );
-				namespace.plotInit( namespace.data.temp_date_range );
-				myScroll.refresh();
-				namespace.scrollToDef(namespace.crosshair_position);
+				namespace.plotInit(date_range);
 				namespace.graph.setCrosshair({"x" : namespace.crosshair_position});
 			})
 
 			// graph init
 			this.assembly.apply( this, [ statistic ] );
 			this.assemblyTempData.apply( this, [ this.data.temp_date_range ] );
+
+			namespace.plot_crosshair_image = new Image();
+			namespace.plot_crosshair_image.src = "http://ria.ru/i/icons/timeline/crosshair.png";
 
 			var plot_date_range = {
 				"from"	:	new Date( this.data.temp_date_range.from.getFullYear(), this.data.temp_date_range.from.getMonth(), this.data.temp_date_range.from.getDate() ),
@@ -216,6 +196,9 @@
 					checkDOMChanges: true
 				});
 			this.scrollToDef(end_date.getTime());
+//			setTimeout(function () {
+//				scale_change_bar_state.set( "MONTH" );
+//			}, 1000);
 		},
 		"load"			:	function( date_range ){
 			var date_string = {
@@ -301,11 +284,13 @@
 			$("#timeline_navigator").css({
 				width: namespace._w
 			});
+//			this.plot_crosshair_image = new Image();
+//			this.plot_crosshair_image.src = "/i/icons/timeline/crosshair.png";
 			this.graph = $.plot(
 				$("#timeline_navigator", this.target),
 				[ { "data" : this.data.statistic_temp }, { "data" : this.data.statistic_temp, "xaxis" : 2 } ],
 				{
-					"crosshair" :   { "mode" : "x", "image" : this.plot_crosshair_image },
+					"crosshair" :   { "mode" : "x", "locked" : true, "image" : this.plot_crosshair_image },
 					"grid"		:	{
 						"clickable"     :   true,
 						"hoverable"     :   true,
@@ -717,12 +702,8 @@
 						data.day = data.month.content[ data.month.dates[ temp_data.day ] ];
 						if( data.day )
 							temp_data.item = data.day.content.length - 1;
-						else if( typeof( data.day ) == 'undefined'){
-//							if (temp_data.month) {
-							temp_data.month -= 1
-//							} else {
-//								temp_data.month = 0
-//							}
+						else if( typeof( data.day ) == 'undefined' ){
+							temp_data.month -= 1;
 							data.month = this.articles.content[ this.articles.dates[ temp_data.month ] ];
 							temp_data.day = data.month.dates.length - 1;
 							data.day = data.month.content[ data.month.dates[ temp_data.day ] ];
@@ -730,6 +711,7 @@
 						}
 					}
 					data.item = data.day.content[ temp_data.item ];
+
 					return data;
 				},
 				"prev"	:	function( timestamp ){
@@ -765,11 +747,7 @@
 						temp_data.item = 0;
 						data.day = data.month.content[ data.month.dates[ temp_data.day ] ];
 						if( typeof( data.day ) == 'undefined' ){
-//							if (temp_data.month) {
-							temp_data.month += 1
-//							} else {
-//								temp_data.month = 0
-//							}
+							temp_data.month += 1;
 							temp_data.day = 0;
 							data.month = this.articles.content[ this.articles.dates[ temp_data.month ] ];
 							data.day = data.month.content[ data.month.dates[ temp_data.day ] ];
@@ -818,8 +796,8 @@
 					scrollToActive = scrollToActive || false;
 					this.active.item.removeClass("active_article");
 					this.active.item = article.addClass("active_article");
-//					if( scrollToActive )    __("set_active");
-//						scrollTo( 0, article.position().top + $(".story_main_container", this).outerHeight() + 50 );
+					if( scrollToActive )
+						scrollTo( 0, article.position().top + $(".story_main_container", this).outerHeight() + 50 );
 				}
 			}
 		},
@@ -937,122 +915,34 @@
 			var graph = this.navigator.graph,
 				graph_container = graph.getPlaceholder();
 
-			var ipad_scroll_lock = false;
-
-			myScroll3 = new iScroll(
-				'timeline_flow',
-				{ scrollbarClass: 'myScrollbar',
-					hScroll: false,
-					vScroll: true,
-					onBeforeScrollMove: function (e) { e.preventDefault(); },
-					onScrollMove: function (e) {
-
-
-
-//
-//						 if (!ipad_scroll_lock) {
-
-//							 var scrolled_items;
-//							 if ( this.dirY < 0 ){
-//								 scrolled_items = namespace.article_list.item.get.next.apply( namespace.article_list, [ namespace.navigator.crosshair_position ] );
-//							 } else if ( this.dirY > 0) {
-//								 scrolled_items = namespace.article_list.item.get.prev.apply( namespace.article_list, [ namespace.navigator.crosshair_position ] );
-//							 }
-//							__("scroll")
-//							if (scrolled_items.item) {
-//								var month = $("#month-item-" + scrolled_items.month.date.getTime(), namespace.article_list.target),
-//									day = $("#day-item-" + scrolled_items.day.date.getTime(), month),
-//									article = $("article[data-timestamp=" + scrolled_items.item.date.getTime() + "]", day);
-//								$('article').removeClass("active_article");
-//								article.addClass("active_article");
-//
-//								myScroll3.scrollToElement("#" + article[0].id, 1000);
-//								namespace.navigator.crosshair_position = scrolled_items.item.date.getTime();
-//								ipad_scroll_lock = true;
-//								ST = setTimeout(function () {
-//									ipad_scroll_lock = false;
-//								}, 1000);
-//								namespace.scrollScroll(namespace.navigator.crosshair_position);
-//							}
-//						}
-
-					},
-
-					wheelAction: 'none'
-					,desktopDisable: true
-				});
-
-			$(window).bind("scroll", function(e){
-
-				__($("#t").height() + ' ' + $("#c").height() + ' ' + $("#b").height() )
-				if ($(document).scrollTop() > $("#t").height()  &&  $(document).scrollTop() < ($(document).height() - $("#b").height() - $(window).height()) ) {
-
-					$("#story_timeline_container").css({
-						border: "1px solid red",
-						position: "fixed",
-						background: "#fff",
-						width: 720,
-						top:0
-
-					})
-//					if( this.story.scrollTop > this.story.timeline.position().top + this.story.timeline.outerHeight() - $(window).height() ){
-//					__("W" +  $(window).height());
-//					__("#" + $(document).height());
-				}  else {
-					$("#story_timeline_container").css({
-						border: "none",
-						position: "static"
-
-					})
-				}
-
-			});
-
-			function scrollToSelectedRange(f){
+			function scrollToSelectedRange(){
 				var coord = graph.getCrosshairPosition(),
 					offset = graph.c2p( coord );
-				if (!f) {
-					var active_article = namespace.get.nextArticleByTimestamp.apply(namespace, [ parseInt(offset.x) ]);
-				}
-				else {
-					var active_article = namespace.get.closestArticleByTimestamp.apply(namespace, [ parseInt(offset.x) ]);
-				}
-				namespace.scrollScroll(parseInt( offset.x ));
+
+				var active_article = namespace.get.nextArticleByTimestamp.apply(namespace, [ parseInt( offset.x ) ])
 				if(active_article.length != 0){
-					myScroll3.refresh();
-					myScroll3.scrollToElement("#" + active_article[0].id, 500);
-
-					namespace.scrollEvents.update.objects.activate.apply(namespace);
-
-					$("article").removeClass("active_article");
-					active_article.addClass("active_article");
-
-				} else {
-
+					scrollTo(0,active_article.offset().top - 200)
+				}else{
 					var load_date_range ={
-						"from"	:	namespace.navigator._start_date,
-						"to"	:	namespace.navigator._end_date
+						"from"	:	undefined,
+						"to"	:	undefined
 					}
 
 					var last_loaded = { "month" : namespace.article_list.articles.content[ namespace.article_list.articles.dates[namespace.article_list.articles.dates.length - 1] ] }
 					last_loaded.day = last_loaded.month.content[ last_loaded.month.dates[last_loaded.month.dates.length - 1] ];
-//
+
 					var prev_day_date = namespace.navigator.get.hour.prev.apply( namespace.navigator, [ last_loaded.day.date ] );
 					if( typeof( prev_day_date ) != 'undefined' )
 						load_date_range.to = new Date( prev_day_date.getFullYear(), prev_day_date.getMonth(), prev_day_date.getDate() )
-//
-					var selected_date = new Date( parseInt( offset.x ) );
 
-					load_date_range.from = new Date( selected_date.getFullYear(), selected_date.getMonth(), selected_date.getDate() - 4 );
+					var selected_date = new Date( parseInt( offset.x ) );
+					load_date_range.from = new Date( selected_date.getFullYear(), selected_date.getMonth(), selected_date.getDate() );
+
 					namespace.article_list.load(load_date_range);
 					namespace.article_list.element.bind("items.loaded", function(){
-						myScroll3.refresh();
-						scrollToSelectedRange(true);
+						scrollToSelectedRange();
 					})
-
 				}
-
-
 			}
 
 
@@ -1092,12 +982,12 @@
 				var item = $(this),
 					scrolled_items;
 
-				if( item.hasClass("prev") ) {
-					namespace.scrollScrollPrev(namespace.navigator.fix_timestamp);
-				}
-				if( item.hasClass("next") ) {
-					namespace.scrollScrollNext(namespace.navigator.fix_timestamp);
-				}
+//				if( item.hasClass("prev") ) {
+//					namespace.scrollScrollPrev(namespace.navigator.fix_timestamp);
+//				}
+//				if( item.hasClass("next") ) {
+//					namespace.scrollScrollNext(namespace.navigator.fix_timestamp);
+//				}
 			}).bind("mousedown", function(){
 					var item = $(this),
 						timoutClick = function(){
@@ -1110,47 +1000,20 @@
 					clearTimeout( scrollTimer );
 				});
 
-			var scroll_lock = false
 
-			namespace.flow = document.getElementById("timeline_flow");
+			$(window).bind("scroll", function(e){
+				namespace.story.scrollTop = $(window).scrollTop()
 
-			if(window.addEventListener) namespace.flow.addEventListener('DOMMouseScroll', doTheScroll, false);  // IE
+				namespace.scrollEvents.update.header.apply( namespace );
 
-			namespace.flow.onmousewheel = doTheScroll;  //other
+				namespace.story.dummy.position_top = namespace.story.scrollTop + namespace.story.dummy.position().top + namespace.story.dummy.outerHeight()/2;
+				namespace.scrollEvents.update.objects.activate.apply(namespace);
+				namespace.scrollEvents.update.statistic.upload.apply(namespace);
+				namespace.scrollEvents.update.objects.upload.apply(namespace);
+				namespace.scrollEvents.update.statistic.redraw.apply(namespace);
 
-			function doTheScroll(event){
-				var delta = 0;
-				if (event.wheelDelta) {
-					delta = event.wheelDelta / 60;
-				} else if (event.detail) {
-					delta = -event.detail / 2;
-				}
-				event.preventDefault();
-
-				var scrolled_items;
-				if(delta>0){
-					scrolled_items = namespace.article_list.item.get.next.apply( namespace.article_list, [ namespace.navigator.crosshair_position ] );
-				}else if(delta<0){
-					scrolled_items = namespace.article_list.item.get.prev.apply( namespace.article_list, [ namespace.navigator.crosshair_position ] );
-				}
-
-				if(!scroll_lock) {
-
-					if(scrolled_items.item){
-						var month = $("#month-item-" + scrolled_items.month.date.getTime(), namespace.article_list.target),
-							day = $("#day-item-" + scrolled_items.day.date.getTime(), month),
-							article = $("article[data-timestamp=" + scrolled_items.item.date.getTime() + "]", day);
-						$('article').removeClass("active_article");
-						article.addClass("active_article");
-
-						myScroll3.scrollToElement("#" + article[0].id, 1000);
-						namespace.navigator.crosshair_position = scrolled_items.item.date.getTime();
-						scroll_lock = true;
-						ST = setTimeout(function(){ scroll_lock = false; }, 140);
-						namespace.scrollScroll(namespace.navigator.crosshair_position);
-					}
-				}
-			}
+				namespace.navigator.graph.setCrosshair({"x" : namespace.article_list.active.item.data("timestamp")});
+			});
 		},
 		scrollScroll : function(timecheck) {
 
@@ -1218,58 +1081,15 @@
 
 				active.month = $("#month-item-" + dates.month.getTime(), this.article_list.target);
 				active.day = $("#day-item-" + dates.day.getTime(), active.month);
-				if (!active.day) { return false }
-				var diff = 0;
-				var _diff = 24 * 60 * 60 * 1000;
+
 				$("article", active.day).each(function(index, item){
 					var item = $(this),
-						item_timestamp = item.data("timestamp");
-					diff = Math.abs(timestamp - item_timestamp);
-
-					if (diff < _diff)  {
+						item_timestamp = item.data("timestamp"),
+						prev_item = item.prev("article");
+					if( prev_item.length == 0 )
 						active.article = item;
-						_diff = diff;
-
-					}
-
-
-
-
-				});
-				return active.article;
-			},
-			"closestArticleByTimestamp"	:	function(timestamp){
-
-				var date = new Date(timestamp),
-					dates = {
-						"month"	:	new Date(date.getFullYear(), date.getMonth(), 1),
-						"day"	:	new Date(date.getFullYear(), date.getMonth(), date.getDate())
-					},
-					active = {
-						"month"	:	[],
-						"day"	:	[],
-						"article"	:	[]
-					};
-
-				active.month = $("#month-item-" + dates.month.getTime(), this.article_list.target);
-				active.day = $("#day-item-" + dates.day.getTime(), active.month);
-				if (!active.day) { return false }
-				var diff = 0;
-				var _diff = 31 * 24 * 60 * 60 * 1000;
-				$("article", active.month).each(function(index, item){
-					var item = $(this),
-						item_timestamp = item.data("timestamp");
-					diff = Math.abs(timestamp - item_timestamp);
-
-					if (diff < _diff)  {
-						active.article = item;
-						_diff = diff;
-
-					}
-
-
-
-
+					else if( prev_item.data("timestamp") > timestamp && item_timestamp < timestamp )
+						active.article = ( timestamp - prev_item.data("timestamp") >= item_timestamp - timestamp ) ? prev_item : item;
 				});
 				return active.article;
 			}
@@ -1296,11 +1116,11 @@
 
 						$(".story_main", this.story.container).css({"border" : "none"})
 
-//						this.story.timeline.css({ "margin-top" : this.story.container.outerHeight() + 'px' });
+						this.story.timeline.css({ "margin-top" : this.story.container.outerHeight() + 'px' });
 
 					}else{
 						this.target.removeClass('sticked_top_symmary offset_bottom_summary')
-//						this.story.timeline.css({ "margin-top"  :   0 });
+						this.story.timeline.css({ "margin-top"  :   0 });
 					}
 				},
 				"objects"		:	{
@@ -1477,6 +1297,3 @@
 
 	}
 })(jQuery)
-function __(text) {
-	$("#log").append("<div>" + text +"</div>");
-}
