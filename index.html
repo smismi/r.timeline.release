@@ -12,13 +12,12 @@
 	<script type="text/javascript" src="js/jquery.state.js?"></script>
 	<script type="text/javascript" src="js/jquery.tmpl.js?"></script>
 	<script type="text/javascript" src="js/jquery.flot.js?"></script>
-	<script type="text/javascript" src="js/jquery.flot.crosshair.js?"></script>
-	<script type="text/javascript" src="js/jquery.flot.navigate.js?"></script>
+	<script type="text/javascript" src="js/jquery.flot.crosshair.js"></script>
+	<script type="text/javascript" src="js/jquery.flot.navigate.js"></script>
 	<!--<script type="text/javascript" src="js/original_article_timeline.js"></script>-->
-	<script type="text/javascript" src="js/last_.js"></script>
 	<!--<script type="text/javascript" src="js/article_timeline.js"></script>-->
 	<script type="text/javascript" src="js/iscroll4.js"></script>
-	<script type="text/javascript" src="js/jquery.mousewheel.js"></script>
+	<script type="text/javascript" src="js/last_.js"></script>
     <style type="text/css">
         #timeline_flow {
             border: 1px solid red;
@@ -30,54 +29,56 @@
 </head>
 <body>
 
+<div id="t" style="height: 300px; background: #f00"></div>
 
-<div id="story_timeline_container" class="story_timeline_container">
-	<div class="story_main_container">
-		<div class="story_main" style="border: none;">
-			<div class="story_summary">
-				<div class="story_summary_header"><h3>Тема</h3><a
-						href="/export/rss2/shoygu_serdyukov_06112012/index.xml" class="header_rss">RSS</a><span
-						class="page_content_title_header_watch subscribe-to unsubscribed" data-type="story"
-						data-sid="shoygu_serdyukov_06112012" data-title="Назначение Шойгу и отставка Сердюкова"
-						data-url="/trend/shoygu_serdyukov_06112012/" data-status="unsubscribed"><label
-						class="unsubscribed" style="display: block;">Отслеживать</label><label class="subscribed">Не
-					отслеживать</label></span>
+<div style="height: 670px"  id="c">
+	<div id="story_timeline_container" class="story_timeline_container">
+		<div class="story_main_container">
+			<div class="story_main" style="border: none;">
+				<div class="story_summary">
+					<div class="story_summary_header"><h3>Тема</h3><a
+							href="/export/rss2/shoygu_serdyukov_06112012/index.xml" class="header_rss">RSS</a><span
+							class="page_content_title_header_watch subscribe-to unsubscribed" data-type="story"
+							data-sid="shoygu_serdyukov_06112012" data-title="Назначение Шойгу и отставка Сердюкова"
+							data-url="/trend/shoygu_serdyukov_06112012/" data-status="unsubscribed"><label
+							class="unsubscribed" style="display: block;">Отслеживать</label><label class="subscribed">Не
+						отслеживать</label></span>
 
-					<div class="clearfix"></div>
-				</div>
-			</div>
-			<div class="timeline_navigator_container">
-				<div id="timeline_navigator_controls" class="timeline_navigator_controls" style="width:1000px; overflow: auto">
-
-					<div id="timeline_navigator" unselectable="on"
-						 style="padding: 0px; position: relative;">
+						<div class="clearfix"></div>
 					</div>
-					<div id="timeline_navigator_loader" class="timeline_loader_1"></div>
-					<div class="middle_check"></div>
-
-					<a href="#" class="prev"><span class="ico"></span></a>
-					<a href="#" class="next"><span class="ico"></span></a>
 				</div>
-				<div class="scale-change-bar"><span>Масштаб:</span><a class="active-state state state-0" href="#month"
-																	  data-scale-size="MONTH">Месяц</a><a
-						class="state state-1" href="#week" data-scale-size="WEEK">Неделя</a><a class="state state-2"
-																							   href="#day"
-																							   data-scale-size="DAY">День</a>
-				</div>
-				<div class="clear"></div>
-				<span class="bottom-shadow"></span></div>
-		</div>
-		<span class="timeline_article_cursor"></span>
-	</div>
-	<div class="story_timeline" id="timeline_flow">
-		<div class="timeline"  >
-			<div class="timeline_video_data"></div>
+				<div class="timeline_navigator_container">
+					<div id="timeline_navigator_controls" class="timeline_navigator_controls" style="width:1000px; overflow: auto">
 
+						<div id="timeline_navigator" unselectable="on"
+							 style="padding: 0px; position: relative;">
+						</div>
+						<div id="timeline_navigator_loader" class="timeline_loader_1"></div>
+						<div class="middle_check"></div>
+
+						<a href="#" class="prev"><span class="ico"></span></a>
+						<a href="#" class="next"><span class="ico"></span></a>
+					</div>
+					<div class="scale-change-bar"><span>Масштаб:</span><a class="active-state state state-0" href="#month"
+																		  data-scale-size="MONTH">Месяц</a><a
+							class="state state-1" href="#week" data-scale-size="WEEK">Неделя</a><a class="state state-2"
+																								   href="#day"
+																								   data-scale-size="DAY">День</a>
+					</div>
+					<div class="clear"></div>
+					<span class="bottom-shadow"></span></div>
+			</div>
+			<span class="timeline_article_cursor"></span>
 		</div>
-		<div id="story_timeline_loader" class="timeline_loader_1"></div>
+		<div class="story_timeline" id="timeline_flow">
+			<div class="timeline"  >
+				<div class="timeline_video_data"></div>
+
+			</div>
+			<div id="story_timeline_loader" class="timeline_loader_1"></div>
+		</div>
 	</div>
 </div>
-
 
 <script type="text/javascript">
     $(function(){
@@ -142,8 +143,9 @@
 
 <div id="log" style="position: fixed; bottom: 0; right: 0;  width: 300px; color: #00c100; background: #000; font-size: 9px;"></div>
 
-<div id="current_timestamp" style="position: fixed; bottom: 0; left: 0;  width: 100px; color: #00c100; background: #000; font-size: 9px;">
 
-</div>
+
+
+<div style="height: 500px; background: #0f0"   id="b"></div>
 </body>
 </html>

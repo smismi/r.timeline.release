@@ -100,7 +100,7 @@
 			this.loader = $("#timeline_navigator_loader", this.target);
 
 			this.plot_crosshair_image = new Image();
-			this.plot_crosshair_image.src = "/i/icons/timeline/crosshair.png";
+			this.plot_crosshair_image.src = "http://ria.ru/i/icons/timeline/crosshair.png";
 
 			var namespace = this,
 				start_date,
@@ -195,7 +195,7 @@
 				namespace.plotInit( namespace.data.temp_date_range );
 				myScroll.refresh();
 				namespace.scrollToDef(namespace.crosshair_position);
-				namespace.graph.setCrosshair({"x" : namespace.crosshair_position, "image" : this.plot_crosshair_image});
+				namespace.graph.setCrosshair({"x" : namespace.crosshair_position});
 			})
 
 			// graph init
@@ -207,7 +207,7 @@
 				"to"	:	new Date( this.data.temp_date_range.to.getFullYear(), this.data.temp_date_range.to.getMonth(), this.data.temp_date_range.to.getDate() )
 			};
 			this.plotInit( plot_date_range );
-			this.graph.setCrosshair({"x" : end_date.getTime(), "image" : this.plot_crosshair_image});
+			this.graph.setCrosshair({"x" : end_date.getTime()});
 			myScroll = new iScroll('timeline_navigator_controls',
 				{
 					scrollbarClass: 'myScrollbar',
@@ -301,7 +301,6 @@
 			$("#timeline_navigator").css({
 				width: namespace._w
 			});
-
 			this.graph = $.plot(
 				$("#timeline_navigator", this.target),
 				[ { "data" : this.data.statistic_temp }, { "data" : this.data.statistic_temp, "xaxis" : 2 } ],
@@ -719,9 +718,11 @@
 						if( data.day )
 							temp_data.item = data.day.content.length - 1;
 						else if( typeof( data.day ) == 'undefined'){
+//							if (temp_data.month) {
 							temp_data.month -= 1
-
-
+//							} else {
+//								temp_data.month = 0
+//							}
 							data.month = this.articles.content[ this.articles.dates[ temp_data.month ] ];
 							temp_data.day = data.month.dates.length - 1;
 							data.day = data.month.content[ data.month.dates[ temp_data.day ] ];
@@ -764,7 +765,11 @@
 						temp_data.item = 0;
 						data.day = data.month.content[ data.month.dates[ temp_data.day ] ];
 						if( typeof( data.day ) == 'undefined' ){
+//							if (temp_data.month) {
 							temp_data.month += 1
+//							} else {
+//								temp_data.month = 0
+//							}
 							temp_data.day = 0;
 							data.month = this.articles.content[ this.articles.dates[ temp_data.month ] ];
 							data.day = data.month.content[ data.month.dates[ temp_data.day ] ];
@@ -946,56 +951,62 @@
 
 //
 //						 if (!ipad_scroll_lock) {
-//
-						var scrolled_items;
-						if ( this.dirY < 0 ){
-							scrolled_items = namespace.article_list.item.get.next.apply( namespace.article_list, [ namespace.navigator.crosshair_position ] );
-						} else if ( this.dirY > 0) {
-							scrolled_items = namespace.article_list.item.get.prev.apply( namespace.article_list, [ namespace.navigator.crosshair_position ] );
-						}
-						__("scroll")
-						if (scrolled_items.item) {
-							var month = $("#month-item-" + scrolled_items.month.date.getTime(), namespace.article_list.target),
-								day = $("#day-item-" + scrolled_items.day.date.getTime(), month),
-								article = $("article[data-timestamp=" + scrolled_items.item.date.getTime() + "]", day);
-							$('article').removeClass("active_article");
-							article.addClass("active_article");
 
-							myScroll3.scrollToElement("#" + article[0].id, 1000);
-							namespace.navigator.crosshair_position = scrolled_items.item.date.getTime();
-							ipad_scroll_lock = true;
-							ST = setTimeout(function () {
-								ipad_scroll_lock = false;
-							}, 1000);
-							namespace.scrollScroll(namespace.navigator.crosshair_position);
-						}
+//							 var scrolled_items;
+//							 if ( this.dirY < 0 ){
+//								 scrolled_items = namespace.article_list.item.get.next.apply( namespace.article_list, [ namespace.navigator.crosshair_position ] );
+//							 } else if ( this.dirY > 0) {
+//								 scrolled_items = namespace.article_list.item.get.prev.apply( namespace.article_list, [ namespace.navigator.crosshair_position ] );
+//							 }
+//							__("scroll")
+//							if (scrolled_items.item) {
+//								var month = $("#month-item-" + scrolled_items.month.date.getTime(), namespace.article_list.target),
+//									day = $("#day-item-" + scrolled_items.day.date.getTime(), month),
+//									article = $("article[data-timestamp=" + scrolled_items.item.date.getTime() + "]", day);
+//								$('article').removeClass("active_article");
+//								article.addClass("active_article");
+//
+//								myScroll3.scrollToElement("#" + article[0].id, 1000);
+//								namespace.navigator.crosshair_position = scrolled_items.item.date.getTime();
+//								ipad_scroll_lock = true;
+//								ST = setTimeout(function () {
+//									ipad_scroll_lock = false;
+//								}, 1000);
+//								namespace.scrollScroll(namespace.navigator.crosshair_position);
+//							}
 //						}
 
 					},
-					onBeforeScrollEnd: function (e) {
-						if (scrolled_items.item) {
-							var month = $("#month-item-" + scrolled_items.month.date.getTime(), namespace.article_list.target),
-								day = $("#day-item-" + scrolled_items.day.date.getTime(), month),
-								article = $("article[data-timestamp=" + scrolled_items.item.date.getTime() + "]", day);
-							$('article').removeClass("active_article");
-							article.addClass("active_article");
-
-							myScroll3.scrollToElement("#" + article[0].id, 1000);
-							namespace.navigator.crosshair_position = scrolled_items.item.date.getTime();
-							ipad_scroll_lock = true;
-							ST = setTimeout(function () {
-								ipad_scroll_lock = false;
-							}, 1000);
-							namespace.scrollScroll(namespace.navigator.crosshair_position);
-							__(1);
-						}
-					},
 
 					wheelAction: 'none'
-					,desktopDisable: false
+					,desktopDisable: true
 				});
 
+			$(window).bind("scroll", function(e){
 
+				__($("#t").height() + ' ' + $("#c").height() + ' ' + $("#b").height() )
+				if ($(document).scrollTop() > $("#t").height()  &&  $(document).scrollTop() < ($(document).height() - $("#b").height() - $(window).height()) ) {
+
+					$("#story_timeline_container").css({
+						border: "1px solid red",
+						position: "fixed",
+						background: "#fff",
+						width: 720,
+						top:0
+
+					})
+//					if( this.story.scrollTop > this.story.timeline.position().top + this.story.timeline.outerHeight() - $(window).height() ){
+//					__("W" +  $(window).height());
+//					__("#" + $(document).height());
+				}  else {
+					$("#story_timeline_container").css({
+						border: "none",
+						position: "static"
+
+					})
+				}
+
+			});
 
 			function scrollToSelectedRange(f){
 				var coord = graph.getCrosshairPosition(),
@@ -1016,7 +1027,7 @@
 					$("article").removeClass("active_article");
 					active_article.addClass("active_article");
 
-				}else {
+				} else {
 
 					var load_date_range ={
 						"from"	:	namespace.navigator._start_date,
@@ -1099,12 +1110,21 @@
 					clearTimeout( scrollTimer );
 				});
 
+			var scroll_lock = false
 
+			namespace.flow = document.getElementById("timeline_flow");
 
-			var scroll_lock = false;
+			if(window.addEventListener) namespace.flow.addEventListener('DOMMouseScroll', doTheScroll, false);  // IE
 
-			$('#timeline_flow').mousewheel(function(event, delta){
+			namespace.flow.onmousewheel = doTheScroll;  //other
 
+			function doTheScroll(event){
+				var delta = 0;
+				if (event.wheelDelta) {
+					delta = event.wheelDelta / 60;
+				} else if (event.detail) {
+					delta = -event.detail / 2;
+				}
 				event.preventDefault();
 
 				var scrolled_items;
@@ -1130,7 +1150,7 @@
 						namespace.scrollScroll(namespace.navigator.crosshair_position);
 					}
 				}
-			});
+			}
 		},
 		scrollScroll : function(timecheck) {
 
@@ -1457,7 +1477,6 @@
 
 	}
 })(jQuery)
-
 function __(text) {
 	$("#log").append("<div>" + text +"</div>");
 }

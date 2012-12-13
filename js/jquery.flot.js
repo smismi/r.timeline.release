@@ -1385,18 +1385,24 @@
             axis.ticks = [];
             for (i = 0; i < ticks.length; ++i) {
                 var label = null;
+                var color = null;
                 var t = ticks[i];
                 if (typeof t == "object") {
                     v = +t[0];
                     if (t.length > 1)
                         label = t[1];
+                    if (t.length > 2)
+                        color = t[2];
+
                 }
                 else
                     v = +t;
                 if (label == null)
                     label = axis.tickFormatter(v, axis);
+                if (color == null)
+					color = axis.options.color;
                 if (!isNaN(v))
-                    axis.ticks.push({ v: v, label: label });
+                    axis.ticks.push({ v: v, label: label, color: color });
             }
         }
 
@@ -1693,7 +1699,7 @@
 
                     pos.width = axis.labelWidth;
 
-                    var style = ["position:absolute", "text-align:" + align ];
+                    var style = ["position:absolute", "text-align:" + align, "color:" + tick.color];
                     for (var a in pos)
                         style.push(a + ":" + pos[a] + "px")
 
