@@ -161,22 +161,25 @@
 				switch( state.name ){
 					case "MONTH"    :
 					default         :
-                        date_range.from = namespace._start_date;
-                        date_range.to = namespace._end_date;
+						date_range.from = new Date(namespace._start_date.getTime() - 31 * 24 * 60 * 60 * 1000);
+						date_range.to = new Date(namespace._end_date.getTime() + 31 * 24 * 60 * 60 * 1000);
                         break;
 					case "WEEK"     :
-                        date_range.from = namespace._start_date;
-                        date_range.to = namespace._end_date;
+						date_range.from = new Date(namespace._start_date.getTime() - 7 * 24 * 60 * 60 * 1000);
+						date_range.to = new Date(namespace._end_date.getTime() + 7 * 24 * 60 * 60 * 1000);
                         break;
 					case "DAY"      :
-						date_range.from = new Date( date_range.from.setDate( date_range.from.getDate() - 3 ) );
-						date_range.to = new Date( date_range.to.setDate( date_range.to.getDate() + 3 ) );
+						date_range.from = new Date(namespace._start_date.getTime() - 12 * 60 * 60 * 1000);
+						date_range.to = new Date(namespace._end_date.getTime() + 12 * 60 * 60 * 1000);
+
+//						date_range.from = namespace._start_date;
+//						date_range.to = namespace._end_date;
 						break;
 				}
 				namespace.assemblyTempData.apply( namespace, [ namespace.data.date_range ] );
 				namespace.plotInit(date_range);
 				namespace.graph.setCrosshair({"x" : namespace.crosshair_position});
-			})
+			});
 
 			// graph init
 			this.assembly.apply( this, [ statistic ] );
@@ -191,6 +194,7 @@
 			};
 			this.plotInit( plot_date_range );
 			this.graph.setCrosshair({"x" : end_date.getTime()});
+
 			myScroll = new iScroll('timeline_navigator_controls',
 				{
 					scrollbarClass: 'myScrollbar',
@@ -198,7 +202,6 @@
 					vScroll: false,
 					checkDOMChanges: true
 				});
-//			this.scrollToDef(end_date.getTime());
 //			setTimeout(function () {
 //				scale_change_bar_state.set( "MONTH" );
 //			}, 1000);
@@ -282,7 +285,7 @@
 				"DAY" : 24*60*60*1000  * 1
 			})[ namespace.scale_change.state.get().name ];
 			namespace.width = 680;
-			$("#timeline_navigator_controls").css({width: namespace.width});
+				$("#timeline_navigator_controls").css({width: namespace.width});
 			namespace._w = namespace.width * (date_range.to.getTime() - date_range.from.getTime()) / namespace.fix_timestamp;
 			$("#timeline_navigator").css({
 				width: namespace._w
@@ -874,7 +877,6 @@
 				});
 			}
 		}
-
 	}
 
 	var StoryTimeline = function( options ){
@@ -926,25 +928,25 @@
 				if(active_article.length != 0){
 					scrollTo(0,active_article.offset().top - 200)
 				}else{
-					var load_date_range ={
-						"from"	:	undefined,
-						"to"	:	undefined
-					}
-
-					var last_loaded = { "month" : namespace.article_list.articles.content[ namespace.article_list.articles.dates[namespace.article_list.articles.dates.length - 1] ] }
-					last_loaded.day = last_loaded.month.content[ last_loaded.month.dates[last_loaded.month.dates.length - 1] ];
-
-					var prev_day_date = namespace.navigator.get.hour.prev.apply( namespace.navigator, [ last_loaded.day.date ] );
-					if( typeof( prev_day_date ) != 'undefined' )
-						load_date_range.to = new Date( prev_day_date.getFullYear(), prev_day_date.getMonth(), prev_day_date.getDate() )
-
-					var selected_date = new Date( parseInt( offset.x ) );
-					load_date_range.from = new Date( selected_date.getFullYear(), selected_date.getMonth(), selected_date.getDate() );
-
-					namespace.article_list.load(load_date_range);
-					namespace.article_list.element.bind("items.loaded", function(){
-						scrollToSelectedRange();
-					})
+//					var load_date_range ={
+//						"from"	:	undefined,
+//						"to"	:	undefined
+//					}
+//
+//					var last_loaded = { "month" : namespace.article_list.articles.content[ namespace.article_list.articles.dates[namespace.article_list.articles.dates.length - 1] ] }
+//					last_loaded.day = last_loaded.month.content[ last_loaded.month.dates[last_loaded.month.dates.length - 1] ];
+//
+//					var prev_day_date = namespace.navigator.get.hour.prev.apply( namespace.navigator, [ last_loaded.day.date ] );
+//					if( typeof( prev_day_date ) != 'undefined' )
+//						load_date_range.to = new Date( prev_day_date.getFullYear(), prev_day_date.getMonth(), prev_day_date.getDate() )
+//
+//					var selected_date = new Date( parseInt( offset.x ) );
+//					load_date_range.from = new Date( selected_date.getFullYear(), selected_date.getMonth(), selected_date.getDate() );
+//
+//					namespace.article_list.load(load_date_range);
+//					namespace.article_list.element.bind("items.loaded", function(){
+//						scrollToSelectedRange();
+//					})
 				}
 			}
 
@@ -1013,11 +1015,12 @@
 				namespace.scrollEvents.update.objects.activate.apply(namespace);
 				namespace.scrollEvents.update.statistic.upload.apply(namespace);
 				namespace.scrollEvents.update.objects.upload.apply(namespace);
-				namespace.scrollEvents.update.statistic.redraw.apply(namespace);
+//				namespace.scrollEvents.update.statistic.redraw.apply(namespace);
 				namespace.scrollEvents.update.statistic.scrollScroll.apply(namespace);
 
 				namespace.navigator.graph.setCrosshair({"x" : namespace.article_list.active.item.data("timestamp")});
 
+__(new Date (namespace.article_list.active.item.data("timestamp")));
 //                namespace.scrollScroll(namespace.article_list.active.day.data("timestamp"))
 			});
 		},
@@ -1044,6 +1047,7 @@
 		"get"	:	{
 			"nextArticleByTimestamp"	:	function(timestamp){
 
+
 				var date = new Date(timestamp),
 					dates = {
 						"month"	:	new Date(date.getFullYear(), date.getMonth(), 1),
@@ -1057,15 +1061,23 @@
 
 				active.month = $("#month-item-" + dates.month.getTime(), this.article_list.target);
 				active.day = $("#day-item-" + dates.day.getTime(), active.month);
-
+				if (!active.day) { return false }
+				var diff = 0;
+				var _diff = 24 * 60 * 60 * 1000;
 				$("article", active.day).each(function(index, item){
 					var item = $(this),
-						item_timestamp = item.data("timestamp"),
-						prev_item = item.prev("article");
-					if( prev_item.length == 0 )
+						item_timestamp = item.data("timestamp");
+					diff = Math.abs(timestamp - item_timestamp);
+
+					if (diff < _diff)  {
 						active.article = item;
-					else if( prev_item.data("timestamp") > timestamp && item_timestamp < timestamp )
-						active.article = ( timestamp - prev_item.data("timestamp") >= item_timestamp - timestamp ) ? prev_item : item;
+						_diff = diff;
+
+					}
+
+
+
+
 				});
 				return active.article;
 			}
@@ -1211,43 +1223,53 @@
 						}
 					},
 
-					"redraw"		:	function(){         __("redraw")
-						var plot_xaxis = this.navigator.graph.getAxes().xaxis,
-							active_day_date = this.article_list.active.day.data("timestamp"),
-							coord = {};
+					"redraw"		:	function(){
+						__("redraw");
+//						var plot_xaxis = this.navigator.graph.getAxes().xaxis,
+//							active_day_date = this.article_list.active.day.data("timestamp"),
+//							coord = {};
+//
+//						if( active_day_date - 24*60*60*1000 < plot_xaxis.min ){
+//							var prev_day_date = this.navigator.get.hour.prev.apply( this.navigator, [ new Date(active_day_date) ] );
+//							coord = this.navigator.graph.p2c({"x" : active_day_date })
+//						}else if( active_day_date + 24*60*60*1000 > plot_xaxis.max ){
+//								var next_day_date = this.navigator.get.hour.next.apply( this.navigator, [ new Date(active_day_date) ] ),
+//								graph_offset_date = new Date(active_day_date);
+//
+//
+//							switch( this.navigator.scale_change.state.get().name ){
+//								case "MONTH"    :
+//								default         :
+//									graph_offset_date = graph_offset_date.setDate(graph_offset_date.getDate() - 29);
+//									break;
+//								case "WEEK"     :
+//									graph_offset_date = graph_offset_date.setDate(graph_offset_date.getDate() - 6);
+//									break;
+//								case "DAY"      :
+//									graph_offset_date = graph_offset_date.setDate(graph_offset_date.getDate() );
+//									break;
+//							}
+//							namespace.plotInit(date_range);
+//
+//
+//
+////							coord = this.navigator.graph.p2c({"x" : graph_offset_date })
+//						}
+//						if( typeof( coord.left ) != 'undefined' && coord.left != 0 )
+//							this.navigator.graph.pan( coord );
 
-						if( active_day_date - 24*60*60*1000 < plot_xaxis.min ){
-							var prev_day_date = this.navigator.get.hour.prev.apply( this.navigator, [ new Date(active_day_date) ] );
-							coord = this.navigator.graph.p2c({"x" : active_day_date })
-						}else if( active_day_date + 24*60*60*1000 > plot_xaxis.max ){
-							var next_day_date = this.navigator.get.hour.next.apply( this.navigator, [ new Date(active_day_date) ] ),
-								graph_offset_date = new Date(active_day_date);
+
+						var date_range = {};
+
+								date_range.from = this.navigator._start_date;
+								date_range.to = this.navigator._end_date;
 
 
-							switch( this.navigator.scale_change.state.get().name ){
-								case "MONTH"    :
-								default         :
-									graph_offset_date = graph_offset_date.setDate(graph_offset_date.getDate() - 29);
-									break;
-								case "WEEK"     :
-									graph_offset_date = graph_offset_date.setDate(graph_offset_date.getDate() - 6);
-									break;
-								case "DAY"      :
-									graph_offset_date = graph_offset_date.setDate(graph_offset_date.getDate() );
-									break;
-							}
-							coord = this.navigator.graph.p2c({"x" : graph_offset_date })
-						}
-						if( typeof( coord.left ) != 'undefined' && coord.left != 0 )
-							this.navigator.graph.pan( coord );
-
-
+//						this.navigator.plotInit(date_range);
 					},
                     scrollScroll : function() {
-                        __("scrollScroll")
 
-                        __(new Date(this.navigator.graph.getAxes().xaxis.min))
-                        __(new Date(this.navigator.graph.getAxes().xaxis.max))
+
 //                        namespace = this;
 //                        var date_range = {
 //                            from:  new Date(this.navigator.graph.getAxes().xaxis.min)
@@ -1264,9 +1286,9 @@
                         })[ this.navigator.scale_change.state.settings.state.settings.state ];
 
                         _w = 680 * (max_value - min_value)  / fix_timestamp; //width_plot
-                        _x = 680 * (this.article_list.active.day.data("timestamp") - min_value)  / fix_timestamp;
+                        _x = 680 * (this.navigator.crosshair_position - min_value)  / fix_timestamp;
 
-__(_x)
+
                         switch( true ){
                             case _x < 340    :
                                 myScroll.scrollTo(0, 0, 500);
