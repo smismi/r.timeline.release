@@ -161,13 +161,13 @@
 				switch( state.name ){
 					case "MONTH"    :
 					default         :
-                        date_range.from = new Date( date_range.from.setDate( date_range.from.getDate() - 31 ) );
-                        date_range.to = new Date( date_range.to.setDate( date_range.to.getDate() + 31 ) );
+                        date_range.from = namespace._start_date;
+                        date_range.to = namespace._end_date;
                         break;
 					case "WEEK"     :
-						date_range.from = new Date( date_range.from.setDate( date_range.from.getDate() - 14 ) );
-						date_range.to = new Date( date_range.to.setDate( date_range.to.getDate() + 14 ) );
-						break;
+                        date_range.from = namespace._start_date;
+                        date_range.to = namespace._end_date;
+                        break;
 					case "DAY"      :
 						date_range.from = new Date( date_range.from.setDate( date_range.from.getDate() - 3 ) );
 						date_range.to = new Date( date_range.to.setDate( date_range.to.getDate() + 3 ) );
@@ -1201,8 +1201,7 @@
 							load_from_date = new Date( load_from_date.getFullYear(), load_from_date.getMonth() - 1, 1 );
 
 							this.navigator.load.apply( this.navigator, [{ "to" : this.navigator.data.date_range.from, "from" : load_from_date }] );
-
-							this.navigator.target.bind("statistic.loaded", function(e){
+ 							this.navigator.target.bind("statistic.loaded", function(e){
 								if( typeof( namespace.navigator.full_load ) == 'undefined' || !namespace.navigator.full_load )
 									namespace.scrollEvents.update.objects.upload.apply(namespace);
 
