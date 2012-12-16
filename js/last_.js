@@ -122,13 +122,13 @@
 				data.sort(function(a,b){ return b.date.getTime() - a.date.getTime(); });
 				return data
 			})()
-
+            namespace = this;
 			start_date = ( statistic.length > 0 ) ? statistic[statistic.length - 1].date : new Date();
 			end_date = ( statistic.length > 0 ) ? statistic[0].date : new Date();
 
-//			if((end_date.getTime() - start_date.getTime()) < 31 * 24 * 60 * 60 * 1000) {
-//				start_date = new Date(end_date.getTime() - 31 * 24 * 60 * 60 * 1000);
-//			}
+			if((end_date.getTime() - start_date.getTime()) < 31 * 24 * 60 * 60 * 1000) {
+				start_date = new Date(end_date.getTime() - 31 * 24 * 60 * 60 * 1000);
+			}
 
 
 
@@ -158,26 +158,29 @@
 
 			scale_change_bar.bind("state-change", function(e, state){
 				var date_range = { "from" : new Date( namespace.crosshair_position), "to" :new Date( namespace.crosshair_position) };
-				switch( state.name ){
+
+
+                switch( state.name ){
 					case "MONTH"    :
-					default         :
-						date_range.from = new Date(namespace._start_date.getTime() - 31 * 24 * 60 * 60 * 1000);
-						date_range.to = new Date(namespace._end_date.getTime() + 31 * 24 * 60 * 60 * 1000);
+                    default         :
+                        date_range.from	= new Date( namespace.data.temp_date_range.from.getFullYear(), namespace.data.temp_date_range.from.getMonth(), namespace.data.temp_date_range.from.getDate() );
+                        date_range.to	=	new Date( namespace.data.temp_date_range.to.getFullYear(), namespace.data.temp_date_range.to.getMonth(), namespace.data.temp_date_range.to.getDate() );
                         break;
-					case "WEEK"     :
-						date_range.from = new Date(namespace._start_date.getTime() - 7 * 24 * 60 * 60 * 1000);
-						date_range.to = new Date(namespace._end_date.getTime() + 7 * 24 * 60 * 60 * 1000);
+                    case "WEEK"     :
+                        date_range.from = new Date( date_range.from.setDate( date_range.from.getDate() - 14 ) );
+                        date_range.to = new Date( date_range.to.setDate( date_range.to.getDate() + 14 ) );
                         break;
-					case "DAY"      :
-						date_range.from = new Date(namespace._start_date.getTime() - 12 * 60 * 60 * 1000);
-						date_range.to = new Date(namespace._end_date.getTime() + 12 * 60 * 60 * 1000);
+                    case "DAY"      :
+                        date_range.from = new Date( date_range.from.setDate( date_range.from.getDate() - 10 ) );
+                        date_range.to = new Date( date_range.to.setDate( date_range.to.getDate() + 10 ) );
+                        break;
 
 //						date_range.from = namespace._start_date;
 //						date_range.to = namespace._end_date;
 						break;
 				}
-				namespace.assemblyTempData.apply( namespace, [ namespace.data.date_range ] );
-				namespace.plotInit(date_range);
+				namespace.assemblyTempData.apply( namespace, [ namespace.data.temp_date_range ] );
+				namespace.plotInit(plot_date_range);
 				namespace.graph.setCrosshair({"x" : namespace.crosshair_position});
 			});
 
@@ -290,6 +293,7 @@
 			$("#timeline_navigator").css({
 				width: namespace._w
 			});
+
 //			this.plot_crosshair_image = new Image();
 //			this.plot_crosshair_image.src = "/i/icons/timeline/crosshair.png";
 			this.graph = $.plot(
