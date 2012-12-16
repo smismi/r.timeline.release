@@ -107,7 +107,10 @@
                 "statistic_temp"	:	[],
                 "list"				:	this.settings.list,
                 "queries"			:	{},
-                "date_range"		:	{}
+                "date_range"		:	[],
+                "plot_date_ranges"	:	[],
+                "plots"	            :	[],
+                "full_date_range"	:	[]
             };
 
             var statistic = (function(){
@@ -119,827 +122,334 @@
                 }
                 data.sort(function(a,b){ return b.date.getTime() - a.date.getTime(); });
                 return data
-            })()
+            })();
+
+            var fix_timestamp = ({
+                "MONTH" : 31*24*60*60*1000, //12*60*60*1000
+                "WEEK" : 7*24*60*60*1000,
+                "DAY" : 24*60*60*1000 //30*60*1000
+            })[ "MONTH" ]
+
+
+
+
+
 
             end_date = ( statistic.length > 0 ) ? statistic[0].date : new Date();
             end_date = new Date( end_date.getFullYear(), end_date.getMonth(), end_date.getDate() + 1);
 
-            this.data.date_range.from = new Date( end_date.getFullYear(), end_date.getMonth(), end_date.getDate() - 31 );
-            this.data.date_range.to = end_date;
+            this.data.full_date_range.from = statistic[statistic.length-1].date.getTime();
+            this.data.full_date_range.to = statistic[0].date.getTime();
 
-            this.crosshair_position = this.data.date_range.from.getTime();
+            var _M = Math.ceil((this.data.full_date_range.to - this.data.full_date_range.from) / fix_timestamp);
+
             //scale bar init
             var scale_change_bar = $(".scale-change-bar", this.target),
                 scale_change_bar_state = scale_change_bar.state({ "state_list" : SCALE_CHANGE_BAR_STATELIST });
 
             $("a", scale_change_bar).bind("click", function(e){
-                e.preventDefault();
-                scale_change_bar_state.set( $(this).data("scale-size") );
-            });
-            this.scale_change = {
-                "bar"	:	scale_change_bar,
-                "state"	:	scale_change_bar_state
-            };
+				e.preventDefault();
+				scale_change_bar_state.set( $(this).data("scale-size") );
+			});
+			this.scale_change = {
+				"bar"	:	scale_change_bar,
+				"state"	:	scale_change_bar_state
+			};
+            this.data.date_range.from = new Date( this.data.full_date_range.from);
+            this.data.date_range.to = new Date( this.data.full_date_range.to);
+////            var plots = (function(){
+//                var plot = _M
+                for( var i = 0; i < _M; i++ ){
 
-            scale_change_bar.bind("state-change", function(e, state){
-                var date_range = { "from" : new Date( namespace.crosshair_position ), "to" :new Date( namespace.crosshair_position ) };
-                switch( state.name ){
-                    case "MONTH"    :
-                    default         :
-                        date_range.to = new Date( date_range.to.setDate( date_range.to.getDate() + 31 ) );
-                        break;
-                    case "WEEK"     :
-                        date_range.to = new Date( date_range.to.setDate( date_range.to.getDate() + 7 ) );
-                        break;
-                    case "DAY"      :
-                        date_range.to = new Date( date_range.to.setDate( date_range.to.getDate() + 1 ) );
-                        break;
+
+
+//                    this.data.plot_date_ranges.push(this.data.date_range);
+                    var fff = {}
+                    fff.from = new Date( end_date.getTime() - fix_timestamp - fix_timestamp * i);
+                    fff.to = new Date( end_date.getTime() - fix_timestamp * i);
+
+                    this.data.plot_date_ranges.push(fff);
+
                 }
-                namespace.assemblyTempData.apply( namespace, [ namespace.data.date_range ] );
-                namespace.plotInit(date_range);
-                namespace.graph.setCrosshair({"x" : namespace.crosshair_position});
-            })
-
-            // graph init
+//            })();
             this.assembly.apply( this, [ statistic ] );
-            this.assemblyTempData.apply( this, [ this.data.date_range ] );
+            //this.assemblyTempData.apply( this, [ this.data.date_range] );
+
+            this.crosshair_position = this.data.date_range.from.getTime();
+
+           // graph init
 
             namespace.plot_crosshair_image = new Image();
             namespace.plot_crosshair_image.src = "i/icons/timeline/crosshair.png";
 
-            var plot_date_range = {
-                "from"	:	new Date( this.data.date_range.from.getFullYear(), this.data.date_range.from.getMonth(), this.data.date_range.from.getDate() ),
-                "to"	:	new Date( this.data.date_range.to.getFullYear(), this.data.date_range.to.getMonth(), this.data.date_range.to.getDate() )
-            };
-            this.plotInit( plot_date_range );
-            this.graph.setCrosshair({"x" : end_date.getTime()});
+            this.graph = [];
+//
+//            <div id="timeline_navigator" class="timeline_navigator" unselectable="on" style="padding: 0px; position: relative;"></div>
+//            <div id="timeline_navigator2" class="timeline_navigator" unselectable="on" style="padding: 0px; position: relative;"></div>
+
+            for( var i = 0; i < this.data.plot_date_ranges.length; i++ ){
+
+                var temp_graph = {};
+
+                temp_graph.tempdata = this.assemblyTempData.apply( this, [ this.data.plot_date_ranges[i]] );
+                temp_graph.graph = this.plotInit(this.data.plot_date_ranges[i], this.drawLeft(), temp_graph.tempdata);
+                temp_graph.dates = this.data.plot_date_ranges[i];
+                this.graph.push(temp_graph);
+
+                $("#timeline_navigator_wrapp").css("width", i + 1 + "00%")
+            }
+
+
+
+
+//            this.drawLeft();
+//            this.drawLeft();
+//            this.drawLeft();
+//            this.drawRight();
+//            this.drawRight();
+//            this.drawRight();
+//            this.drawRight();
+//            this.graph.setCrosshair({"x" : end_date.getTime()});
 
 			myScroll = new iScroll('timeline_navigator_controls',
 				{
 					scrollbarClass: 'myScrollbar',
 					hScroll: true,
-					vScroll: false
+					vScroll: false,
+                    bounce: true
 				});
 //			setTimeout(function () {
 //				scale_change_bar_state.set( "MONTH" );
 //			}, 1000);
         },
+        drawLeft: function(){
+            var outerDiv = $(document.createElement('div')).addClass("timeline_navigator left")
+//                .hide()
+                .insertBefore($('#timeline_navigator')
+            );
+            return outerDiv;
+        },
+        drawRight: function(){
+            var OuterDiv = $(document.createElement('div')).addClass("timeline_navigator right")
+//                .hide()
+                .insertAfter($('#timeline_navigator')
+            );
+
+
+        },
+        getScrollerWidth: function () {
+
+        },
         "load"			:	function( date_range ){
-            var date_string = {
-                    "from"		:   date_range.from.getFullYear() + ( ( date_range.from.getMonth() < 9 ) ? '0' : '' ) + ( date_range.from.getMonth() + 1) + ( ( date_range.from.getDate() < 10 ) ? '0' : '' ) + date_range.from.getDate(),
-                    "to"		:	date_range.to.getFullYear() + ( ( date_range.to.getMonth() < 9 ) ? '0' : '' ) + ( date_range.to.getMonth() + 1) + ( ( date_range.to.getDate() < 10 ) ? '0' : '' ) + date_range.to.getDate()
-                },
-                query_id            =   date_string.from,
-                namespace           =   this;
-
-            if( typeof( this.data.queries[ query_id ] ) == 'undefined' && ( typeof( this.full_load ) == 'undefined' || !namespace.full_load ) ){
-                this.loader.show();
-                this.data.queries[ query_id ] = $.ajax({
-                    "url"       :   "/services/timeline/gettimeline",
-                    "type"      :   "POST",
-                    "dataType"  :   "json",
-                    "data"      :   {
-                        "list_sid"  :   this.data.list,
-                        "date_from" :   date_string.from,
-                        "date_to"   :   date_string.to,
-                        "group_type":   "hour"
-                    },
-                    "success"   :   function( response ){
-
-                        for( var i = 0; i < response.data.length; i++ ){
-                            response.data[i].date = new Date( response.data[i].date );
-                            if( typeof( response.data[i].is_first ) != 'undefined' )
-                                namespace.full_load = true;
-                        }
-
-
-                        namespace.data.date_range.from = date_range.from;
-
-                        var plot_to_date = date_range.from;
-                        switch( namespace.scale_change.state.get().name ){
-                            case "MONTH"    :
-                            default         :
-                                plot_to_date = new Date( plot_to_date.getFullYear(), plot_to_date.getMonth() + 1, 1 );
-                                break;
-                            case "WEEK"		:
-                                plot_to_date = new Date( plot_to_date.getFullYear(), plot_to_date.getMonth(), plot_to_date.getDate() + 7 );
-                                break;
-                            case "DAY"		:
-                                plot_to_date = new Date( plot_to_date.getFullYear(), plot_to_date.getMonth(), plot_to_date.getDate() + 1 );
-                                break;
-                        }
-                        var plot_date_range = {
-                            "from"	:	date_range.from,
-                            "to"	:	plot_to_date
-                        }
-                        namespace.assembly( response.data );
-                        namespace.assemblyTempData( namespace.data.date_range );
-
-
-                        namespace.plotInit(plot_date_range);
-                        namespace.graph.pan(namespace.graph.p2c({"x" : namespace.crosshair_position }))
-                        namespace.graph.setCrosshair({ "x" : namespace.crosshair_position });
-                        namespace.loader.hide()
-
-                        namespace.target.trigger("statistic.loaded");
-
-                    }
-                });
-            }
+//            var date_string = {
+//                    "from"		:   date_range.from.getFullYear() + ( ( date_range.from.getMonth() < 9 ) ? '0' : '' ) + ( date_range.from.getMonth() + 1) + ( ( date_range.from.getDate() < 10 ) ? '0' : '' ) + date_range.from.getDate(),
+//                    "to"		:	date_range.to.getFullYear() + ( ( date_range.to.getMonth() < 9 ) ? '0' : '' ) + ( date_range.to.getMonth() + 1) + ( ( date_range.to.getDate() < 10 ) ? '0' : '' ) + date_range.to.getDate()
+//                },
+//                query_id            =   date_string.from,
+//                namespace           =   this;
+//
+//            if( typeof( this.data.queries[ query_id ] ) == 'undefined' && ( typeof( this.full_load ) == 'undefined' || !namespace.full_load ) ){
+//                this.loader.show();
+//                this.data.queries[ query_id ] = $.ajax({
+//                    "url"       :   "/services/timeline/gettimeline",
+//                    "type"      :   "POST",
+//                    "dataType"  :   "json",
+//                    "data"      :   {
+//                        "list_sid"  :   this.data.list,
+//                        "date_from" :   date_string.from,
+//                        "date_to"   :   date_string.to,
+//                        "group_type":   "hour"
+//                    },
+//                    "success"   :   function( response ){
+//
+//                        for( var i = 0; i < response.data.length; i++ ){
+//                            response.data[i].date = new Date( response.data[i].date );
+//                            if( typeof( response.data[i].is_first ) != 'undefined' )
+//                                namespace.full_load = true;
+//                        }
+//
+//
+//                        namespace.data.date_range.from = date_range.from;
+//
+//                        var plot_to_date = date_range.from;
+//                        switch( namespace.scale_change.state.get().name ){
+//                            case "MONTH"    :
+//                            default         :
+//                                plot_to_date = new Date( plot_to_date.getFullYear(), plot_to_date.getMonth() + 1, 1 );
+//                                break;
+//                            case "WEEK"		:
+//                                plot_to_date = new Date( plot_to_date.getFullYear(), plot_to_date.getMonth(), plot_to_date.getDate() + 7 );
+//                                break;
+//                            case "DAY"		:
+//                                plot_to_date = new Date( plot_to_date.getFullYear(), plot_to_date.getMonth(), plot_to_date.getDate() + 1 );
+//                                break;
+//                        }
+//                        var plot_date_range = {
+//                            "from"	:	date_range.from,
+//                            "to"	:	plot_to_date
+//                        }
+//                        namespace.assembly( response.data );
+//                        namespace.assemblyTempData( namespace.data.date_range );
+//
+//
+//                        namespace.plotInit(plot_date_range);
+//                        namespace.graph.pan(namespace.graph.p2c({"x" : namespace.crosshair_position }))
+//                        namespace.graph.setCrosshair({ "x" : namespace.crosshair_position });
+//                        namespace.loader.hide()
+//
+//                        namespace.target.trigger("statistic.loaded");
+//
+//                    }
+//                });
+//            }
 
         },
 
-        "plotInit"	:	function( date_range ){
+        "plotInit"	:	function( date_range, place, data ){
+
             var namespace = this,
+                graph,
                 min_value = date_range.from.getTime(),
                 max_value = date_range.to.getTime();
 
-            this.graph = $.plot(
-                $("#timeline_navigator", this.target),
-                [ { "data" : this.data.statistic_temp }, { "data" : this.data.statistic_temp, "xaxis" : 2 } ],
-                {
-                    "crosshair" :   { "mode" : "x", "locked" : true, "image" : this.plot_crosshair_image },
-                    "grid"		:	{
-                        "clickable"     :   true,
-                        "hoverable"     :   true,
-                        "autoHighlight" :   false,
-                        "show"			:	true,
-                        "borderWidth"	:	0,
-                        "lineWidth"		:	0,
-                        "markings"		:	function areas(axes) {
-
-                            var markings            =   [],
-                                markings_counter    =   ({
-                                    "MONTH" : 31,
-                                    "WEEK" : 7,
-                                    "DAY" : 24
-                                })[ namespace.scale_change.state.get().name ] - 1;
-
-                            do {
-                                if( axes.xaxis.ticks[ markings_counter  ] ){
-
-                                    var fix_timestamp = ({
-                                        "MONTH" : 43200000, //12*60*60*1000
-                                        "WEEK" : 43200000,
-                                        "DAY" : 1800000 //30*60*1000
-                                    })[ namespace.scale_change.state.get().name ]
-
-                                    markings.push({
-                                        "x1axis"		: {
-                                            "from"	: axes.xaxis.ticks[ markings_counter  ].v + fix_timestamp,
-                                            "to"	: axes.xaxis.ticks[ markings_counter - axes.xaxis.n ].v + fix_timestamp
-                                        },
-                                        "color"		: ( markings_counter % 2 ) ? "#ffffff" : "#f7f7f7"
-                                    });
-                                }
-
-                                markings_counter -= axes.xaxis.n;
-                            } while ( markings_counter > 0 );
-
-                            return markings;
-                        }
-                    },
-                    "series":	{
-                        /*"lines"		:	{
-                         "lineWidth"		:	0,
-                         "fill"			:	true,
-                         "fillColor"		:	"#b7c1c4"
-                         },*/
-                        "bars"		:	{
-                            "show"			:	true,
-                            "lineWidth"		:	0,
-                            "fill"			:	true,
-                            "fillColor"		:	"#b7c1c4",
-                            "barWidth"		:	({ "MONTH" : 24*60*60*1000, "WEEK" : 24*60*60*1000, "DAY" : 60*60*1000 })[ namespace.scale_change.state.get().name ]
-                        },
-                        "shadowSize"	:	0
-                    },
-                    "yaxes"	:	[{
-                        "show"      :   false,
-                        "min"       :   null,
-                        "max"       :   null
-                    }],
-                    "xaxes"	:	[
+                    graph = $.plot(
+                        $(place, this.target),
+                        [ { "data" : data }, { "data" : data, "xaxis" : 2 } ],
                         {
-                            "min"           :   min_value,
-                            "max"           :   max_value,
-                            "tickLength"    :   0,
-                            "position"      :   "bottom",
-                            "ticks"         :   function( date_range ){
+                            "crosshair" :   { "mode" : "x", "locked" : true, "image" : this.plot_crosshair_image },
+                            "grid"		:	{
+                                "clickable"     :   true,
+                                "hoverable"     :   true,
+                                "autoHighlight" :   false,
+                                "show"			:	true,
+                                "borderWidth"	:	0,
+                                "lineWidth"		:	0,
+                                "markings"		:	function areas(axes) {
 
-                                var ticks       =   [],
-                                    last_date   =   new Date( date_range.max ),
-                                    tick_counter=   ({ "MONTH" : 31, "WEEK" : 7, "DAY" : 24 })[ namespace.scale_change.state.get().name ];
+                                    var markings            =   [],
+                                        markings_counter    =   ({
+                                            "MONTH" : 31,
+                                            "WEEK" : 7,
+                                            "DAY" : 24
+                                        })[ namespace.scale_change.state.get().name ] - 1;
 
-                                switch( namespace.scale_change.state.get().name ) {
-                                    case 'DAY':
-                                        for( var i = 0; i < tick_counter; i++ ){
-                                            var tick_date = new Date( last_date.getFullYear(), last_date.getMonth(), last_date.getDate(),  last_date.getHours() - i - 1 );
-                                            ticks.push( [ tick_date.getTime() + 30*60*1000 , "" + (( tick_date.getHours() < 10 ) ? "0" : "" ) + tick_date.getHours() ] );
+                                    do {
+                                        if( axes.xaxis.ticks[ markings_counter  ] ){
+
+                                            var fix_timestamp = ({
+                                                "MONTH" : 43200000, //12*60*60*1000
+                                                "WEEK" : 43200000,
+                                                "DAY" : 1800000 //30*60*1000
+                                            })[ namespace.scale_change.state.get().name ]
+
+                                            markings.push({
+                                                "x1axis"		: {
+                                                    "from"	: axes.xaxis.ticks[ markings_counter  ].v + fix_timestamp,
+                                                    "to"	: axes.xaxis.ticks[ markings_counter - axes.xaxis.n ].v + fix_timestamp
+                                                },
+                                                "color"		: ( markings_counter % 2 ) ? "#ffffff" : "#f7f7f7"
+                                            });
                                         }
-                                        break;
-                                    default     :
-                                        for( var i = 0; i <= tick_counter; i++ ){
-                                            var tick_date = new Date( last_date.getFullYear(), last_date.getMonth(), last_date.getDate() - i );
-                                            ticks.push( [ tick_date.getTime() + 43200000, tick_date.getDate() ] ); // 12*60*60*1000 = 43200000 for correcting position (left border)
-                                        }
-                                        break;
+
+                                        markings_counter -= axes.xaxis.n;
+                                    } while ( markings_counter > 0 );
+
+                                    return markings;
                                 }
-                                return ticks;
-                            }
-                        },
-                        {
-                            "min"           :   min_value,
-                            "max"           :   max_value,
-                            "tickSize"      :   4,
-                            "ticks"         :   function( date_range ){
-
-                                var ticks = [],
-                                    first_tick_date = new Date( date_range.min ),
-                                    last_tick_date = new Date( date_range.max );
-
-                                switch( namespace.scale_change.state.get().name ) {
-                                    case 'MONTH':
-                                    default     :
-                                        var month_count = (last_tick_date.getFullYear() - first_tick_date.getFullYear()) * 12 - first_tick_date.getMonth() + 1 + last_tick_date.getMonth()
-                                        for( var i = 0; i < month_count; i++ ){
-                                            var month_date_end = new Date( first_tick_date.getFullYear(), first_tick_date.getMonth() + i + 1, 0 ),
-                                                month_date_middle = new Date( month_date_end.getFullYear(), month_date_end.getMonth(), parseInt( month_date_end.getDate()/2 ));
-                                            ticks.push( [ month_date_middle.getTime(), months_names.nominative[ month_date_middle.getMonth() ] + " " + month_date_middle.getFullYear() ] );
-                                        }
-                                    case 'WEEK' :
-                                        var month_count = last_tick_date.getUTCMonth() - first_tick_date.getUTCMonth() + 1;
-                                        for( var i = 0; i < month_count; i++ ){
-                                            var month_date_end = new Date( first_tick_date.getFullYear(), first_tick_date.getMonth() + i + 1, 0 ),
-                                                month_date_middle = new Date( month_date_end.getFullYear(), month_date_end.getMonth(), parseInt( month_date_end.getDate()/2 ));
-                                            ticks.push( [ month_date_middle.getTime(), months_names.nominative[ month_date_middle.getMonth() ] + " " + month_date_middle.getFullYear() ] );
-                                        }
-                                        break;
-                                    case 'DAY'  :
-                                        var day_date = new Date( namespace.crosshair_position ),
-                                            day_date_middle = new Date( day_date.getFullYear(), day_date.getMonth(), day_date.getDate(), 12 );
-                                        ticks.push( [ day_date_middle.getTime(), day_date_middle.getDate() + " " + months_names.genitive[ day_date_middle.getMonth() ] + " " + day_date_middle.getFullYear() ] );
-                                        break;
-                                }
-                                return ticks;
                             },
-                            "position"      :   "top",
-                            "labelHeight"   :   0,
-                            "tickColor"     :   "#ffffff"
-                        }
-                    ]
-                }
-            );
-
-            this.graph2 = $.plot(
-                $("#timeline_navigator2", this.target),
-                [ { "data" : this.data.statistic_temp }, { "data" : this.data.statistic_temp, "xaxis" : 2 } ],
-                {
-                    "crosshair" :   { "mode" : "x", "locked" : true, "image" : this.plot_crosshair_image },
-                    "grid"		:	{
-                        "clickable"     :   true,
-                        "hoverable"     :   true,
-                        "autoHighlight" :   false,
-                        "show"			:	true,
-                        "borderWidth"	:	0,
-                        "lineWidth"		:	0,
-                        "markings"		:	function areas(axes) {
-
-                            var markings            =   [],
-                                markings_counter    =   ({
-                                    "MONTH" : 31,
-                                    "WEEK" : 7,
-                                    "DAY" : 24
-                                })[ namespace.scale_change.state.get().name ] - 1;
-
-                            do {
-                                if( axes.xaxis.ticks[ markings_counter  ] ){
-
-                                    var fix_timestamp = ({
-                                        "MONTH" : 43200000, //12*60*60*1000
-                                        "WEEK" : 43200000,
-                                        "DAY" : 1800000 //30*60*1000
-                                    })[ namespace.scale_change.state.get().name ]
-
-                                    markings.push({
-                                        "x1axis"		: {
-                                            "from"	: axes.xaxis.ticks[ markings_counter  ].v + fix_timestamp,
-                                            "to"	: axes.xaxis.ticks[ markings_counter - axes.xaxis.n ].v + fix_timestamp
-                                        },
-                                        "color"		: ( markings_counter % 2 ) ? "#ffffff" : "#f7f7f7"
-                                    });
-                                }
-
-                                markings_counter -= axes.xaxis.n;
-                            } while ( markings_counter > 0 );
-
-                            return markings;
-                        }
-                    },
-                    "series":	{
-                        /*"lines"		:	{
-                         "lineWidth"		:	0,
-                         "fill"			:	true,
-                         "fillColor"		:	"#b7c1c4"
-                         },*/
-                        "bars"		:	{
-                            "show"			:	true,
-                            "lineWidth"		:	0,
-                            "fill"			:	true,
-                            "fillColor"		:	"#b7c1c4",
-                            "barWidth"		:	({ "MONTH" : 24*60*60*1000, "WEEK" : 24*60*60*1000, "DAY" : 60*60*1000 })[ namespace.scale_change.state.get().name ]
-                        },
-                        "shadowSize"	:	0
-                    },
-                    "yaxes"	:	[{
-                        "show"      :   false,
-                        "min"       :   null,
-                        "max"       :   null
-                    }],
-                    "xaxes"	:	[
-                        {
-                            "min"           :   min_value,
-                            "max"           :   max_value,
-                            "tickLength"    :   0,
-                            "position"      :   "bottom",
-                            "ticks"         :   function( date_range ){
-
-                                var ticks       =   [],
-                                    last_date   =   new Date( date_range.max ),
-                                    tick_counter=   ({ "MONTH" : 31, "WEEK" : 7, "DAY" : 24 })[ namespace.scale_change.state.get().name ];
-
-                                switch( namespace.scale_change.state.get().name ) {
-                                    case 'DAY':
-                                        for( var i = 0; i < tick_counter; i++ ){
-                                            var tick_date = new Date( last_date.getFullYear(), last_date.getMonth(), last_date.getDate(),  last_date.getHours() - i - 1 );
-                                            ticks.push( [ tick_date.getTime() + 30*60*1000 , "" + (( tick_date.getHours() < 10 ) ? "0" : "" ) + tick_date.getHours() ] );
-                                        }
-                                        break;
-                                    default     :
-                                        for( var i = 0; i <= tick_counter; i++ ){
-                                            var tick_date = new Date( last_date.getFullYear(), last_date.getMonth(), last_date.getDate() - i );
-                                            ticks.push( [ tick_date.getTime() + 43200000, tick_date.getDate() ] ); // 12*60*60*1000 = 43200000 for correcting position (left border)
-                                        }
-                                        break;
-                                }
-                                return ticks;
-                            }
-                        },
-                        {
-                            "min"           :   min_value,
-                            "max"           :   max_value,
-                            "tickSize"      :   4,
-                            "ticks"         :   function( date_range ){
-
-                                var ticks = [],
-                                    first_tick_date = new Date( date_range.min ),
-                                    last_tick_date = new Date( date_range.max );
-
-                                switch( namespace.scale_change.state.get().name ) {
-                                    case 'MONTH':
-                                    default     :
-                                        var month_count = (last_tick_date.getFullYear() - first_tick_date.getFullYear()) * 12 - first_tick_date.getMonth() + 1 + last_tick_date.getMonth()
-                                        for( var i = 0; i < month_count; i++ ){
-                                            var month_date_end = new Date( first_tick_date.getFullYear(), first_tick_date.getMonth() + i + 1, 0 ),
-                                                month_date_middle = new Date( month_date_end.getFullYear(), month_date_end.getMonth(), parseInt( month_date_end.getDate()/2 ));
-                                            ticks.push( [ month_date_middle.getTime(), months_names.nominative[ month_date_middle.getMonth() ] + " " + month_date_middle.getFullYear() ] );
-                                        }
-                                    case 'WEEK' :
-                                        var month_count = last_tick_date.getUTCMonth() - first_tick_date.getUTCMonth() + 1;
-                                        for( var i = 0; i < month_count; i++ ){
-                                            var month_date_end = new Date( first_tick_date.getFullYear(), first_tick_date.getMonth() + i + 1, 0 ),
-                                                month_date_middle = new Date( month_date_end.getFullYear(), month_date_end.getMonth(), parseInt( month_date_end.getDate()/2 ));
-                                            ticks.push( [ month_date_middle.getTime(), months_names.nominative[ month_date_middle.getMonth() ] + " " + month_date_middle.getFullYear() ] );
-                                        }
-                                        break;
-                                    case 'DAY'  :
-                                        var day_date = new Date( namespace.crosshair_position ),
-                                            day_date_middle = new Date( day_date.getFullYear(), day_date.getMonth(), day_date.getDate(), 12 );
-                                        ticks.push( [ day_date_middle.getTime(), day_date_middle.getDate() + " " + months_names.genitive[ day_date_middle.getMonth() ] + " " + day_date_middle.getFullYear() ] );
-                                        break;
-                                }
-                                return ticks;
+                            "series":	{
+                                /*"lines"		:	{
+                                 "lineWidth"		:	0,
+                                 "fill"			:	true,
+                                 "fillColor"		:	"#b7c1c4"
+                                 },*/
+                                "bars"		:	{
+                                    "show"			:	true,
+                                    "lineWidth"		:	0,
+                                    "fill"			:	true,
+                                    "fillColor"		:	"#b7c1c4",
+                                    "barWidth"		:	({ "MONTH" : 24*60*60*1000, "WEEK" : 24*60*60*1000, "DAY" : 60*60*1000 })[ namespace.scale_change.state.get().name ]
+                                },
+                                "shadowSize"	:	0
                             },
-                            "position"      :   "top",
-                            "labelHeight"   :   0,
-                            "tickColor"     :   "#ffffff"
+                            "yaxes"	:	[{
+                                "show"      :   false,
+                                "min"       :   null,
+                                "max"       :   null
+                            }],
+                            "xaxes"	:	[
+                                {
+                                    "min"           :   min_value,
+                                    "max"           :   max_value,
+                                    "tickLength"    :   0,
+                                    "position"      :   "bottom",
+                                    "ticks"         :   function( date_range ){
+
+                                        var ticks       =   [],
+                                            last_date   =   new Date( date_range.max ),
+                                            tick_counter=   ({ "MONTH" : 31, "WEEK" : 7, "DAY" : 24 })[ namespace.scale_change.state.get().name ];
+
+                                        switch( namespace.scale_change.state.get().name ) {
+                                            case 'DAY':
+                                                for( var i = 0; i < tick_counter; i++ ){
+                                                    var tick_date = new Date( last_date.getFullYear(), last_date.getMonth(), last_date.getDate(),  last_date.getHours() - i - 1 );
+                                                    ticks.push( [ tick_date.getTime() + 30*60*1000 , "" + (( tick_date.getHours() < 10 ) ? "0" : "" ) + tick_date.getHours() ] );
+                                                }
+                                                break;
+                                            default     :
+                                                for( var i = 0; i <= tick_counter; i++ ){
+                                                    var tick_date = new Date( last_date.getFullYear(), last_date.getMonth(), last_date.getDate() - i );
+                                                    ticks.push( [ tick_date.getTime() + 43200000, tick_date.getDate() ] ); // 12*60*60*1000 = 43200000 for correcting position (left border)
+                                                }
+                                                break;
+                                        }
+                                        return ticks;
+                                    }
+                                },
+                                {
+                                    "min"           :   min_value,
+                                    "max"           :   max_value,
+                                    "tickSize"      :   4,
+                                    "ticks"         :   function( date_range ){
+
+                                        var ticks = [],
+                                            first_tick_date = new Date( date_range.min ),
+                                            last_tick_date = new Date( date_range.max );
+
+                                        switch( namespace.scale_change.state.get().name ) {
+                                            case 'MONTH':
+                                            default     :
+                                                var month_count = (last_tick_date.getFullYear() - first_tick_date.getFullYear()) * 12 - first_tick_date.getMonth() + 1 + last_tick_date.getMonth()
+                                                for( var i = 0; i < month_count; i++ ){
+                                                    var month_date_end = new Date( first_tick_date.getFullYear(), first_tick_date.getMonth() + i + 1, 0 ),
+                                                        month_date_middle = new Date( month_date_end.getFullYear(), month_date_end.getMonth(), parseInt( month_date_end.getDate()/2 ));
+                                                    ticks.push( [ month_date_middle.getTime(), months_names.nominative[ month_date_middle.getMonth() ] + " " + month_date_middle.getFullYear() ] );
+                                                }
+                                            case 'WEEK' :
+                                                var month_count = last_tick_date.getUTCMonth() - first_tick_date.getUTCMonth() + 1;
+                                                for( var i = 0; i < month_count; i++ ){
+                                                    var month_date_end = new Date( first_tick_date.getFullYear(), first_tick_date.getMonth() + i + 1, 0 ),
+                                                        month_date_middle = new Date( month_date_end.getFullYear(), month_date_end.getMonth(), parseInt( month_date_end.getDate()/2 ));
+                                                    ticks.push( [ month_date_middle.getTime(), months_names.nominative[ month_date_middle.getMonth() ] + " " + month_date_middle.getFullYear() ] );
+                                                }
+                                                break;
+                                            case 'DAY'  :
+                                                var day_date = new Date( namespace.crosshair_position ),
+                                                    day_date_middle = new Date( day_date.getFullYear(), day_date.getMonth(), day_date.getDate(), 12 );
+                                                ticks.push( [ day_date_middle.getTime(), day_date_middle.getDate() + " " + months_names.genitive[ day_date_middle.getMonth() ] + " " + day_date_middle.getFullYear() ] );
+                                                break;
+                                        }
+                                        return ticks;
+                                    },
+                                    "position"      :   "top",
+                                    "labelHeight"   :   0,
+                                    "tickColor"     :   "#ffffff"
+                                }
+                            ]
                         }
-                    ]
-                }
-            );
+                    );
 
-            this.graph3 = $.plot(
-                $("#timeline_navigator3", this.target),
-                [ { "data" : this.data.statistic_temp }, { "data" : this.data.statistic_temp, "xaxis" : 2 } ],
-                {
-                    "crosshair" :   { "mode" : "x", "locked" : true, "image" : this.plot_crosshair_image },
-                    "grid"		:	{
-                        "clickable"     :   true,
-                        "hoverable"     :   true,
-                        "autoHighlight" :   false,
-                        "show"			:	true,
-                        "borderWidth"	:	0,
-                        "lineWidth"		:	0,
-                        "markings"		:	function areas(axes) {
-
-                            var markings            =   [],
-                                markings_counter    =   ({
-                                    "MONTH" : 31,
-                                    "WEEK" : 7,
-                                    "DAY" : 24
-                                })[ namespace.scale_change.state.get().name ] - 1;
-
-                            do {
-                                if( axes.xaxis.ticks[ markings_counter  ] ){
-
-                                    var fix_timestamp = ({
-                                        "MONTH" : 43200000, //12*60*60*1000
-                                        "WEEK" : 43200000,
-                                        "DAY" : 1800000 //30*60*1000
-                                    })[ namespace.scale_change.state.get().name ]
-
-                                    markings.push({
-                                        "x1axis"		: {
-                                            "from"	: axes.xaxis.ticks[ markings_counter  ].v + fix_timestamp,
-                                            "to"	: axes.xaxis.ticks[ markings_counter - axes.xaxis.n ].v + fix_timestamp
-                                        },
-                                        "color"		: ( markings_counter % 2 ) ? "#ffffff" : "#f7f7f7"
-                                    });
-                                }
-
-                                markings_counter -= axes.xaxis.n;
-                            } while ( markings_counter > 0 );
-
-                            return markings;
-                        }
-                    },
-                    "series":	{
-                        /*"lines"		:	{
-                         "lineWidth"		:	0,
-                         "fill"			:	true,
-                         "fillColor"		:	"#b7c1c4"
-                         },*/
-                        "bars"		:	{
-                            "show"			:	true,
-                            "lineWidth"		:	0,
-                            "fill"			:	true,
-                            "fillColor"		:	"#b7c1c4",
-                            "barWidth"		:	({ "MONTH" : 24*60*60*1000, "WEEK" : 24*60*60*1000, "DAY" : 60*60*1000 })[ namespace.scale_change.state.get().name ]
-                        },
-                        "shadowSize"	:	0
-                    },
-                    "yaxes"	:	[{
-                        "show"      :   false,
-                        "min"       :   null,
-                        "max"       :   null
-                    }],
-                    "xaxes"	:	[
-                        {
-                            "min"           :   min_value,
-                            "max"           :   max_value,
-                            "tickLength"    :   0,
-                            "position"      :   "bottom",
-                            "ticks"         :   function( date_range ){
-
-                                var ticks       =   [],
-                                    last_date   =   new Date( date_range.max ),
-                                    tick_counter=   ({ "MONTH" : 31, "WEEK" : 7, "DAY" : 24 })[ namespace.scale_change.state.get().name ];
-
-                                switch( namespace.scale_change.state.get().name ) {
-                                    case 'DAY':
-                                        for( var i = 0; i < tick_counter; i++ ){
-                                            var tick_date = new Date( last_date.getFullYear(), last_date.getMonth(), last_date.getDate(),  last_date.getHours() - i - 1 );
-                                            ticks.push( [ tick_date.getTime() + 30*60*1000 , "" + (( tick_date.getHours() < 10 ) ? "0" : "" ) + tick_date.getHours() ] );
-                                        }
-                                        break;
-                                    default     :
-                                        for( var i = 0; i <= tick_counter; i++ ){
-                                            var tick_date = new Date( last_date.getFullYear(), last_date.getMonth(), last_date.getDate() - i );
-                                            ticks.push( [ tick_date.getTime() + 43200000, tick_date.getDate() ] ); // 12*60*60*1000 = 43200000 for correcting position (left border)
-                                        }
-                                        break;
-                                }
-                                return ticks;
-                            }
-                        },
-                        {
-                            "min"           :   min_value,
-                            "max"           :   max_value,
-                            "tickSize"      :   4,
-                            "ticks"         :   function( date_range ){
-
-                                var ticks = [],
-                                    first_tick_date = new Date( date_range.min ),
-                                    last_tick_date = new Date( date_range.max );
-
-                                switch( namespace.scale_change.state.get().name ) {
-                                    case 'MONTH':
-                                    default     :
-                                        var month_count = (last_tick_date.getFullYear() - first_tick_date.getFullYear()) * 12 - first_tick_date.getMonth() + 1 + last_tick_date.getMonth()
-                                        for( var i = 0; i < month_count; i++ ){
-                                            var month_date_end = new Date( first_tick_date.getFullYear(), first_tick_date.getMonth() + i + 1, 0 ),
-                                                month_date_middle = new Date( month_date_end.getFullYear(), month_date_end.getMonth(), parseInt( month_date_end.getDate()/2 ));
-                                            ticks.push( [ month_date_middle.getTime(), months_names.nominative[ month_date_middle.getMonth() ] + " " + month_date_middle.getFullYear() ] );
-                                        }
-                                    case 'WEEK' :
-                                        var month_count = last_tick_date.getUTCMonth() - first_tick_date.getUTCMonth() + 1;
-                                        for( var i = 0; i < month_count; i++ ){
-                                            var month_date_end = new Date( first_tick_date.getFullYear(), first_tick_date.getMonth() + i + 1, 0 ),
-                                                month_date_middle = new Date( month_date_end.getFullYear(), month_date_end.getMonth(), parseInt( month_date_end.getDate()/2 ));
-                                            ticks.push( [ month_date_middle.getTime(), months_names.nominative[ month_date_middle.getMonth() ] + " " + month_date_middle.getFullYear() ] );
-                                        }
-                                        break;
-                                    case 'DAY'  :
-                                        var day_date = new Date( namespace.crosshair_position ),
-                                            day_date_middle = new Date( day_date.getFullYear(), day_date.getMonth(), day_date.getDate(), 12 );
-                                        ticks.push( [ day_date_middle.getTime(), day_date_middle.getDate() + " " + months_names.genitive[ day_date_middle.getMonth() ] + " " + day_date_middle.getFullYear() ] );
-                                        break;
-                                }
-                                return ticks;
-                            },
-                            "position"      :   "top",
-                            "labelHeight"   :   0,
-                            "tickColor"     :   "#ffffff"
-                        }
-                    ]
-                }
-            );
-
-            this.graph4 = $.plot(
-                $("#timeline_navigator4", this.target),
-                [ { "data" : this.data.statistic_temp }, { "data" : this.data.statistic_temp, "xaxis" : 2 } ],
-                {
-                    "crosshair" :   { "mode" : "x", "locked" : true, "image" : this.plot_crosshair_image },
-                    "grid"		:	{
-                        "clickable"     :   true,
-                        "hoverable"     :   true,
-                        "autoHighlight" :   false,
-                        "show"			:	true,
-                        "borderWidth"	:	0,
-                        "lineWidth"		:	0,
-                        "markings"		:	function areas(axes) {
-
-                            var markings            =   [],
-                                markings_counter    =   ({
-                                    "MONTH" : 31,
-                                    "WEEK" : 7,
-                                    "DAY" : 24
-                                })[ namespace.scale_change.state.get().name ] - 1;
-
-                            do {
-                                if( axes.xaxis.ticks[ markings_counter  ] ){
-
-                                    var fix_timestamp = ({
-                                        "MONTH" : 43200000, //12*60*60*1000
-                                        "WEEK" : 43200000,
-                                        "DAY" : 1800000 //30*60*1000
-                                    })[ namespace.scale_change.state.get().name ]
-
-                                    markings.push({
-                                        "x1axis"		: {
-                                            "from"	: axes.xaxis.ticks[ markings_counter  ].v + fix_timestamp,
-                                            "to"	: axes.xaxis.ticks[ markings_counter - axes.xaxis.n ].v + fix_timestamp
-                                        },
-                                        "color"		: ( markings_counter % 2 ) ? "#ffffff" : "#f7f7f7"
-                                    });
-                                }
-
-                                markings_counter -= axes.xaxis.n;
-                            } while ( markings_counter > 0 );
-
-                            return markings;
-                        }
-                    },
-                    "series":	{
-                        /*"lines"		:	{
-                         "lineWidth"		:	0,
-                         "fill"			:	true,
-                         "fillColor"		:	"#b7c1c4"
-                         },*/
-                        "bars"		:	{
-                            "show"			:	true,
-                            "lineWidth"		:	0,
-                            "fill"			:	true,
-                            "fillColor"		:	"#b7c1c4",
-                            "barWidth"		:	({ "MONTH" : 24*60*60*1000, "WEEK" : 24*60*60*1000, "DAY" : 60*60*1000 })[ namespace.scale_change.state.get().name ]
-                        },
-                        "shadowSize"	:	0
-                    },
-                    "yaxes"	:	[{
-                        "show"      :   false,
-                        "min"       :   null,
-                        "max"       :   null
-                    }],
-                    "xaxes"	:	[
-                        {
-                            "min"           :   min_value,
-                            "max"           :   max_value,
-                            "tickLength"    :   0,
-                            "position"      :   "bottom",
-                            "ticks"         :   function( date_range ){
-
-                                var ticks       =   [],
-                                    last_date   =   new Date( date_range.max ),
-                                    tick_counter=   ({ "MONTH" : 31, "WEEK" : 7, "DAY" : 24 })[ namespace.scale_change.state.get().name ];
-
-                                switch( namespace.scale_change.state.get().name ) {
-                                    case 'DAY':
-                                        for( var i = 0; i < tick_counter; i++ ){
-                                            var tick_date = new Date( last_date.getFullYear(), last_date.getMonth(), last_date.getDate(),  last_date.getHours() - i - 1 );
-                                            ticks.push( [ tick_date.getTime() + 30*60*1000 , "" + (( tick_date.getHours() < 10 ) ? "0" : "" ) + tick_date.getHours() ] );
-                                        }
-                                        break;
-                                    default     :
-                                        for( var i = 0; i <= tick_counter; i++ ){
-                                            var tick_date = new Date( last_date.getFullYear(), last_date.getMonth(), last_date.getDate() - i );
-                                            ticks.push( [ tick_date.getTime() + 43200000, tick_date.getDate() ] ); // 12*60*60*1000 = 43200000 for correcting position (left border)
-                                        }
-                                        break;
-                                }
-                                return ticks;
-                            }
-                        },
-                        {
-                            "min"           :   min_value,
-                            "max"           :   max_value,
-                            "tickSize"      :   4,
-                            "ticks"         :   function( date_range ){
-
-                                var ticks = [],
-                                    first_tick_date = new Date( date_range.min ),
-                                    last_tick_date = new Date( date_range.max );
-
-                                switch( namespace.scale_change.state.get().name ) {
-                                    case 'MONTH':
-                                    default     :
-                                        var month_count = (last_tick_date.getFullYear() - first_tick_date.getFullYear()) * 12 - first_tick_date.getMonth() + 1 + last_tick_date.getMonth()
-                                        for( var i = 0; i < month_count; i++ ){
-                                            var month_date_end = new Date( first_tick_date.getFullYear(), first_tick_date.getMonth() + i + 1, 0 ),
-                                                month_date_middle = new Date( month_date_end.getFullYear(), month_date_end.getMonth(), parseInt( month_date_end.getDate()/2 ));
-                                            ticks.push( [ month_date_middle.getTime(), months_names.nominative[ month_date_middle.getMonth() ] + " " + month_date_middle.getFullYear() ] );
-                                        }
-                                    case 'WEEK' :
-                                        var month_count = last_tick_date.getUTCMonth() - first_tick_date.getUTCMonth() + 1;
-                                        for( var i = 0; i < month_count; i++ ){
-                                            var month_date_end = new Date( first_tick_date.getFullYear(), first_tick_date.getMonth() + i + 1, 0 ),
-                                                month_date_middle = new Date( month_date_end.getFullYear(), month_date_end.getMonth(), parseInt( month_date_end.getDate()/2 ));
-                                            ticks.push( [ month_date_middle.getTime(), months_names.nominative[ month_date_middle.getMonth() ] + " " + month_date_middle.getFullYear() ] );
-                                        }
-                                        break;
-                                    case 'DAY'  :
-                                        var day_date = new Date( namespace.crosshair_position ),
-                                            day_date_middle = new Date( day_date.getFullYear(), day_date.getMonth(), day_date.getDate(), 12 );
-                                        ticks.push( [ day_date_middle.getTime(), day_date_middle.getDate() + " " + months_names.genitive[ day_date_middle.getMonth() ] + " " + day_date_middle.getFullYear() ] );
-                                        break;
-                                }
-                                return ticks;
-                            },
-                            "position"      :   "top",
-                            "labelHeight"   :   0,
-                            "tickColor"     :   "#ffffff"
-                        }
-                    ]
-                }
-            );
-
-            this.graph5 = $.plot(
-                $("#timeline_navigator5", this.target),
-                [ { "data" : this.data.statistic_temp }, { "data" : this.data.statistic_temp, "xaxis" : 2 } ],
-                {
-                    "crosshair" :   { "mode" : "x", "locked" : true, "image" : this.plot_crosshair_image },
-                    "grid"		:	{
-                        "clickable"     :   true,
-                        "hoverable"     :   true,
-                        "autoHighlight" :   false,
-                        "show"			:	true,
-                        "borderWidth"	:	0,
-                        "lineWidth"		:	0,
-                        "markings"		:	function areas(axes) {
-
-                            var markings            =   [],
-                                markings_counter    =   ({
-                                    "MONTH" : 31,
-                                    "WEEK" : 7,
-                                    "DAY" : 24
-                                })[ namespace.scale_change.state.get().name ] - 1;
-
-                            do {
-                                if( axes.xaxis.ticks[ markings_counter  ] ){
-
-                                    var fix_timestamp = ({
-                                        "MONTH" : 43200000, //12*60*60*1000
-                                        "WEEK" : 43200000,
-                                        "DAY" : 1800000 //30*60*1000
-                                    })[ namespace.scale_change.state.get().name ]
-
-                                    markings.push({
-                                        "x1axis"		: {
-                                            "from"	: axes.xaxis.ticks[ markings_counter  ].v + fix_timestamp,
-                                            "to"	: axes.xaxis.ticks[ markings_counter - axes.xaxis.n ].v + fix_timestamp
-                                        },
-                                        "color"		: ( markings_counter % 2 ) ? "#ffffff" : "#f7f7f7"
-                                    });
-                                }
-
-                                markings_counter -= axes.xaxis.n;
-                            } while ( markings_counter > 0 );
-
-                            return markings;
-                        }
-                    },
-                    "series":	{
-                        /*"lines"		:	{
-                         "lineWidth"		:	0,
-                         "fill"			:	true,
-                         "fillColor"		:	"#b7c1c4"
-                         },*/
-                        "bars"		:	{
-                            "show"			:	true,
-                            "lineWidth"		:	0,
-                            "fill"			:	true,
-                            "fillColor"		:	"#b7c1c4",
-                            "barWidth"		:	({ "MONTH" : 24*60*60*1000, "WEEK" : 24*60*60*1000, "DAY" : 60*60*1000 })[ namespace.scale_change.state.get().name ]
-                        },
-                        "shadowSize"	:	0
-                    },
-                    "yaxes"	:	[{
-                        "show"      :   false,
-                        "min"       :   null,
-                        "max"       :   null
-                    }],
-                    "xaxes"	:	[
-                        {
-                            "min"           :   min_value,
-                            "max"           :   max_value,
-                            "tickLength"    :   0,
-                            "position"      :   "bottom",
-                            "ticks"         :   function( date_range ){
-
-                                var ticks       =   [],
-                                    last_date   =   new Date( date_range.max ),
-                                    tick_counter=   ({ "MONTH" : 31, "WEEK" : 7, "DAY" : 24 })[ namespace.scale_change.state.get().name ];
-
-                                switch( namespace.scale_change.state.get().name ) {
-                                    case 'DAY':
-                                        for( var i = 0; i < tick_counter; i++ ){
-                                            var tick_date = new Date( last_date.getFullYear(), last_date.getMonth(), last_date.getDate(),  last_date.getHours() - i - 1 );
-                                            ticks.push( [ tick_date.getTime() + 30*60*1000 , "" + (( tick_date.getHours() < 10 ) ? "0" : "" ) + tick_date.getHours() ] );
-                                        }
-                                        break;
-                                    default     :
-                                        for( var i = 0; i <= tick_counter; i++ ){
-                                            var tick_date = new Date( last_date.getFullYear(), last_date.getMonth(), last_date.getDate() - i );
-                                            ticks.push( [ tick_date.getTime() + 43200000, tick_date.getDate() ] ); // 12*60*60*1000 = 43200000 for correcting position (left border)
-                                        }
-                                        break;
-                                }
-                                return ticks;
-                            }
-                        },
-                        {
-                            "min"           :   min_value,
-                            "max"           :   max_value,
-                            "tickSize"      :   4,
-                            "ticks"         :   function( date_range ){
-
-                                var ticks = [],
-                                    first_tick_date = new Date( date_range.min ),
-                                    last_tick_date = new Date( date_range.max );
-
-                                switch( namespace.scale_change.state.get().name ) {
-                                    case 'MONTH':
-                                    default     :
-                                        var month_count = (last_tick_date.getFullYear() - first_tick_date.getFullYear()) * 12 - first_tick_date.getMonth() + 1 + last_tick_date.getMonth()
-                                        for( var i = 0; i < month_count; i++ ){
-                                            var month_date_end = new Date( first_tick_date.getFullYear(), first_tick_date.getMonth() + i + 1, 0 ),
-                                                month_date_middle = new Date( month_date_end.getFullYear(), month_date_end.getMonth(), parseInt( month_date_end.getDate()/2 ));
-                                            ticks.push( [ month_date_middle.getTime(), months_names.nominative[ month_date_middle.getMonth() ] + " " + month_date_middle.getFullYear() ] );
-                                        }
-                                    case 'WEEK' :
-                                        var month_count = last_tick_date.getUTCMonth() - first_tick_date.getUTCMonth() + 1;
-                                        for( var i = 0; i < month_count; i++ ){
-                                            var month_date_end = new Date( first_tick_date.getFullYear(), first_tick_date.getMonth() + i + 1, 0 ),
-                                                month_date_middle = new Date( month_date_end.getFullYear(), month_date_end.getMonth(), parseInt( month_date_end.getDate()/2 ));
-                                            ticks.push( [ month_date_middle.getTime(), months_names.nominative[ month_date_middle.getMonth() ] + " " + month_date_middle.getFullYear() ] );
-                                        }
-                                        break;
-                                    case 'DAY'  :
-                                        var day_date = new Date( namespace.crosshair_position ),
-                                            day_date_middle = new Date( day_date.getFullYear(), day_date.getMonth(), day_date.getDate(), 12 );
-                                        ticks.push( [ day_date_middle.getTime(), day_date_middle.getDate() + " " + months_names.genitive[ day_date_middle.getMonth() ] + " " + day_date_middle.getFullYear() ] );
-                                        break;
-                                }
-                                return ticks;
-                            },
-                            "position"      :   "top",
-                            "labelHeight"   :   0,
-                            "tickColor"     :   "#ffffff"
-                        }
-                    ]
-                }
-            );
-
-            this.graph.lockCrosshair();
+                return graph;
         },
 
         "assembly"  :   function( data ){
@@ -1018,6 +528,7 @@
             data.sort(function(a,b){ return a[0] - b[0] });
 
             this.data.statistic_temp = data;
+            return data;
         }
 
     };
@@ -1389,13 +900,17 @@
                 "dummy"		:	$(".timeline_article_cursor", this.target)
             }
 
+            for( var i = 0; i < this.navigator.graph.length; i++ ){
 
-            var graph = this.navigator.graph,
-                graph_container = graph.getPlaceholder();
+
+
+
+            var graph = this.navigator.graph[i],
+                graph_container = graph.graph.getPlaceholder();
 
             function scrollToSelectedRange(){
-                var coord = graph.getCrosshairPosition(),
-                    offset = graph.c2p( coord );
+                var coord = graph.graph.getCrosshairPosition(),
+                    offset = graph.graph.c2p( coord );
 
                 var active_article = namespace.get.nextArticleByTimestamp.apply(namespace, [ parseInt( offset.x ) ])
                 if(active_article.length != 0){
@@ -1446,7 +961,7 @@
 			graph_container.bind("plotclick.graph_navigation", function(e, data, item){
 				if (!click_lock) {
 					namespace.navigator.crosshair_position = parseInt( data.x )
-					graph.setCrosshair({"x" : namespace.navigator.crosshair_position });
+                    graph.graph.setCrosshair({"x" : namespace.navigator.crosshair_position });
 					scrollToSelectedRange(false)
 				}
 			})
@@ -1476,6 +991,7 @@
                     clearTimeout( scrollTimer );
                 });
 
+            }
 
             $(window).bind("scroll", function(e){
                 namespace.story.scrollTop = $(window).scrollTop()
@@ -1487,9 +1003,9 @@
                 namespace.scrollEvents.update.statistic.upload.apply(namespace);
                 namespace.scrollEvents.update.objects.upload.apply(namespace);
 //                namespace.scrollEvents.update.statistic.redraw.apply(namespace);
-				namespace.scrollEvents.update.statistic.scrollScroll.apply(namespace);
+//				namespace.scrollEvents.update.statistic.scrollScroll.apply(namespace);
 
-                namespace.navigator.graph.setCrosshair({"x" : namespace.article_list.active.item.data("timestamp")});
+//                namespace.navigator.graph.setCrosshair({"x" : namespace.article_list.active.item.data("timestamp")});
 
 __(new Date (namespace.article_list.active.item.data("timestamp")));
 //                namespace.scrollScroll(namespace.article_list.active.day.data("timestamp"))
@@ -1737,43 +1253,7 @@ __(new Date (namespace.article_list.active.item.data("timestamp")));
 
 
 //						this.navigator.plotInit(date_range);
-					},
-                    scrollScroll : function() {
-
-
-//                        namespace = this;
-//                        var date_range = {
-//                            from:  new Date(this.navigator.graph.getAxes().xaxis.min)
-//                            to:  new Date(this.navigator.graph.getAxes().xaxis.max)
-//                        };
-//                        namespace.navigator.graph.setCrosshair({"x" : namespace.navigator.crosshair_position});
-                        var min_value = this.navigator.graph.getAxes().xaxis.min,
-                            max_value = this.navigator.graph.getAxes().xaxis.max;
-
-                        var fix_timestamp = ({
-                            "MONTH" : 31 * 24 * 60 * 60 * 1000, //12*60*60*1000
-                            "WEEK" : 14 * 24 * 60 * 60 * 1000,
-                            "DAY" : 1 * 24 * 60 * 60 * 1000 //30*60*1000
-                        })[ this.navigator.scale_change.state.settings.state.settings.state ];
-
-                        _w = 680 * (max_value - min_value)  / fix_timestamp; //width_plot
-                        _x = 680 * (this.navigator.crosshair_position - min_value)  / fix_timestamp;
-
-
-                        switch( true ){
-                            case _x < 340    :
-                                myScroll.scrollTo(0, 0, 500);
-                                    break;
-                            case _x > (_w - 340)     :
-
-                                myScroll.scrollTo(-_w + 680, 0, 500);
-                                    break;
-                            default :
-                                myScroll.scrollTo(-_x + 340, 0, 500);
-
-                            }
-                        }
-
+					}
                 }
             }
         }
