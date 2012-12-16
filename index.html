@@ -25,6 +25,35 @@
             /*height:500px;*/
             /*overflow: scroll;*/
         }
+
+        /*#timeline_navigator {*/
+            /*text-align: right;*/
+            /*white-space: nowrap;*/
+        /*}*/
+        /*.timeline_navigator {*/
+            /*display: inline-block;*/
+        /*}*/
+
+        .timeline_navigator {
+            width: 680px;
+            float: right;
+        }
+        #timeline_navigator_wrapp {
+            border: 1px solid red;
+            overflow: hidden;
+
+        }
+        #timeline_navigator_controls {
+            width: 680px;
+            height: 100px;
+            border: 1px solid green;
+        }
+        .left {
+            border-radius: 23px
+        }
+        .right {
+            border-radius: 13px
+        }
     </style>
 </head>
 <body>
@@ -46,11 +75,11 @@
 				</div>
 			</div>
 			<div class="timeline_navigator_container">
-				<div id="timeline_navigator_controls" class="timeline_navigator_controls">
+				<div id="timeline_navigator_controls"  class="timeline_navigator_controls">
 
-					<div id="timeline_navigator" unselectable="on"
-						 style="padding: 0px; position: relative;">
-					</div>
+					<div id="timeline_navigator_wrapp">
+					    <div id="timeline_navigator" class="timeline_navigator" unselectable="on" style="padding: 0px; position: relative;"></div>
+ 					</div>
 					<div id="timeline_navigator_loader" class="timeline_loader_1"></div>
 					<div class="middle_check"></div>
 
