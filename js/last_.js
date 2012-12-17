@@ -109,6 +109,7 @@
 				"list"				:	this.settings.list,
 				"queries"			:	{},
 				"date_range"		:	{},
+				"actual_date_range"	:	{},
 				"temp_date_range"	:	{}
 			};
 
@@ -122,7 +123,7 @@
 				data.sort(function(a,b){ return b.date.getTime() - a.date.getTime(); });
 				return data
 			})()
-            namespace = this;
+
 			start_date = ( statistic.length > 0 ) ? statistic[statistic.length - 1].date : new Date();
 			end_date = ( statistic.length > 0 ) ? statistic[0].date : new Date();
 
@@ -139,8 +140,12 @@
 			this.data.date_range.from = this._start_date;
 			this.data.date_range.to = this._end_date;
 
-			this.data.temp_date_range.from = new Date( this.data.date_range.from.setDate( this.data.date_range.from.getDate())) ;
-			this.data.temp_date_range.to = new Date( this.data.date_range.to.setDate( this.data.date_range.to.getDate()) + 1) ;
+			this.data.current_pos = (this.data.date_range.to).getTime() - 15 * 24 * 60 * 60 * 1000;
+
+
+//			--------------
+			this.data.current_from = 0;
+			this.data.current_to = 0;
 
 			this.crosshair_position = this.data.date_range.from.getTime();
 			//scale bar init
@@ -160,29 +165,31 @@
 				var date_range = { "from" : new Date( namespace.crosshair_position), "to" :new Date( namespace.crosshair_position) };
 
 
-                switch( state.name ){
+				switch( state.name ){
 					case "MONTH"    :
-                    default         :
-                        date_range.from	= new Date( namespace.data.temp_date_range.from.getFullYear(), namespace.data.temp_date_range.from.getMonth(), namespace.data.temp_date_range.from.getDate() );
-                        date_range.to	=	new Date( namespace.data.temp_date_range.to.getFullYear(), namespace.data.temp_date_range.to.getMonth(), namespace.data.temp_date_range.to.getDate() );
-                        break;
-                    case "WEEK"     :
-                        date_range.from = new Date( date_range.from.setDate( date_range.from.getDate() - 14 ) );
-                        date_range.to = new Date( date_range.to.setDate( date_range.to.getDate() + 14 ) );
-                        break;
-                    case "DAY"      :
-                        date_range.from = new Date( date_range.from.setDate( date_range.from.getDate() - 10 ) );
-                        date_range.to = new Date( date_range.to.setDate( date_range.to.getDate() + 10 ) );
-                        break;
+					default         :
+						date_range.from	= new Date( namespace.data.temp_date_range.from.getFullYear(), namespace.data.temp_date_range.from.getMonth(), namespace.data.temp_date_range.from.getDate() );
+						date_range.to	=	new Date( namespace.data.temp_date_range.to.getFullYear(), namespace.data.temp_date_range.to.getMonth(), namespace.data.temp_date_range.to.getDate() );
+						break;
+					case "WEEK"     :
+						date_range.from = new Date( date_range.from.setDate( date_range.from.getDate() - 14 ) );
+						date_range.to = new Date( date_range.to.setDate( date_range.to.getDate() + 14 ) );
+						break;
+					case "DAY"      :
+						date_range.from = new Date( date_range.from.setDate( date_range.from.getDate() - 10 ) );
+						date_range.to = new Date( date_range.to.setDate( date_range.to.getDate() + 10 ) );
+						break;
 
 //						date_range.from = namespace._start_date;
 //						date_range.to = namespace._end_date;
 						break;
 				}
-                date_range  = namespace.getActualDate();
-                namespace.assemblyTempData.apply( namespace, [ date_range] );
-                namespace.plotInit( date_range );
+				date_range  = namespace.getActualDate();
+				namespace.assemblyTempData.apply( namespace, [ date_range] );
+				namespace.plotInit( date_range );
 				namespace.graph.setCrosshair({"x" : namespace.crosshair_position});
+
+
 			});
 
 			// graph init
@@ -190,55 +197,124 @@
 
 
 			namespace.plot_crosshair_image = new Image();
-			namespace.plot_crosshair_image.src = "i/icons/timeline/crosshair.png";
+			namespace.plot_crosshair_image.src = "/i/icons/timeline/crosshair.png";
 
-			var plot_date_range = {
-				"from"	:	new Date( this.data.temp_date_range.from.getFullYear(), this.data.temp_date_range.from.getMonth(), this.data.temp_date_range.from.getDate() ),
-				"to"	:	new Date( this.data.temp_date_range.to.getFullYear(), this.data.temp_date_range.to.getMonth(), this.data.temp_date_range.to.getDate() )
-			};
 
-            date_range  = this.getActualDate();
-            this.assemblyTempData.apply( this, [ date_range] );
+			date_range  = this.getActualDate();
+			this.assemblyTempData.apply( this, [ date_range] );
 			this.plotInit( date_range );
 			this.graph.setCrosshair({"x" : end_date.getTime()});
 
-//			myScroll = new iScroll('timeline_navigator_controls',
-//				{
-//					scrollbarClass: 'myScrollbar',
-//					hScroll: true,
-//					vScroll: false,
-//					checkDOMChanges: true
-//				});
+
+			myScroll = new iScroll('timeline_navigator_controls',
+				{
+					scrollbarClass: 'myScrollbar',
+					hScroll: true,
+					vScroll: false,
+					checkDOMChanges: true,
+					onBeforeScrollEnd : function(e) {
+
+						if(-this.x < 300 && namespace.data.current_from > namespace._start_date.getTime()) {
+							namespace.data.current_pos = namespace.data.current_from + toTime(Math.abs(this.x) + 340)
+							namespace.replot();
+							console.log("fired left")
+						} else	if(this.scrollerW - 680 + this.x < 300 && namespace.data.current_to < namespace._end_date.getTime()) {
+							namespace.data.current_pos = namespace.data.current_from + toTime(Math.abs(this.x) + 340)
+							namespace.replot();
+
+							console.log("fired right")
+						}
+
+						function toTime(pixels) {
+
+							fix_timestamp = ({
+								"MONTH" : 31*24*60*60*1000 * 1,
+								"WEEK" : 7*24*60*60*1000 * 2,
+								"DAY" : 24*60*60*1000  * 1
+							})[ namespace.scale_change.state.get().name ];
+
+							time = fix_timestamp * pixels / 680;
+							return time
+						}
+					}
+				});
+			this.scrollToEnd();
 //			setTimeout(function () {
 //				scale_change_bar_state.set( "MONTH" );
 //			}, 1000);
 		},
-        getActualDate : function () {
-            namespace = this
-            __(namespace.data.temp_date_range);
+		replot : function() {
 
-            var __R = {}
-            var _to = (namespace.data.date_range.to).getTime();
-            var _from = (namespace.data.date_range.from).getTime();
-
-            _r = _to - _from;
-            __(new Date(_r))
-
-            if (_r > 7*24*60*60*1000 ) {
-                __R.from = new Date( _to - 7*24*60*60*1000),
-                    __R.to = new Date( _to)
-                } else {
-
-                __R.from = new Date( _from),
-                    __R.to = new Date( _to)
+			console.log("replot")
+			date_range  = this.getActualDate();
+			this.plotInit( date_range );
+			this.scrollToTime(this.data.current_pos);
+		},
+		getActualDate : function () {
+			namespace = this
+			__(namespace.data.temp_date_range);
+			var range;
+			var actual_date_range = {}
+			var current_pos = this.data.current_pos;
 
 
-            }
+			switch( namespace.scale_change.state.get().name ){
+				case "MONTH"    :
+				default         :
+					range = 12*31*24*60*60*1000;
+					break;
+				case "WEEK"     :
+					range = 31*24*60*60*1000
+					break;
+				case "DAY"      :
+					range = 7*24*60*60*1000
+					break;
+			}
+
+			namespace.data.current_from = Math.max(namespace._start_date.getTime(), current_pos - range/2)
+			namespace.data.current_to = Math.min(namespace._end_date.getTime(), namespace.data.current_from + range);
 
 
 
-            return __R;
-        },
+			__(namespace.data.current_pos)
+
+//			var _to = (namespace.data.date_range.to).getTime();
+//			var _from = (namespace.data.date_range.from).getTime();
+//
+//			actual_date_range_delta = _to - _from;
+//
+//
+//			switch( namespace.scale_change.state.get().name ){
+//				case "MONTH"    :
+//				default         :
+//					date_temp_range = 12*31*24*60*60*1000;
+//					break;
+//				case "WEEK"     :
+//					date_temp_range = 31*24*60*60*1000
+//					 break;
+//				case "DAY"      :
+//					date_temp_range = 7*24*60*60*1000
+//					 break;
+//			}
+//
+//
+//			if (actual_date_range_delta > date_temp_range ) {
+//					actual_date_range.from = new Date( _to - date_temp_range),
+//					actual_date_range.to = new Date( _to)
+//			} else {
+//				actual_date_range.from = new Date( _from),
+//				actual_date_range.to = new Date( _to)
+//			}
+//
+//			namespace.data.actual_date_range.from = actual_date_range.from;
+//			namespace.data.actual_date_range.to = actual_date_range.to;
+			actual_date_range.from = new Date(namespace.data.current_from),
+				actual_date_range.to = new Date(namespace.data.current_to)
+
+			return actual_date_range;
+
+
+		},
 		"load"			:	function( date_range ){
 			var date_string = {
 					"from"		:   date_range.from.getFullYear() + ( ( date_range.from.getMonth() < 9 ) ? '0' : '' ) + ( date_range.from.getMonth() + 1) + ( ( date_range.from.getDate() < 10 ) ? '0' : '' ) + date_range.from.getDate(),
@@ -248,7 +324,7 @@
 				namespace           =   this;
 
 			if( typeof( this.data.queries[ query_id ] ) == 'undefined' && ( typeof( this.full_load ) == 'undefined' || !namespace.full_load ) ){
-				this.loader.show();
+//				this.loader.show();
 				this.data.queries[ query_id ] = $.ajax({
 					"url"       :   "/services/timeline/gettimeline",
 					"type"      :   "POST",
@@ -268,33 +344,33 @@
 						}
 
 
-						namespace.data.date_range.from = date_range.from;
-
-						var plot_to_date = date_range.from;
-						switch( namespace.scale_change.state.get().name ){
-							case "MONTH"    :
-							default         :
-								plot_to_date = new Date( plot_to_date.getFullYear(), plot_to_date.getMonth() + 1, 1 );
-								break;
-							case "WEEK"		:
-								plot_to_date = new Date( plot_to_date.getFullYear(), plot_to_date.getMonth(), plot_to_date.getDate() + 7 );
-								break;
-							case "DAY"		:
-								plot_to_date = new Date( plot_to_date.getFullYear(), plot_to_date.getMonth(), plot_to_date.getDate() + 1 );
-								break;
-						}
-						var plot_date_range = {
-							"from"	:	date_range.from,
-							"to"	:	plot_to_date
-						}
-						namespace.assembly( response.data );
-						namespace.assemblyTempData( namespace.data.date_range );
-
-
-						namespace.plotInit(plot_date_range);
-						namespace.graph.pan(namespace.graph.p2c({"x" : namespace.crosshair_position }))
-						namespace.graph.setCrosshair({ "x" : namespace.crosshair_position });
-						namespace.loader.hide()
+//						namespace.data.date_range.from = date_range.from;
+//
+//						var plot_to_date = date_range.from;
+//						switch( namespace.scale_change.state.get().name ){
+//							case "MONTH"    :
+//							default         :
+//								plot_to_date = new Date( plot_to_date.getFullYear(), plot_to_date.getMonth() + 1, 1 );
+//								break;
+//							case "WEEK"		:
+//								plot_to_date = new Date( plot_to_date.getFullYear(), plot_to_date.getMonth(), plot_to_date.getDate() + 7 );
+//								break;
+//							case "DAY"		:
+//								plot_to_date = new Date( plot_to_date.getFullYear(), plot_to_date.getMonth(), plot_to_date.getDate() + 1 );
+//								break;
+//						}
+//						var plot_date_range = {
+//							"from"	:	date_range.from,
+//							"to"	:	plot_to_date
+//						}
+//						namespace.assembly( response.data );
+//						namespace.assemblyTempData( namespace.data.date_range );
+//
+//
+//						namespace.plotInit(plot_date_range);
+//						namespace.graph.pan(namespace.graph.p2c({"x" : namespace.crosshair_position }))
+//						namespace.graph.setCrosshair({ "x" : namespace.crosshair_position });
+//						namespace.loader.hide()
 
 						namespace.target.trigger("statistic.loaded");
 
@@ -318,14 +394,13 @@
 				"DAY" : 24*60*60*1000  * 1
 			})[ namespace.scale_change.state.get().name ];
 			namespace.width = 680;
-				$("#timeline_navigator_controls").css({width: namespace.width});
+			$("#timeline_navigator_controls").css({width: namespace.width});
 			namespace._w = namespace.width * (date_range.to.getTime() - date_range.from.getTime()) / namespace.fix_timestamp;
-			$("#timeline_navigator, #timeline_navigator_wrapp").css({
+			$("#timeline_navigator").css({
 				width: namespace._w
 			});
-
-			this.plot_crosshair_image = new Image();
-			this.plot_crosshair_image.src = "/i/icons/timeline/crosshair.png";
+//			this.plot_crosshair_image = new Image();
+//			this.plot_crosshair_image.src = "/i/icons/timeline/crosshair.png";
 			this.graph = $.plot(
 				$("#timeline_navigator", this.target),
 				[ { "data" : this.data.statistic_temp }, { "data" : this.data.statistic_temp, "xaxis" : 2 } ],
@@ -551,7 +626,37 @@
 
 			this.data.statistic_temp = data;
 		},
+		scrollToTime : function (timestamp) {
+			namespace = this;
+			var min_value = this.data.current_from,
+				max_value = this.data.current_to;
 
+			var fix_timestamp = ({
+				"MONTH" : 31 * 24 * 60 * 60 * 1000, //12*60*60*1000
+				"WEEK" : 14 * 24 * 60 * 60 * 1000,
+				"DAY" : 1 * 24 * 60 * 60 * 1000 //30*60*1000
+			})[ namespace.scale_change.state.settings.state.settings.state ];
+
+			_w = namespace.width * (max_value - min_value)  / fix_timestamp; //width_plot
+			_x = namespace.width * (timestamp - min_value)  / fix_timestamp;
+
+			switch( true ){
+				case _x < namespace.width / 2    :
+					myScroll.scrollTo(0, 0, 0);
+					break;
+				case _x > (_w - namespace.width / 2)     :
+
+					myScroll.scrollTo(-_w + namespace.width, 0, 1500);
+					break;
+				default :
+					myScroll.scrollTo(-_x + namespace.width / 2, 0, 1500);
+
+			}
+
+		},
+		scrollToEnd : function () {
+			myScroll.scrollTo(-myScroll.scrollerW + 680, 0, 0);
+		},
 		scrollToDef : function(timecheck) {
 			namespace = this;
 			var date_range = namespace.data.temp_date_range;
@@ -574,10 +679,10 @@
 					break;
 				case _x > (_w - namespace.width / 2)     :
 
-					myScroll.scrollTo(-_w + namespace.width, 0, 0);
+					myScroll.scrollTo(-_w + namespace.width, 0, 1500);
 					break;
 				default :
-					myScroll.scrollTo(-_x + namespace.width / 2, 0, 0);
+					myScroll.scrollTo(-_x + namespace.width / 2, 0, 1500);
 
 			}
 		}
@@ -853,7 +958,7 @@
 
 			if( typeof( this.queries[ date_string ] ) == 'undefined' && typeof( date_range.to ) != 'undefined' ){
 
-				namespace.loader.show();
+//				namespace.loader.show();
 
 				var request_params = {
 					"list_sid"	:	this.list,
@@ -911,6 +1016,7 @@
 				});
 			}
 		}
+
 	}
 
 	var StoryTimeline = function( options ){
@@ -962,25 +1068,25 @@
 				if(active_article.length != 0){
 					scrollTo(0,active_article.offset().top - 200)
 				}else{
-//					var load_date_range ={
-//						"from"	:	undefined,
-//						"to"	:	undefined
-//					}
-//
-//					var last_loaded = { "month" : namespace.article_list.articles.content[ namespace.article_list.articles.dates[namespace.article_list.articles.dates.length - 1] ] }
-//					last_loaded.day = last_loaded.month.content[ last_loaded.month.dates[last_loaded.month.dates.length - 1] ];
-//
-//					var prev_day_date = namespace.navigator.get.hour.prev.apply( namespace.navigator, [ last_loaded.day.date ] );
-//					if( typeof( prev_day_date ) != 'undefined' )
-//						load_date_range.to = new Date( prev_day_date.getFullYear(), prev_day_date.getMonth(), prev_day_date.getDate() )
-//
-//					var selected_date = new Date( parseInt( offset.x ) );
-//					load_date_range.from = new Date( selected_date.getFullYear(), selected_date.getMonth(), selected_date.getDate() );
-//
-//					namespace.article_list.load(load_date_range);
-//					namespace.article_list.element.bind("items.loaded", function(){
-//						scrollToSelectedRange();
-//					})
+					var load_date_range ={
+						"from"	:	undefined,
+						"to"	:	undefined
+					}
+
+					var last_loaded = { "month" : namespace.article_list.articles.content[ namespace.article_list.articles.dates[namespace.article_list.articles.dates.length - 1] ] }
+					last_loaded.day = last_loaded.month.content[ last_loaded.month.dates[last_loaded.month.dates.length - 1] ];
+
+					var prev_day_date = namespace.navigator.get.hour.prev.apply( namespace.navigator, [ last_loaded.day.date ] );
+					if( typeof( prev_day_date ) != 'undefined' )
+						load_date_range.to = new Date( prev_day_date.getFullYear(), prev_day_date.getMonth(), prev_day_date.getDate() )
+
+					var selected_date = new Date( parseInt( offset.x ) );
+					load_date_range.from = new Date( selected_date.getFullYear(), selected_date.getMonth(), selected_date.getDate() );
+
+					namespace.article_list.load(load_date_range);
+					namespace.article_list.element.bind("items.loaded", function(){
+						scrollToSelectedRange();
+					})
 				}
 			}
 
@@ -1015,7 +1121,7 @@
 			})
 
 			var scrollTimer = 0;
-			$(".timeline_navigator_controls a.prev,.timeline_navigator_controls a.next", this.target).bind("click", function(e){
+			$(".timeline_navigator_container a.prev, .timeline_navigator_container a.next", this.target).bind("click", function(e){
 				e.preventDefault();
 
 				var item = $(this),
@@ -1041,7 +1147,7 @@
 
 
 			$(window).bind("scroll", function(e){
-				namespace.story.scrollTop = $(window).scrollTop()
+				namespace.story.scrollTop = $(window).scrollTop();
 
 				namespace.scrollEvents.update.header.apply( namespace );
 
@@ -1050,11 +1156,10 @@
 				namespace.scrollEvents.update.statistic.upload.apply(namespace);
 				namespace.scrollEvents.update.objects.upload.apply(namespace);
 //				namespace.scrollEvents.update.statistic.redraw.apply(namespace);
-				namespace.scrollEvents.update.statistic.scrollScroll.apply(namespace);
+				namespace.scrollEvents.update.statistic.scrollCenter.apply(namespace);
 
 				namespace.navigator.graph.setCrosshair({"x" : namespace.article_list.active.item.data("timestamp")});
 
-__(new Date (namespace.article_list.active.item.data("timestamp")));
 //                namespace.scrollScroll(namespace.article_list.active.day.data("timestamp"))
 			});
 		},
@@ -1068,6 +1173,7 @@ __(new Date (namespace.article_list.active.item.data("timestamp")));
 			} else {
 				myScroll.scrollTo(-myScroll.scrollerW + 680, 0, 500);
 			}
+			__("3")
 		},
 		scrollScrollPrev : function() {
 			namespace = this;
@@ -1077,6 +1183,7 @@ __(new Date (namespace.article_list.active.item.data("timestamp")));
 			} else {
 				myScroll.scrollTo(0, 0, 500);
 			}
+			__("1")
 		},
 		"get"	:	{
 			"nextArticleByTimestamp"	:	function(timestamp){
@@ -1247,7 +1354,7 @@ __(new Date (namespace.article_list.active.item.data("timestamp")));
 							load_from_date = new Date( load_from_date.getFullYear(), load_from_date.getMonth() - 1, 1 );
 
 							this.navigator.load.apply( this.navigator, [{ "to" : this.navigator.data.date_range.from, "from" : load_from_date }] );
- 							this.navigator.target.bind("statistic.loaded", function(e){
+							this.navigator.target.bind("statistic.loaded", function(e){
 								if( typeof( namespace.navigator.full_load ) == 'undefined' || !namespace.navigator.full_load )
 									namespace.scrollEvents.update.objects.upload.apply(namespace);
 
@@ -1258,50 +1365,50 @@ __(new Date (namespace.article_list.active.item.data("timestamp")));
 					},
 
 					"redraw"		:	function(){
-						__("redraw");
-//						var plot_xaxis = this.navigator.graph.getAxes().xaxis,
-//							active_day_date = this.article_list.active.day.data("timestamp"),
-//							coord = {};
-//
-//						if( active_day_date - 24*60*60*1000 < plot_xaxis.min ){
-//							var prev_day_date = this.navigator.get.hour.prev.apply( this.navigator, [ new Date(active_day_date) ] );
-//							coord = this.navigator.graph.p2c({"x" : active_day_date })
-//						}else if( active_day_date + 24*60*60*1000 > plot_xaxis.max ){
-//								var next_day_date = this.navigator.get.hour.next.apply( this.navigator, [ new Date(active_day_date) ] ),
-//								graph_offset_date = new Date(active_day_date);
-//
-//
-//							switch( this.navigator.scale_change.state.get().name ){
-//								case "MONTH"    :
-//								default         :
-//									graph_offset_date = graph_offset_date.setDate(graph_offset_date.getDate() - 29);
-//									break;
-//								case "WEEK"     :
-//									graph_offset_date = graph_offset_date.setDate(graph_offset_date.getDate() - 6);
-//									break;
-//								case "DAY"      :
-//									graph_offset_date = graph_offset_date.setDate(graph_offset_date.getDate() );
-//									break;
-//							}
-//							namespace.plotInit(date_range);
-//
-//
-//
-////							coord = this.navigator.graph.p2c({"x" : graph_offset_date })
-//						}
-//						if( typeof( coord.left ) != 'undefined' && coord.left != 0 )
-//							this.navigator.graph.pan( coord );
+
+						var plot_xaxis = this.navigator.graph.getAxes().xaxis,
+							active_day_date = this.article_list.active.day.data("timestamp"),
+							coord = {};
+
+						if( active_day_date - 24*60*60*1000 < plot_xaxis.min ){
+							var prev_day_date = this.navigator.get.hour.prev.apply( this.navigator, [ new Date(active_day_date) ] );
+							coord = this.navigator.graph.p2c({"x" : active_day_date })
+
+							_("!")
+						}else if( active_day_date + 24*60*60*1000 > plot_xaxis.max ){
+							var next_day_date = this.navigator.get.hour.next.apply( this.navigator, [ new Date(active_day_date) ] ),
+								graph_offset_date = new Date(active_day_date);
 
 
-						var date_range = {};
+							switch( this.navigator.scale_change.state.get().name ){
+								case "MONTH"    :
+								default         :
+									graph_offset_date = graph_offset_date.setDate(graph_offset_date.getDate() - 29);
+									break;
+								case "WEEK"     :
+									graph_offset_date = graph_offset_date.setDate(graph_offset_date.getDate() - 6);
+									break;
+								case "DAY"      :
+									graph_offset_date = graph_offset_date.setDate(graph_offset_date.getDate() );
+									break;
+							}
 
-								date_range.from = this.navigator._start_date;
-								date_range.to = this.navigator._end_date;
+							_("!!")
+							coord = this.navigator.graph.p2c({"x" : graph_offset_date })
+						}
+						if( typeof( coord.left ) != 'undefined' && coord.left != 0 )
+							this.navigator.graph.pan( coord );
+
+//
+//						var date_range = {};
+//
+//						date_range.from = this.navigator._start_date;
+//						date_range.to = this.navigator._end_date;
 
 
 //						this.navigator.plotInit(date_range);
 					},
-                    scrollScroll : function() {
+					scrollCenter : function() {
 
 
 //                        namespace = this;
@@ -1310,32 +1417,32 @@ __(new Date (namespace.article_list.active.item.data("timestamp")));
 //                            to:  new Date(this.navigator.graph.getAxes().xaxis.max)
 //                        };
 //                        namespace.navigator.graph.setCrosshair({"x" : namespace.navigator.crosshair_position});
-                        var min_value = this.navigator.graph.getAxes().xaxis.min,
-                            max_value = this.navigator.graph.getAxes().xaxis.max;
+						var min_value = this.navigator.graph.getAxes().xaxis.min,
+							max_value = this.navigator.graph.getAxes().xaxis.max;
 
-                        var fix_timestamp = ({
-                            "MONTH" : 31 * 24 * 60 * 60 * 1000, //12*60*60*1000
-                            "WEEK" : 14 * 24 * 60 * 60 * 1000,
-                            "DAY" : 1 * 24 * 60 * 60 * 1000 //30*60*1000
-                        })[ this.navigator.scale_change.state.settings.state.settings.state ];
+						var fix_timestamp = ({
+							"MONTH" : 31 * 24 * 60 * 60 * 1000, //12*60*60*1000
+							"WEEK" : 14 * 24 * 60 * 60 * 1000,
+							"DAY" : 1 * 24 * 60 * 60 * 1000 //30*60*1000
+						})[ this.navigator.scale_change.state.settings.state.settings.state ];
 
-                        _w = 680 * (max_value - min_value)  / fix_timestamp; //width_plot
-                        _x = 680 * (this.navigator.crosshair_position - min_value)  / fix_timestamp;
+						_w = 680 * (max_value - min_value)  / fix_timestamp; //width_plot
+						_x = 680 * (this.navigator.crosshair_position - min_value)  / fix_timestamp;
 
 
-                        switch( true ){
-                            case _x < 340    :
-                                myScroll.scrollTo(0, 0, 500);
-                                break;
-                            case _x > (_w - 340)     :
+						switch( true ){
+							case _x < 340    :
+								myScroll.scrollTo(0, 0, 500);
+								break;
+							case _x > (_w - 340)     :
 
-                                myScroll.scrollTo(-_w + 680, 0, 500);
-                                break;
-                            default :
-                                myScroll.scrollTo(-_x + 340, 0, 500);
+								myScroll.scrollTo(-_w + 680, 0, 500);
+								break;
+							default :
+								myScroll.scrollTo(-_x + 340, 0, 500);
 
-                        }
-                    }
+						}
+					}
 
 				}
 			}
@@ -1368,5 +1475,5 @@ __(new Date (namespace.article_list.active.item.data("timestamp")));
 	}
 })(jQuery)
 function __(text) {
-    $("#log").append("<div>" + text +"</div>");
+	$("#log").append("<div>" + text +"</div>");
 }
