@@ -179,36 +179,66 @@
 //						date_range.to = namespace._end_date;
 						break;
 				}
-				namespace.assemblyTempData.apply( namespace, [ namespace.data.temp_date_range ] );
-				namespace.plotInit(plot_date_range);
+                date_range  = namespace.getActualDate();
+                namespace.assemblyTempData.apply( namespace, [ date_range] );
+                namespace.plotInit( date_range );
 				namespace.graph.setCrosshair({"x" : namespace.crosshair_position});
 			});
 
 			// graph init
 			this.assembly.apply( this, [ statistic ] );
-			this.assemblyTempData.apply( this, [ this.data.temp_date_range ] );
+
 
 			namespace.plot_crosshair_image = new Image();
-			namespace.plot_crosshair_image.src = "http://ria.ru/i/icons/timeline/crosshair.png";
+			namespace.plot_crosshair_image.src = "i/icons/timeline/crosshair.png";
 
 			var plot_date_range = {
 				"from"	:	new Date( this.data.temp_date_range.from.getFullYear(), this.data.temp_date_range.from.getMonth(), this.data.temp_date_range.from.getDate() ),
 				"to"	:	new Date( this.data.temp_date_range.to.getFullYear(), this.data.temp_date_range.to.getMonth(), this.data.temp_date_range.to.getDate() )
 			};
-			this.plotInit( plot_date_range );
+
+            date_range  = this.getActualDate();
+            this.assemblyTempData.apply( this, [ date_range] );
+			this.plotInit( date_range );
 			this.graph.setCrosshair({"x" : end_date.getTime()});
 
-			myScroll = new iScroll('timeline_navigator_controls',
-				{
-					scrollbarClass: 'myScrollbar',
-					hScroll: true,
-					vScroll: false,
-					checkDOMChanges: true
-				});
+//			myScroll = new iScroll('timeline_navigator_controls',
+//				{
+//					scrollbarClass: 'myScrollbar',
+//					hScroll: true,
+//					vScroll: false,
+//					checkDOMChanges: true
+//				});
 //			setTimeout(function () {
 //				scale_change_bar_state.set( "MONTH" );
 //			}, 1000);
 		},
+        getActualDate : function () {
+            namespace = this
+            __(namespace.data.temp_date_range);
+
+            var __R = {}
+            var _to = (namespace.data.date_range.to).getTime();
+            var _from = (namespace.data.date_range.from).getTime();
+
+            _r = _to - _from;
+            __(new Date(_r))
+
+            if (_r > 7*24*60*60*1000 ) {
+                __R.from = new Date( _to - 7*24*60*60*1000),
+                    __R.to = new Date( _to)
+                } else {
+
+                __R.from = new Date( _from),
+                    __R.to = new Date( _to)
+
+
+            }
+
+
+
+            return __R;
+        },
 		"load"			:	function( date_range ){
 			var date_string = {
 					"from"		:   date_range.from.getFullYear() + ( ( date_range.from.getMonth() < 9 ) ? '0' : '' ) + ( date_range.from.getMonth() + 1) + ( ( date_range.from.getDate() < 10 ) ? '0' : '' ) + date_range.from.getDate(),
@@ -290,12 +320,12 @@
 			namespace.width = 680;
 				$("#timeline_navigator_controls").css({width: namespace.width});
 			namespace._w = namespace.width * (date_range.to.getTime() - date_range.from.getTime()) / namespace.fix_timestamp;
-			$("#timeline_navigator").css({
+			$("#timeline_navigator, #timeline_navigator_wrapp").css({
 				width: namespace._w
 			});
 
-//			this.plot_crosshair_image = new Image();
-//			this.plot_crosshair_image.src = "/i/icons/timeline/crosshair.png";
+			this.plot_crosshair_image = new Image();
+			this.plot_crosshair_image.src = "/i/icons/timeline/crosshair.png";
 			this.graph = $.plot(
 				$("#timeline_navigator", this.target),
 				[ { "data" : this.data.statistic_temp }, { "data" : this.data.statistic_temp, "xaxis" : 2 } ],
