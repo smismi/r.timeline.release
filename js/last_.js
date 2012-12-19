@@ -206,13 +206,16 @@
 
 
 			namespace.plot_crosshair_image = new Image();
-			namespace.plot_crosshair_image.src = "/i/icons/timeline/crosshair.png";
+			namespace.plot_crosshair_image.src = "i/icons/timeline/crosshair.png";
 
 
 			date_range  = this.getActualDate();
 			this.assemblyTempData.apply( this, [ this.data.temp_date_range] );
 			this.plotInit( date_range );
-			this.graph.setCrosshair({"x" : end_date.getTime()});
+
+            setTimeout(function () {
+                namespace.graph.setCrosshair({"x" : namespace.crosshair_position});
+			}, 1000);
 
 
 			myScroll = new iScroll('timeline_navigator_controls',
@@ -284,8 +287,10 @@
 
 			console.log("replot")
 			date_range  = this.getActualDate();
-			this.plotInit( date_range );
-			this.scrollToTime(this.data.current_pos);
+
+
+
+
 		},
 		getActualDate : function () {
 			namespace = this
@@ -306,7 +311,7 @@
 					range = 4*31*24*60*60*1000;
 					break;
 				case "DAY"      :
-					range = 14*24*60*60*1000;
+					range = 12*60*60*1000;
 					break;
 
 
@@ -429,7 +434,10 @@
 			}
 
 		},
-
+        "setCH" : function () {
+            namespace = this;
+            namespace.graph.setCrosshair({"x" : namespace.crosshair_position});
+        },
 		"plotInit"	:	function( date_range ){
 
 
@@ -597,6 +605,8 @@
 			);
 
 			this.graph.lockCrosshair();
+
+
 		},
 
 		"assembly"  :   function( data ){
@@ -1186,7 +1196,7 @@
 		scrollScroll : function() {
 
 			namespace = this;
-			namespace.navigator.graph.setCrosshair({"x" : namespace.navigator.crosshair_position});
+//			namespace.navigator.graph.setCrosshair({"x" : namespace.navigator.crosshair_position});
 			var min_value = namespace.navigator.data.current_from,
 				max_value = namespace.navigator.data.current_to;
 
