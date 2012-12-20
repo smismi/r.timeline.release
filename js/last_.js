@@ -227,7 +227,6 @@
 					momentum : false,
 					onBeforeScrollEnd : function(e) {
 
-						namespace.checkX();
 
 					}
 				});
@@ -245,12 +244,12 @@
 //			left_visible_date = namespace.data.current_pos - toTime(340);
 //			right_visible_date = namespace.data.current_pos + toTime(340);
 
-			if(-myScroll.x < 300 && namespace.data.current_from  > namespace._start_date.getTime()) {
+			if( namespace.graph.getAxes().xaxis.datamin > namespace._start_date.getTime()) {
 				console.log("fired left");
-				this.replot();
-			} else if(myScroll.scrollerW - 680 + myScroll.x < 300 && namespace.data.current_to + 24*60*60*1000 < namespace._end_date.getTime()) {
+//				this.replot();
+			} else if(namespace.graph.getAxes().xaxis.datamax < namespace._end_date.getTime()) {
 				console.log("fired right");
-				this.replot()
+//				this.replot()
 			}
 
 
@@ -284,26 +283,27 @@
 
 		},
 		replot : function() {
-
-			console.log("replot")
+            console.log("replot")
 			date_range  = this.getActualDate();
+            this.plotInit( date_range );
+            this.scrollToTime(this.data.current_pos);
 
 
 
 
-		},
+        },
 		getActualDate : function () {
 			namespace = this
 //			__(namespace.data.temp_date_range);
 			var range;
 			var actual_date_range = {}
-			var current_pos = this.data.current_pos;
+			var current_pos = this.crosshair_position;
 
 
 			switch( namespace.scale_change.state.get().name ){
 				case "MONTH"    :
 				default         :
-					offset = 15*24*60*60*1000;
+					offset = 31/2*24*60*60*1000;
 					range = 12*31*24*60*60*1000;
 					break;
 				case "WEEK"     :
@@ -311,7 +311,8 @@
 					range = 4*31*24*60*60*1000;
 					break;
 				case "DAY"      :
-					range = 12*60*60*1000;
+                    offset = 12*60*60*1000;
+                    range = 2*24*60*60*1000;
 					break;
 
 
@@ -1185,7 +1186,7 @@
 				namespace.scrollEvents.update.objects.activate.apply(namespace);
 				namespace.scrollEvents.update.statistic.upload.apply(namespace);
 				namespace.scrollEvents.update.objects.upload.apply(namespace);
-//				namespace.scrollEvents.update.statistic.redraw.apply(namespace);
+				namespace.scrollEvents.update.statistic.redraw.apply(namespace);
 //				namespace.scrollEvents.update.statistic.scrollCenter.apply(namespace);
 
 				namespace.navigator.graph.setCrosshair({"x" : namespace.article_list.active.item.data("timestamp")});
@@ -1426,48 +1427,24 @@
 					},
 
 					"redraw"		:	function(){
+                        var plot_xaxis = this.navigator.graph.getAxes().xaxis,
+                            active_day_date = this.article_list.active.item.data("timestamp"),
+                            new_day_date  = 0,
+                            coord = {};
 
-						var plot_xaxis = this.navigator.graph.getAxes().xaxis,
-							active_day_date = this.article_list.active.day.data("timestamp"),
-							coord = {};
+                        if( active_day_date - 24*60*60*1000 < plot_xaxis.min ){
+                            new_day_date = this.navigator.get.hour.prev.apply( this.navigator, [ new Date(active_day_date) ] );
 
-						if( active_day_date - 24*60*60*1000 < plot_xaxis.min ){
-							var prev_day_date = this.navigator.get.hour.prev.apply( this.navigator, [ new Date(active_day_date) ] );
-							coord = this.navigator.graph.p2c({"x" : active_day_date })
-
-							_("!")
-						}else if( active_day_date + 24*60*60*1000 > plot_xaxis.max ){
-							var next_day_date = this.navigator.get.hour.next.apply( this.navigator, [ new Date(active_day_date) ] ),
-								graph_offset_date = new Date(active_day_date);
+                        }else if( active_day_date + 24*60*60*1000 > plot_xaxis.max ){
+                            new_day_date = this.navigator.get.hour.next.apply( this.navigator, [ new Date(active_day_date) ] );
 
 
-							switch( this.navigator.scale_change.state.get().name ){
-								case "MONTH"    :
-								default         :
-									graph_offset_date = graph_offset_date.setDate(graph_offset_date.getDate() - 29);
-									break;
-								case "WEEK"     :
-									graph_offset_date = graph_offset_date.setDate(graph_offset_date.getDate() - 6);
-									break;
-								case "DAY"      :
-									graph_offset_date = graph_offset_date.setDate(graph_offset_date.getDate() );
-									break;
-							}
+                        }
 
-							_("!!")
-							coord = this.navigator.graph.p2c({"x" : graph_offset_date })
-						}
-						if( typeof( coord.left ) != 'undefined' && coord.left != 0 )
-							this.navigator.graph.pan( coord );
-
-//
-//						var date_range = {};
-//
-//						date_range.from = this.navigator._start_date;
-//						date_range.to = this.navigator._end_date;
-
-
-//						this.navigator.plotInit(date_range);
+                        if (new_day_date) {
+                               console.log(new_day_date)
+                            this.navigator.replot( new_day_date )
+                        };
 					},
 					scrollCenter : function() {
 
