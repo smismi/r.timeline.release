@@ -13,6 +13,8 @@
     <script type="text/javascript" src="js/jquery.flot.js?"></script>
     <script type="text/javascript" src="js/jquery.flot.crosshair.js"></script>
     <script type="text/javascript" src="js/jquery.flot.navigate.js"></script>
+    <script type="text/javascript" src="js/jquery.flot.time.js"></script>
+    <script type="text/javascript" src="js/jquery.flot.selection.js"></script>
     <!--<script type="text/javascript" src="js/original_article_timeline.js"></script>-->
     <!--<script type="text/javascript" src="js/article_timeline.js"></script>-->
     <script type="text/javascript" src="js/iscroll4.js"></script>
@@ -44,6 +46,28 @@
                     <div class="clearfix"></div>
                 </div>
             </div>
+			<div class="timeline_navigator_container">
+				<div id="timeline_navigator_controls" class="timeline_navigator_controls">
+
+					<div id="timeline_navigator" unselectable="on"
+						 style="padding: 0px; position: relative;">
+						<div id="placeholder" style="width:720px;height:200px;"></div>
+					</div>
+
+					    <div id="overview" style="margin-top:20px;width:720px;height:24px"></div>
+					<div id="timeline_navigator_loader" class="timeline_loader_1"></div>
+					<div class="middle_check"></div>
+
+				</div>
+				<div class="scale-change-bar"><span>Масштаб:</span><a class="active-state state state-0" href="#month"
+																	  data-scale-size="MONTH">Месяц</a><a
+						class="state state-1" href="#week" data-scale-size="WEEK">Неделя</a><a class="state state-2"
+																							   href="#day"
+																							   data-scale-size="DAY">День</a>
+				</div>
+				<div class="clear"></div>
+				<span class="bottom-shadow"></span>
+			</div>
         </div>
         <span class="timeline_article_cursor"></span>
     </div>

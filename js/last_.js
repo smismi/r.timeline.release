@@ -1441,10 +1441,21 @@
 
                         }
 
-                        if (new_day_date) {
-                               console.log(new_day_date)
-                            this.navigator.replot( new_day_date )
-                        };
+//                        if (new_day_date) {
+//                               console.log(new_day_date)
+//                            this.navigator.replot( new_day_date )
+//                        };
+//
+
+                        for( var i = 0; i < this.navigator.data.statistic.length; i++ ){
+                            if (this.navigator.data.statistic[i])  {
+                                if (this.navigator.data.statistic[i][0] == this.navigator.crosshair_position) alert(i)
+                                 var next =  this.navigator.data.statistic[i+1]
+                                 var prev =  this.navigator.data.statistic[i-1]
+                            }
+                        }
+
+
 					},
 					scrollCenter : function() {
 

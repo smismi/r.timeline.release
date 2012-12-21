@@ -142,7 +142,63 @@
             namespace.plotInit();
         },
         plotInit : function() {
-            alert(1);
+            var namespace = this,
+                min_value = namespace.data.statistic_temp[0][0],
+                max_value = namespace.data.statistic_temp[namespace.data.statistic_temp.length - 1][0];
+            var data = [ { "data" : this.data.statistic_temp }, { "data" : this.data.statistic_temp, "xaxis" : 2 } ];
+
+            var placeholder = $("#placeholder");
+            var options = {
+                series: { lines: { show: true }, shadowSize: 0 },
+                xaxis: {
+                    min         :   min_value,
+                    max         :   max_value,
+                    zoomRange: [24*60*60*1000, 365*24*60*60*1000],
+                    panRange: [min_value, max_value],
+                    mode: "time"
+                },
+                "crosshair" :   { "mode" : "x", "locked" : true, "image" : this.plot_crosshair_image },
+                "grid"		:	{
+                    "clickable"     :   true,
+                    "hoverable"     :   true,
+                    "autoHighlight" :   false,
+                    "show"			:	true,
+                    "borderWidth"	:	0,
+                    "lineWidth"		:	0
+                },
+                "series":	{
+                    /*"lines"		:	{
+                     "lineWidth"		:	0,
+                     "fill"			:	true,
+                     "fillColor"		:	"#b7c1c4"
+                     },*/
+                    "bars"		:	{
+                        "show"			:	true,
+                        "lineWidth"		:	0,
+                        "fill"			:	true,
+                        "fillColor"		:	"#b7c1c4",
+                        "barWidth"		:	60*60*1000
+                    },
+                    "shadowSize"	:	0
+                },
+                yaxis: {
+                    zoomRange   :   false,
+                    panRange    :   false,
+                    show        :   false,
+                    min         :   null,
+                    max         :   null,
+                },
+                zoom: {
+                    interactive: true
+                },
+                pan: {
+                    interactive: true,
+                    frameRate: 1000
+                }
+            };
+
+            var plot = $.plot(placeholder, data, options);
+
         },
         "assembly"  :   function( data ){
             var end_date = this.data.date_range.to;
@@ -156,45 +212,12 @@
 
         "assemblyTempData"  :   function( date_range ){
             var data = [];
-
-            switch( "YEAR" ){
-                case "YEAR"    :
-                    var diff_years = Math.floor( ( date_range.to.getTime() - date_range.from.getTime() )/(365*24*60*60*1000) ); // 86400000 = 24*60*60*1000;
-                    data.push( [ new Date( date_range.to.getFullYear()), 0] )
-                    console.log(diff_years)
-
-                    for( var i = 0; i < diff_years + 1; i++ ){
-                        var items_count = 0;
-                        for( var k = 0; k < 365*24; k++ ){
-                            var hour = i*365*24 + k;
-                            if( typeof( this.data.statistic[ hour ] ) != 'undefined' ){
-                                items_count += this.data.statistic[ hour ][1];
-                            }
-                        }
-                        data.push( [ new Date( date_range.to.getFullYear() - i - 1 ), items_count ] )
-                    }
-
-                    break;
-                case "MONTH"    :
-                    var diff_months = Math.floor( ( date_range.to.getTime() - date_range.from.getTime() )/(31*24*60*60*1000) ); // 86400000 = 24*60*60*1000;
-                    data.push( [ new Date( date_range.to.getFullYear(), date_range.to.getMonth() ), 0] )
-
-                    console.log(diff_months)
-                    for( var i = 0; i < diff_months + 1; i++ ){
-                        var items_count = 0;
-                        for( var k = 0; k < 31*24; k++ ){
-                            var hour = i*31*24 + k;
-                            if( typeof( this.data.statistic[ hour ] ) != 'undefined' ){
-                                items_count += this.data.statistic[ hour ][1];
-                            }
-                        }
-                        data.push( [ new Date( date_range.to.getFullYear(), date_range.to.getMonth() - i - 1 ), items_count ] )
-                    }
-                    break;
-
-                case "WEEK"     :
-                default         :
-                    var diff_days = Math.floor( ( date_range.to.getTime() - date_range.from.getTime() )/(24*60*60*1000)); // 86400000 = 24*60*60*1000;
+//
+//            switch( this.scale_change.state.get().name ){
+//                case "MONTH"    :
+//                case "WEEK"     :
+//                default         :
+                    var diff_days = Math.floor( ( date_range.to.getTime() - date_range.from.getTime() )/86400000 ); // 86400000 = 24*60*60*1000;
                     data.push( [ new Date( date_range.to.getFullYear(), date_range.to.getMonth(), date_range.to.getDate() ), 0 ] )
                     for( var i = 0; i < diff_days + 1; i++ ){
                         var items_count = 0;
@@ -207,22 +230,22 @@
                         data.push( [ new Date( date_range.to.getFullYear(), date_range.to.getMonth(), date_range.to.getDate() - i - 1 ), items_count ] )
                     }
 
-                    break;
-                case "DAY"      :
-                    var diff_hours = Math.floor( ( date_range.to.getTime() - date_range.from.getTime() )/3600000 ); // 3600000 = 60*60*1000;
-
-                    for( var i = 0; i < diff_hours; i++ ){
-                        var items_count = ( typeof( this.data.statistic[ i ] ) != 'undefined' ) ? this.data.statistic[ i ][1] : 0;
-                        data.push(
-                            [
-                                new Date( date_range.to.getFullYear(), date_range.to.getMonth(), date_range.to.getDate(), date_range.to.getHours() - i  ).getTime(),
-                                items_count
-                            ]
-                        )
-                    }
-
-                    break;
-            }
+//                    break;
+//                case "DAY"      :
+//                    var diff_hours = Math.floor( ( date_range.to.getTime() - date_range.from.getTime() )/3600000 ); // 3600000 = 60*60*1000;
+//
+//                    for( var i = 0; i < diff_hours; i++ ){
+//                        var items_count = ( typeof( this.data.statistic[ i ] ) != 'undefined' ) ? this.data.statistic[ i ][1] : 0;
+//                        data.push(
+//                            [
+//                                new Date( date_range.to.getFullYear(), date_range.to.getMonth(), date_range.to.getDate(), date_range.to.getHours() - i  ).getTime(),
+//                                items_count
+//                            ]
+//                        )
+//                    }
+//
+//                    break;
+//            }
             data.sort(function(a,b){ return a[0] - b[0] });
 
             this.data.statistic_temp = data;
