@@ -105,7 +105,8 @@
 
             this.data = {
                 "statistic"			:	[],
-                "statistic_temp"	:	[],
+                "statistic_by_day"	:	[],
+                "statistic_by_hour"	:	[],
                 "list"				:	this.settings.list,
                 "queries"			:	{},
                 "date_range"		:	{}
@@ -134,7 +135,8 @@
 
             this.assembly.apply( this, [ statistic ] );
 
-            this.assemblyTempData.apply( this, [ this.data.date_range] );
+            this.assemblyData.apply( this, [ this.data.date_range] );
+            this.assemblyDayData.apply( this, [ this.data.date_range] );
 
 
 
@@ -143,19 +145,49 @@
         },
         plotInit : function() {
             var namespace = this,
-                min_value = namespace.data.statistic_temp[0][0],
-                max_value = namespace.data.statistic_temp[namespace.data.statistic_temp.length - 1][0];
-            var data = [ { "data" : this.data.statistic_temp }, { "data" : this.data.statistic_temp, "xaxis" : 2 } ];
+                view_mode = "MONTH",
+                min_value = namespace.data.statistic_by_day[0][0],
+                max_value = namespace.data.statistic_by_day[namespace.data.statistic_by_day.length - 1][0];
+            var data = [ { "data" : this.data.statistic_by_day }, { "data" : this.data.statistic_by_day, "xaxis" : 1 } ];
+            var data_2 = [ { "data" : this.data.statistic_by_hour }, { "data" : this.data.statistic_by_hour, "xaxis" : 1 } ];
 
             var placeholder = $("#placeholder");
+            var overview = $("#overview");
             var options = {
                 series: { lines: { show: true }, shadowSize: 0 },
                 xaxis: {
                     min         :   min_value,
                     max         :   max_value,
-                    zoomRange: [24*60*60*1000, 365*24*60*60*1000],
+                    zoomRange: [48*60*60*1000, 365*24*60*60*1000],
                     panRange: [min_value, max_value],
-                    mode: "time"
+                    mode: "time",
+                    tickLength: 5,
+                    "ticks"         :   function( date_range ){
+                        var ticks       =   [],
+                            first_date   =   new Date( date_range.min ),
+                            last_date   =   new Date( date_range.max ),
+                            tick_counter =   ({
+                                "MONTH" : (date_range.max - date_range.min) / (24*60*60*1000),
+                                "WEEK" : (date_range.max - date_range.min) / (24*60*60*1000),
+                                "DAY" : (date_range.max - date_range.min) / (60*60*1000)
+                            })[ view_mode ];
+
+                        switch( view_mode ) {
+                            case 'DAY':
+                                for( var i = 0; i < tick_counter; i++ ){
+                                    var tick_date = new Date( last_date.getFullYear(), last_date.getMonth(), last_date.getDate(),  last_date.getHours() - i - 1 );
+                                    ticks.push( [ tick_date.getTime() + 30*60*1000 , "" + (( tick_date.getHours() < 10 ) ? "0" : "" ) + tick_date.getHours() ] );
+                                }
+                                break;
+                            default     :
+                                for( var i = 0; i <= tick_counter; i++ ){
+                                    var tick_date = new Date( last_date.getFullYear(), last_date.getMonth(), last_date.getDate() - i );
+                                    ticks.push( [ tick_date.getTime() + 43200000, tick_date.getDate() ] ); // 12*60*60*1000 = 43200000 for correcting position (left border)
+                                }
+                                break;
+                        }
+                        return ticks;
+                    }
                 },
                 "crosshair" :   { "mode" : "x", "locked" : true, "image" : this.plot_crosshair_image },
                 "grid"		:	{
@@ -177,7 +209,7 @@
                         "lineWidth"		:	0,
                         "fill"			:	true,
                         "fillColor"		:	"#b7c1c4",
-                        "barWidth"		:	60*60*1000
+                        "barWidth"		:   ({ "MONTH" : 24*60*60*1000, "DAY" : 60*60*1000 })[ "DAY" ]
                     },
                     "shadowSize"	:	0
                 },
@@ -189,6 +221,7 @@
                     max         :   null,
                 },
                 zoom: {
+                    amount: 2,
                     interactive: true
                 },
                 pan: {
@@ -196,8 +229,120 @@
                     frameRate: 1000
                 }
             };
+            var overview_options = {
 
+                series: { lines: { show: true }, shadowSize: 0 },
+                xaxis: {
+                    min         :   min_value,
+                    max         :   max_value,
+                    mode: "time",
+                    tickLength: 5,
+                    "ticks"         :   function( date_range ){
+                        var ticks       =   [],
+                            first_date   =   new Date( date_range.min ),
+                            last_date   =   new Date( date_range.max ),
+                            tick_counter =   ({
+                                "MONTH" : (date_range.max - date_range.min) / (24*60*60*1000),
+                                "WEEK" : (date_range.max - date_range.min) / (24*60*60*1000),
+                                "DAY" : (date_range.max - date_range.min) / (60*60*1000)
+                            })[ "MONTH" ];
+
+                        switch( view_mode ) {
+                            case 'MONTH':
+                                for( var i = 0; i < tick_counter; i++ ){
+                                    var tick_date = new Date( last_date.getFullYear(), last_date.getMonth(), last_date.getDate(),  last_date.getHours() - i - 1 );
+                                    ticks.push( [ tick_date.getTime() + 30*60*1000 , "" + (( tick_date.getHours() < 10 ) ? "0" : "" ) + tick_date.getHours() ] );
+                                }
+                                break;
+                            default     :
+                                for( var i = 0; i <= tick_counter; i++ ){
+                                    var tick_date = new Date( last_date.getFullYear(), last_date.getMonth(), last_date.getDate() - i );
+                                    ticks.push( [ tick_date.getTime() + 43200000, tick_date.getDate() ] ); // 12*60*60*1000 = 43200000 for correcting position (left border)
+                                }
+                                break;
+                        }
+                        return ticks;
+                    }
+                },
+                "grid"		:	{
+                    "clickable"     :   true,
+                    "hoverable"     :   true,
+                    "autoHighlight" :   false,
+                    "show"			:	true,
+                    "borderWidth"	:	0,
+                    "lineWidth"		:	0
+                },
+                "series":	{
+                    /*"lines"		:	{
+                     "lineWidth"		:	0,
+                     "fill"			:	true,
+                     "fillColor"		:	"#b7c1c4"
+                     },*/
+                    "bars"		:	{
+                        "show"			:	true,
+                        "lineWidth"		:	0,
+                        "fill"			:	true,
+                        "fillColor"		:	"#b7c1c4",
+                        "barWidth"		:   ({ "MONTH" : 24*60*60*1000, "DAY" : 60*60*1000 })[ "MONTH" ]
+                    },
+                    "shadowSize"	:	0
+                },
+                yaxis: {
+                    min         :   null,
+                    max         :   null,
+                },
+                selection: { mode: "x" }
+            } ;
             var plot = $.plot(placeholder, data, options);
+            var plotoverview = $.plot(overview, data, overview_options);
+
+
+            // show pan/zoom messages to illustrate events
+            placeholder.bind('plotpan', function (event, plot) {
+                var axes = plot.getAxes();
+                $(".message").html("Panning to x: "  + axes.xaxis.min.toFixed(2)
+                    + " &ndash; " + axes.xaxis.max.toFixed(2)
+                    + " and y: " + axes.yaxis.min.toFixed(2)
+                    + " &ndash; " + axes.yaxis.max.toFixed(2));
+
+                plotoverview.setSelection({ xaxis: { from: axes.xaxis.min.toFixed(2), to: axes.xaxis.max.toFixed(2) }}, true);
+
+            });
+
+            placeholder.bind('plotzoom', function (event, plot) {
+                var axes = plot.getAxes();
+//                $(".message").html("Zooming to x: "  + axes.xaxis.min.toFixed(2)
+//                    + " &ndash; " + axes.xaxis.max.toFixed(2)
+//                    + " and y: " + axes.yaxis.min.toFixed(2)
+//                    + " &ndash; " + axes.yaxis.max.toFixed(2));
+ //                ranges.xaxis = {
+//                       from: axes.xaxis.min.toFixed(2),
+//                       to: axes.xaxis.max.toFixed(2)
+//                    }
+//                }
+                plotoverview.setSelection({ xaxis: { from: axes.xaxis.min.toFixed(2), to: axes.xaxis.max.toFixed(2) }}, true);
+
+
+
+//                if(axes.xaxis.max.toFixed(2) - axes.xaxis.min.toFixed(2) < 5 * 24 * 60 * 60 * 1000 && view_mode != "DAY")  {
+//                    view_mode = "DAY";
+//                    plot.setData( data_2 );
+//
+//                    console.log(plot.getPlotOffset())
+//                    plot.draw();
+//
+//
+//                } else if (axes.xaxis.max.toFixed(2) - axes.xaxis.min.toFixed(2) > 5 * 24 * 60 * 60 * 1000 && view_mode != "MONTH") {
+//                    view_mode = "MONTH";
+//                    plot.setData( data );
+//
+//
+//                    plot.draw();
+//
+//                }
+            });
+
+
 
         },
         "assembly"  :   function( data ){
@@ -210,13 +355,9 @@
             }
         },
 
-        "assemblyTempData"  :   function( date_range ){
+        "assemblyData"  :   function( date_range ){
             var data = [];
-//
-//            switch( this.scale_change.state.get().name ){
-//                case "MONTH"    :
-//                case "WEEK"     :
-//                default         :
+
                     var diff_days = Math.floor( ( date_range.to.getTime() - date_range.from.getTime() )/86400000 ); // 86400000 = 24*60*60*1000;
                     data.push( [ new Date( date_range.to.getFullYear(), date_range.to.getMonth(), date_range.to.getDate() ), 0 ] )
                     for( var i = 0; i < diff_days + 1; i++ ){
@@ -230,26 +371,40 @@
                         data.push( [ new Date( date_range.to.getFullYear(), date_range.to.getMonth(), date_range.to.getDate() - i - 1 ), items_count ] )
                     }
 
-//                    break;
-//                case "DAY"      :
-//                    var diff_hours = Math.floor( ( date_range.to.getTime() - date_range.from.getTime() )/3600000 ); // 3600000 = 60*60*1000;
-//
-//                    for( var i = 0; i < diff_hours; i++ ){
-//                        var items_count = ( typeof( this.data.statistic[ i ] ) != 'undefined' ) ? this.data.statistic[ i ][1] : 0;
-//                        data.push(
-//                            [
-//                                new Date( date_range.to.getFullYear(), date_range.to.getMonth(), date_range.to.getDate(), date_range.to.getHours() - i  ).getTime(),
-//                                items_count
-//                            ]
-//                        )
-//                    }
-//
-//                    break;
-//            }
+
             data.sort(function(a,b){ return a[0] - b[0] });
 
-            this.data.statistic_temp = data;
+            this.data.statistic_by_day = data;
+
+
+
+
+
+        },
+
+        "assemblyDayData"  :   function( date_range ){
+            var data = [];
+                    var diff_hours = Math.floor( ( date_range.to.getTime() - date_range.from.getTime() )/3600000 ); // 3600000 = 60*60*1000;
+
+                    for( var i = 0; i < diff_hours; i++ ){
+                        var items_count = ( typeof( this.data.statistic[ i ] ) != 'undefined' ) ? this.data.statistic[ i ][1] : 0;
+                        data.push(
+                            [
+                                new Date( date_range.to.getFullYear(), date_range.to.getMonth(), date_range.to.getDate(), date_range.to.getHours() - i  ).getTime(),
+                                items_count
+                            ]
+                        )
+                    }
+            data.sort(function(a,b){ return a[0] - b[0] });
+
+            this.data.statistic_by_hour = data;
+
+
+
+
+
         }
+
 
     };
 
