@@ -158,7 +158,7 @@
                 xaxis: {
                     min         :   min_value,
                     max         :   max_value,
-                    zoomRange: [48*60*60*1000, 365*24*60*60*1000],
+                    zoomRange: [24*60*60*1000, 365*24*60*60*1000],
                     panRange: [min_value, max_value],
                     mode: "time",
                     tickLength: 5,
@@ -220,10 +220,7 @@
                     min         :   null,
                     max         :   null,
                 },
-                zoom: {
-                    amount: 2,
-                    interactive: true
-                },
+                zoom: false,
                 pan: {
                     interactive: true,
                     frameRate: 1000
@@ -264,6 +261,13 @@
                         return ticks;
                     }
                 },
+                yaxis: {
+                    zoomRange   :   false,
+                    panRange    :   false,
+                    show        :   false,
+                    min         :   null,
+                    max         :   null,
+                },
                 "grid"		:	{
                     "clickable"     :   true,
                     "hoverable"     :   true,
@@ -287,10 +291,6 @@
                     },
                     "shadowSize"	:	0
                 },
-                yaxis: {
-                    min         :   null,
-                    max         :   null,
-                },
                 selection: { mode: "x" }
             } ;
             var plot = $.plot(placeholder, data, options);
@@ -309,37 +309,46 @@
 
             });
 
+            overview.bind("plotselected", function (event, ranges) {
+//                plot.zoomOut(1);
+                w = plot.getAxes().xaxis.datamax - plot.getAxes().xaxis.datamin;
+                a = plot.getOptions().xaxis.max.getTime() - plot.getOptions().xaxis.min.getTime();
+
+                r = plot.getSelection()
+//                r = plot.getAxes().xaxis.max - plot.getAxes().xaxis.min;
+                m = ranges.xaxis.to - ranges.xaxis.from;
+                c =  a / m
+                koe = (ranges.xaxis.from + (m/2) - plot.getAxes().xaxis.datamin)  / w
+                plot.setCrosshair(ranges.xaxis.from + (m/2))
+                plot.lockCrosshair();
+                center_x = 1000 * 1;
+                offset_x = 0;
+                plot.zoom({amount: 0.0000000000000000000001});
+
+                a = plot.p2c({"x" : ranges.xaxis.from }).left;
+                b = plot.p2c({"x" : ranges.xaxis.to }).left;
+
+//
+              console.log(a)
+              console.log(b)
+                plot.zoom({amount: c, center: { left: (a + b)/2, top: 0 }});
+
+
+
+
+
+                time2pixel = function(time){
+
+                    return pixel;
+                }
+
+            });
+
+
+
             placeholder.bind('plotzoom', function (event, plot) {
                 var axes = plot.getAxes();
-//                $(".message").html("Zooming to x: "  + axes.xaxis.min.toFixed(2)
-//                    + " &ndash; " + axes.xaxis.max.toFixed(2)
-//                    + " and y: " + axes.yaxis.min.toFixed(2)
-//                    + " &ndash; " + axes.yaxis.max.toFixed(2));
- //                ranges.xaxis = {
-//                       from: axes.xaxis.min.toFixed(2),
-//                       to: axes.xaxis.max.toFixed(2)
-//                    }
-//                }
                 plotoverview.setSelection({ xaxis: { from: axes.xaxis.min.toFixed(2), to: axes.xaxis.max.toFixed(2) }}, true);
-
-
-
-//                if(axes.xaxis.max.toFixed(2) - axes.xaxis.min.toFixed(2) < 5 * 24 * 60 * 60 * 1000 && view_mode != "DAY")  {
-//                    view_mode = "DAY";
-//                    plot.setData( data_2 );
-//
-//                    console.log(plot.getPlotOffset())
-//                    plot.draw();
-//
-//
-//                } else if (axes.xaxis.max.toFixed(2) - axes.xaxis.min.toFixed(2) > 5 * 24 * 60 * 60 * 1000 && view_mode != "MONTH") {
-//                    view_mode = "MONTH";
-//                    plot.setData( data );
-//
-//
-//                    plot.draw();
-//
-//                }
             });
 
 
