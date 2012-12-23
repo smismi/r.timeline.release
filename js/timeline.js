@@ -106,7 +106,9 @@
             this.data = {
                 "statistic"			:	[],
                 "statistic_by_day"	:	[],
+                "statistic_by_day0"	:	[],
                 "statistic_by_hour"	:	[],
+                "statistic_by_hour0"	:	[],
                 "list"				:	this.settings.list,
                 "queries"			:	{},
                 "date_range"		:	{}
@@ -139,7 +141,9 @@
             this.plot_crosshair_image.src = "i/icons/timeline/crosshair.png";
 
             this.assemblyData.apply( this, [ this.data.date_range] );
+            this.assemblyData0.apply( this, [ this.data.date_range] );
             this.assemblyDayData.apply( this, [ this.data.date_range] );
+            this.assemblyDayData0.apply( this, [ this.data.date_range] );
 
             this.crosshair_position = this._end_date;
             //scale bar init
@@ -176,10 +180,10 @@
 
             switch (view_mode) {
                 case 'DAY':
-                    var data = [ { "data" : this.data.statistic_by_hour }, { "data" : this.data.statistic_by_hour, "xaxis" : 2 } ]
+                    var data = [ { color:'#b7c1c4', "data" : this.data.statistic_by_hour0 }, { color:'#f00',  "data" : this.data.statistic_by_hour, "xaxis" : 2 } ]
                     break;
                 default     :
-                    var data = [ { "data" : this.data.statistic_by_day }, { "data" : this.data.statistic_by_day, "xaxis" : 2 } ]
+                    var data = [ { color:'#b7c1c4', "data" : this.data.statistic_by_day0 }, { color:'#f00',  "data" : this.data.statistic_by_day, "xaxis" : 2 } ]
                     break;
             }
 
@@ -283,33 +287,18 @@
                     "autoHighlight" :   true,
                     "show"			:	true,
                     "borderWidth"	:	1,
-                    "lineWidth"		:	1,
-                    "markings"		:	function areas(axes) {var markings = [];
-                        var d = new Date(axes.xaxis.min);
-                        // go to the first Saturday
-                        d.setUTCDate(d.getUTCDate() - ((d.getUTCDay() + 1)));
-                        var i = d.getTime();
-                        do {
-                            // when we don't set yaxis, the rectangle automatically
-                            // extends to infinity upwards and downwards
-                            markings.push({ xaxis: { from: i, to: i + 24 * 60 * 60 * 1000 } });
-                            i += 2 * 24 * 60 * 60 * 1000;
-                        } while (i < axes.xaxis.max);
-
-                        return markings;
-                    }
+                    "lineWidth"		:	1
                 },
                 "series":	{
-                    /*"lines"		:	{
-                     "lineWidth"		:	0,
-                     "fill"			:	true,
-                     "fillColor"		:	"#b7c1c4"
-                     },*/
+//                     "lines"		:	{
+//                     "lineWidth"	:	0,
+//                     "fill"			:	true,
+//                     "fillColor"	:	"#b7c1c4"
+//                     },
                     "bars"		:	{
                         "show"			:	true,
                         "lineWidth"		:	0,
                         "fill"			:	true,
-                        "fillColor"		:	"#b7c1c4",
                         "barWidth"		:   ({ "MONTH" : 24*60*60*1000,  "WEEK" : 24*60*60*1000, "DAY" : 60*60*1000 })[ view_mode ]
                     },
                     "shadowSize"	:	0
@@ -319,7 +308,7 @@
                     panRange    :   false,
                     show        :   false,
                     min         :   null,
-                    max         :   null,
+                    max         :   12,
                 },
                 zoom: false,
                 pan: {
@@ -402,6 +391,32 @@
 
 
         },
+        "assemblyData0"  :   function( date_range ){
+            var data = [];
+
+                    var diff_days = Math.floor( ( date_range.to.getTime() - date_range.from.getTime() )/86400000 ); // 86400000 = 24*60*60*1000;
+                    data.push( [ new Date( date_range.to.getFullYear(), date_range.to.getMonth(), date_range.to.getDate() ), 0 ] )
+                    for( var i = 0; i < diff_days + 1;  i = i + 2){
+                        var items_count = 0;
+                        for( var k = 0; k < 24; k++ ){
+                            var hour = i*24 + k;
+
+                                items_count = 1000;
+
+                        }
+                        data.push( [ new Date( date_range.to.getFullYear(), date_range.to.getMonth(), date_range.to.getDate() - i - 1 ), items_count ] )
+                    }
+
+
+            data.sort(function(a,b){ return a[0] - b[0] });
+
+            this.data.statistic_by_day0 = data;
+
+
+
+
+
+        },
 
         "assemblyDayData"  :   function( date_range ){
             var data = [];
@@ -419,6 +434,29 @@
             data.sort(function(a,b){ return a[0] - b[0] });
 
             this.data.statistic_by_hour = data;
+
+
+
+
+
+        },
+
+        "assemblyDayData0"  :   function( date_range ){
+            var data = [];
+                    var diff_hours = Math.floor( ( date_range.to.getTime() - date_range.from.getTime() )/3600000 ); // 3600000 = 60*60*1000;
+
+                    for( var i = 0; i < diff_hours; i = i + 2){
+                        var items_count = ( typeof( this.data.statistic[ i ] ) != 'undefined' ) ? this.data.statistic[ i ][1] : 0;
+                        data.push(
+                            [
+                                new Date( date_range.to.getFullYear(), date_range.to.getMonth(), date_range.to.getDate(), date_range.to.getHours() - i  ).getTime(),
+                                1000
+                            ]
+                        )
+                    }
+            data.sort(function(a,b){ return a[0] - b[0] });
+
+            this.data.statistic_by_hour0 = data;
 
 
 
