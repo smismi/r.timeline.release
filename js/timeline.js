@@ -198,7 +198,6 @@
             })[ view_mode ];
             var placeholder = $("#placeholder");
             var options = {
-                series: { lines: { show: true }, shadowSize: 0 },
                 "xaxes"	:	[
                     {
                         min         :   max_value - fixstamp,
@@ -207,6 +206,7 @@
                         mode: "time",
                         tickLength: 5,
                         "position": "bottom",
+                        "tickColor"     :   "#ffffff",
                         "ticks": function (date_range) {
 
                             var ticks = [],
@@ -217,13 +217,13 @@
                                 case 'DAY':
                                     for (var i = 0; i < tick_counter; i++) {
                                         var tick_date = new Date(last_date.getFullYear(), last_date.getMonth(), last_date.getDate(), last_date.getHours() - i - 1);
-                                        ticks.push([ tick_date.getTime(), "" + (( tick_date.getHours() < 10 ) ? "0" : "" ) + tick_date.getHours() ]);
+                                        ticks.push([ tick_date.getTime()/* + 30*60*1000*/, "" + (( tick_date.getHours() < 10 ) ? "0" : "" ) + tick_date.getHours() ]);
                                     }
                                     break;
                                 default     :
                                     for (var i = 0; i <= tick_counter; i++) {
                                         var tick_date = new Date(last_date.getFullYear(), last_date.getMonth(), last_date.getDate() - i);
-                                        ticks.push([ tick_date.getTime(), tick_date.getDate() ]); // 12*60*60*1000 = 43200000 for correcting position (left border)
+                                        ticks.push([ tick_date.getTime()/* + 12*60*60*1000*/, tick_date.getDate() ]); // 12*60*60*1000 = 43200000 for correcting position (left border)
                                     }
                                     break;
                             }
@@ -286,7 +286,7 @@
                     "hoverable"     :   true,
                     "autoHighlight" :   true,
                     "show"			:	true,
-                    "borderWidth"	:	1,
+                    "borderWidth"	:	0,
                     "lineWidth"		:	1
                 },
                 "series":	{
@@ -299,16 +299,16 @@
                         "show"			:	true,
                         "lineWidth"		:	0,
                         "fill"			:	true,
+                        align : "center",
                         "barWidth"		:   ({ "MONTH" : 24*60*60*1000,  "WEEK" : 24*60*60*1000, "DAY" : 60*60*1000 })[ view_mode ]
-                    },
-                    "shadowSize"	:	0
+                    }
                 },
                 yaxis: {
                     zoomRange   :   false,
                     panRange    :   false,
                     show        :   false,
                     min         :   null,
-                    max         :   12,
+                    max         :   50,
                 },
                 zoom: false,
                 pan: {
@@ -317,14 +317,14 @@
                 }
             };
 
-            var plot = $.plot(placeholder, data, options);
-//            plot.setCrosshair({ "x" : max_value });
+            this.graph = $.plot(placeholder, data, options);
+
             $("#m100").on("click", function(){
-                plot.pan({ left: -1000 });
+                namespace.graph.pan({ left: -1000 });
 
             })
             $("#p100").on("click", function(){
-                plot.pan({ left: 1000 });
+                namespace.graph.pan({ left: 1000 });
 
             })
 
@@ -343,14 +343,11 @@
                     + " and y: " + axes.yaxis.min.toFixed(2)
                     + " &ndash; " + axes.yaxis.max.toFixed(2));
 
-                plot.setCrosshair({ "x" : namespace.crosshair_position });
+            //    plot.setCrosshair({ "x" : namespace.crosshair_position });
             });
 
 
-            placeholder.bind('plotzoom', function (event, plot) {
-                var axes = plot.getAxes();
-                plot.setCrosshair({ "x" : namespace.crosshair_position });
-            });
+
 
 
 
@@ -836,7 +833,25 @@
             }
 
 
-            var graph = this.navigator.graph;
+            var graph = this.navigator.graph,
+                graph_container = graph.getPlaceholder();
+
+
+
+            function scrollToSelectedRange(){
+
+            }
+
+
+//            graph_container.bind("plotclick.graph_navigation", function(e, data, point){
+//                namespace.navigator.graph.lockCrosshair();
+//                namespace.navigator.crosshair_position = parseInt( data.x )
+////                graph.setCrosshair({"x" : namespace.navigator.crosshair_position });
+//                console.log (namespace.navigator.crosshair_position)
+//            })
+        },
+        "get"	:	{
+
 
         }
     }
