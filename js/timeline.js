@@ -322,7 +322,7 @@
                 },
                 zoom: {
                     amount: 2,
-                    interactive: false
+                    interactive: true
                 },
                 pan: {
                     interactive: true,
@@ -332,13 +332,17 @@
 
             this.graph = $.plot(placeholder, data, options);
             this.graph.lockCrosshair();
-
             $("#m100").on("click", function(){
                 namespace.graph.pan({ left: -1000 });
 
             })
             $("#p100").on("click", function(){
                 namespace.graph.pan({ left: 1000 });
+
+            })
+            $("#zoom").on("click", function(){
+                namespace.graph.setCrosshair({ "x" : 1356613740772 });
+
 
             })
 
@@ -356,7 +360,8 @@
                     + " and y: " + axes.yaxis.min.toFixed(2)
                     + " &ndash; " + axes.yaxis.max.toFixed(2));
 
-            //    plot.setCrosshair({ "x" : namespace.crosshair_position });
+                plot.setCrosshair({ "x" : namespace.crosshair_position });
+                plot.lockCrosshair();
             });
             placeholder.bind('plotzoom', function (event, plot) {
                 var axes = plot.getAxes();
@@ -364,6 +369,9 @@
                     + " &ndash; " + axes.xaxis.max.toFixed(2)
                     + " and y: " + axes.yaxis.min.toFixed(2)
                     + " &ndash; " + axes.yaxis.max.toFixed(2));
+
+                plot.setCrosshair({ "x" : namespace.crosshair_position });
+                plot.lockCrosshair();
 
             });
 
@@ -869,6 +877,7 @@
 
                     namespace.navigator.crosshair_position = parseInt( data.x )
                     graph.setCrosshair({"x" : namespace.navigator.crosshair_position });
+                    graph.lockCrosshair();
                     console.log(new Date(namespace.navigator.crosshair_position))
             })
 
