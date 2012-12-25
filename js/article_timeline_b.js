@@ -182,7 +182,7 @@
 
 
 			namespace.plot_crosshair_image = new Image();
-			namespace.plot_crosshair_image.src = "/i/icons/timeline/crosshair.png";
+			namespace.plot_crosshair_image.src = "i/icons/timeline/crosshair.png";
 
 
 			date_range  = this.getActualDate();
@@ -204,7 +204,7 @@
 
 		},
 		replot : function() {
-			this.graph.pan()
+
 //			console.log("replot")
 //			date_range  = this.getActualDate();
 //			this.plotInit( date_range );
@@ -998,7 +998,16 @@
 //				}
 //				_gaq.push(['_trackEvent', 'a/b_timeline', 'a_timeline_click', 'not_used', 0, true]);
 //			})
+            graph_container.bind('plotpan', function (event, plot) {
+                var axes = plot.getAxes();
+                 console.log(new Date(axes.xaxis.min))
+                 console.log(new Date(axes.xaxis.max))
+                plot.setCrosshair({ "x" : namespace.navigator.crosshair_position });
 
+                plot.lockCrosshair();
+                if (namespace.navigator.crosshair_position > axes.xaxis.max) plot.setCrosshair({y: -200})
+                if (namespace.navigator.crosshair_position < axes.xaxis.min) plot.setCrosshair({y: -200})
+            });
 			var scrollTimer = 0;
 			$(".timeline_navigator_container a.prev, .timeline_navigator_container a.next", this.target).bind("click", function(e){
 				e.preventDefault();
@@ -1040,63 +1049,36 @@
 			});
 		},
 		scrollPlot : function() {
-//
+
 			namespace = this;
 			namespace.navigator.graph.setCrosshair({"x" : namespace.navigator.crosshair_position});
 
-//			var min_value = namespace.navigator.data.current_from,
-//				max_value = namespace.navigator.data.current_to;
-//
+
 			var fix_timestamp = ({
 				"MONTH" : 31 * 24 * 60 * 60 * 1000,
 				"WEEK" : 14 * 24 * 60 * 60 * 1000,
 				"DAY" : 1 * 24 * 60 * 60 * 1000
 			})[ namespace.navigator.scale_change.state.settings.state.settings.state ];
-//			console.log(namespace.navigator.crosshair_position);
-//			console.log(namespace.navigator.graph.getAxes().xaxis.min);
 
-			coord = this.navigator.graph.p2c({"x" : namespace.navigator.crosshair_position - namespace.navigator.graph.getAxes().xaxis.min })
+			coord = this.navigator.graph.p2c({"x" : namespace.navigator.graph.getAxes().xaxis.min - (namespace.navigator.graph.getAxes().xaxis.min - namespace.navigator.crosshair_position)  - fix_timestamp/2})
 
 			if( typeof( coord.left ) != 'undefined' && coord.left != 0 )
 				namespace.navigator.graph.pan( coord );
 
-//			_w = 680 * (max_value - min_value)  / fix_timestamp; //width_plot
-//			_x = 680 * (namespace.navigator.crosshair_position - min_value)  / fix_timestamp;
-//
-//
-//			switch( true ){
-//				case _x < 340    :
-//					myScroll.scrollTo(0, 0, 500);
-//					break;
-//				case _x > (_w - 340)     :
-//
-//					myScroll.scrollTo(-_w + 680, 0, 500);
-//					break;
-//				default :
-//					myScroll.scrollTo(-_x + 340, 0, 500);
-//
-//			}
-//
-//			namespace.navigator.checkX();
+
+
+
 		},
 		scrollToNext : function() {
 			namespace = this;
 			namespace.navigator.graph.pan({ left: +1000 });
 
-//			if(myScroll.scrollerW + myScroll.x - 680 > 680)  {
-//				myScroll.scrollTo(myScroll.x - 680, 0, 500);
-//			} else {
-//				myScroll.scrollTo(-myScroll.scrollerW + 680, 0, 500);
-//			}
+
 		},
 		scrollToPrev : function() {
 			namespace = this;
 			namespace.navigator.graph.pan({ left: -1000 });
-//			if(-myScroll.x > 680)  {
-//				myScroll.scrollTo(myScroll.x + delta, 0, 500);
-//			} else {
-//				myScroll.scrollTo(0, 0, 500);
-//			}
+
 		},
 		"get"	:	{
 			"nextArticleByTimestamp"	:	function(timestamp){
