@@ -110,6 +110,7 @@
 				"queries"			:	{},
 				"date_range"		:	{},
 				"actual_date_range"	:	{},
+				"panning"			:	false,
 				"temp_date_range"	:	{}
 			};
 
@@ -130,9 +131,9 @@
 			start_date = ( statistic.length > 0 ) ? statistic[statistic.length - 1].date : new Date();
 			end_date = ( statistic.length > 0 ) ? statistic[0].date : new Date();
 
-			if((end_date.getTime() - start_date.getTime()) < 30 * 24 * 60 * 60 * 1000) {
-				start_date = new Date(end_date.getTime() - 30 * 24 * 60 * 60 * 1000);
-			}
+//			if((end_date.getTime() - start_date.getTime()) < 30 * 24 * 60 * 60 * 1000) {
+//				start_date = new Date(end_date.getTime() - 30 * 24 * 60 * 60 * 1000);
+//			}
 
 
 
@@ -172,9 +173,14 @@
 				namespace.assemblyTempData.apply( namespace, [ namespace.data.temp_date_range] );
 				namespace.plotInit( date_range );
 				namespace.graph.setCrosshair({"x" : namespace.crosshair_position});
-				myScroll.refresh();
-				namespace.scrollToTime(namespace.crosshair_position, 0);
+// 				namespace.scrollToTime(namespace.crosshair_position, 0);
 
+				$('#timeline_navigator canvas').bind('drag', function(){
+					namespace.data.panning = true;
+				});
+				$('#timeline_navigator canvas').bind('dragend', function(){
+					setTimeout(function() { namespace.data.panning = false; }, 100);
+				});
 
 			});
 
@@ -196,53 +202,9 @@
 				namespace.graph.setCrosshair({"x" : namespace.crosshair_position});
 			}, 1000);
 
-			if (namespace.checkIeVersion() > 8) {
 
-				myScroll = new iScroll('timeline_navigator_controls',
-					{
-						scrollbarClass: 'myScrollbar',
-						hScroll: true,
-						vScroll: false,
-						checkDOMChanges: true,
-						momentum : false,
-						onBeforeScrollEnd : function(e) {
-
-							namespace.checkX();
-
-						}
-					});
-				this.scrollToTime(end_date.getTime(), 0);
-			} else {
-				$("#timeline_navigator_controls").css({overflow: "auto", width: 680})
-			}
 		},
-		checkX : function() {
-			namespace = this;
-			namespace.data.current_pos = namespace.crosshair_position
 
-
-			if ((-myScroll.x < 300 && namespace.data.current_from  > namespace._start_date.getTime()) || (myScroll.scrollerW - 680 + myScroll.x < 300 && namespace.data.current_to + 24*60*60*1000 < namespace._end_date.getTime()))
-				this.replot();
-
-			function toTime(pixels) {
-
-				fix_timestamp = ({
-					"MONTH" : 31*24*60*60*1000 * 1,
-					"WEEK" : 7*24*60*60*1000 * 2,
-					"DAY" : 24*60*60*1000  * 1
-				})[ namespace.scale_change.state.get().name ];
-
-				time = fix_timestamp * pixels / 680;
-				return Math.round(time)
-			}
-		},
-		replot : function() {
-
-//			console.log("replot")
-			date_range  = this.getActualDate();
-			this.plotInit( date_range );
-			this.scrollToTime(this.data.current_pos);
-		},
 		getActualDate : function () {
 			namespace = this
 			var range;
@@ -318,26 +280,23 @@
 
 		"plotInit"	:	function( date_range ){
 
-			var namespace = this,
-				min_value = date_range.from.getTime(),
-				max_value = date_range.to.getTime();
+			var namespace = this;
 
 			namespace.fix_timestamp = ({
 				"MONTH" : 31*24*60*60*1000 * 1,
 				"WEEK" : 7*24*60*60*1000 * 2,
 				"DAY" : 24*60*60*1000  * 1
 			})[ namespace.scale_change.state.get().name ];
-			namespace.width = 680;
-			$("#timeline_navigator_controls").css({width: namespace.width});
-			namespace._w = namespace.width * (date_range.to.getTime() - date_range.from.getTime()) / namespace.fix_timestamp;
-			$("#timeline_navigator").css({
-				width: namespace._w
-			});
 
-			this.graph = $.plot(
-				$("#timeline_navigator", this.target),
-				[ { "data" : this.data.statistic_temp }, { "data" : this.data.statistic_temp, "xaxis" : 2 } ],
-				{
+			min_date = namespace.data.statistic_temp[0][0].getTime() - namespace.fix_timestamp / 2,
+			max_date = namespace.data.statistic_temp[namespace.data.statistic_temp.length - 1][0].getTime() + namespace.fix_timestamp / 2;
+//
+
+			min_value = namespace.crosshair_position - namespace.fix_timestamp / 2;
+			max_value = namespace.crosshair_position + namespace.fix_timestamp / 2;
+
+			var data = [ { "data" : this.data.statistic_temp }, { "data" : this.data.statistic_temp, "xaxis" : 2 } ]
+			var options = {
 					"crosshair" :   { "mode" : "x", "locked" : true, "image" : this.plot_crosshair_image },
 					"grid"		:	{
 						"clickable"     :   true,
@@ -395,6 +354,8 @@
 						"shadowSize"	:	0
 					},
 					"yaxes"	:	[{
+					"zoomRange" :   false,
+					"panRange"  :   false,
 						"show"      :   false,
 						"min"       :   null,
 						"max"       :   null
@@ -403,6 +364,7 @@
 						{
 							"min"           :   min_value,
 							"max"           :   max_value,
+						"panRange"		: 	[min_date, max_date],
 							"tickLength"    :   0,
 							"position"      :   "bottom",
 							"ticks"         :   function( date_range ){
@@ -435,6 +397,7 @@
 						{
 							"min"           :   min_value,
 							"max"           :   max_value,
+						"panRange"		: 	[min_date, max_date],
 							"tickSize"      :   4,
 							"ticks"         :   function( date_range ){
 
@@ -475,11 +438,22 @@
 							"labelHeight"   :   0,
 							"tickColor"     :   "#ffffff"
 						}
-					]
+				],
+				pan: {
+					interactive: true,
+					frameRate: 1000
 				}
-			);
+			}
 
+			this.graph = $.plot($("#timeline_navigator", this.target), data, options);
 			this.graph.lockCrosshair();
+
+
+			$("#timeline_navigator").bind('plotpan', function (event, plot) {
+				(namespace.graph.getAxes().xaxis.min -  namespace.graph.getAxes().xaxis.datamin < 0) ? $(".prev span.ico").hide() : $(".prev span.ico").show();
+				(namespace.graph.getAxes().xaxis.max -  namespace.graph.getAxes().xaxis.datamax > 0) ? $(".next span.ico").hide() : $(".next span.ico").show();
+
+			});
 		},
 
 		"assembly"  :   function( data ){
@@ -545,12 +519,7 @@
 
 					for( var i = 0; i < diff_hours; i++ ){
 						var items_count = ( typeof( this.data.statistic[ i ] ) != 'undefined' ) ? this.data.statistic[ i ][1] : 0;
-						data.push(
-							[
-								new Date( date_range.to.getFullYear(), date_range.to.getMonth(), date_range.to.getDate(), date_range.to.getHours() - i  ).getTime(),
-								items_count
-							]
-						)
+						data.push( [ new Date( date_range.to.getFullYear(), date_range.to.getMonth(), date_range.to.getDate(), date_range.to.getHours() - i), items_count ] )
 					}
 
 					break;
@@ -1003,32 +972,38 @@
 
 				}
 			}
-			graph_container.bind("mousedown.graph_navigation", function(e){
-				e.preventDefault();
-				click_lock = false;
 
-				graph_container.bind("mousemove.graph_navigation", function(){
-					click_lock = true;
-					namespace.navigator.graph.lockCrosshair();
-				});
-				graph_container.bind("mouseup.graph_navigation", function(){
-					graph_container
-						.unbind("mousemove.graph_navigation")
-						.unbind("mouseup.graph_navigation");
-					namespace.navigator.graph.lockCrosshair();
-				});
-				click_lock = false;
-				return false;
+
+			namespace.navigator.data.panning = false;
+
+			$('#timeline_navigator canvas').bind('drag', function(){
+
+				namespace.navigator.data.panning = true;
+
 			});
+			$('#timeline_navigator canvas').bind('dragend', function(){
 
-			graph_container.bind("plotclick.graph_navigation", function(e, data, item){
-				if (!click_lock) {
+				setTimeout(function() { namespace.navigator.data.panning = false; }, 100);
+
+			});
+			graph_container.bind('plotclick', function (e, data, item) {
+				if (!namespace.navigator.data.panning){
 					namespace.navigator.crosshair_position = parseInt( data.x )
 					graph.setCrosshair({"x" : namespace.navigator.crosshair_position });
 					scrollToSelectedRange(false)
+
+					_gaq.push(['_trackEvent', 'a/b_timeline', 'a_timeline_click', 'not_used', 0, true]);
 				}
-				_gaq.push(['_trackEvent', 'a/b_timeline', 'a_timeline_click', 'not_used', 0, true]);
-			})
+
+			});
+
+			graph_container.bind('plotpan', function (event, plot) {
+				var axes = plot.getAxes();
+				plot.setCrosshair({ "x" : namespace.navigator.crosshair_position });
+				plot.lockCrosshair();
+				if (namespace.navigator.crosshair_position > axes.xaxis.max) plot.setCrosshair({y: -200})
+				if (namespace.navigator.crosshair_position < axes.xaxis.min) plot.setCrosshair({y: -200})
+			});
 
 			var scrollTimer = 0;
 			$(".timeline_navigator_container a.prev, .timeline_navigator_container a.next", this.target).bind("click", function(e){
@@ -1065,7 +1040,7 @@
 				namespace.scrollEvents.update.objects.activate.apply(namespace);
 				namespace.scrollEvents.update.statistic.upload.apply(namespace);
 				namespace.scrollEvents.update.objects.upload.apply(namespace);
-				namespace.scrollEvents.update.statistic.redraw.apply(namespace);
+//				namespace.scrollEvents.update.statistic.redraw.apply(namespace);
 
 				namespace.navigator.graph.setCrosshair({"x" : namespace.article_list.active.item.data("timestamp")});
 
@@ -1076,8 +1051,6 @@
 
 			namespace = this;
 			namespace.navigator.graph.setCrosshair({"x" : namespace.navigator.crosshair_position});
-			var min_value = namespace.navigator.data.current_from,
-				max_value = namespace.navigator.data.current_to;
 
 			var fix_timestamp = ({
 				"MONTH" : 31 * 24 * 60 * 60 * 1000,
@@ -1085,43 +1058,22 @@
 				"DAY" : 1 * 24 * 60 * 60 * 1000
 			})[ namespace.navigator.scale_change.state.settings.state.settings.state ];
 
-			_w = 680 * (max_value - min_value)  / fix_timestamp; //width_plot
-			_x = 680 * (namespace.navigator.crosshair_position - min_value)  / fix_timestamp;
+			coord = this.navigator.graph.p2c({"x" : namespace.navigator.graph.getAxes().xaxis.min - (namespace.navigator.graph.getAxes().xaxis.min - namespace.navigator.crosshair_position)  - fix_timestamp/2})
 
+			if( typeof( coord.left ) != 'undefined' && coord.left != 0 )
+				namespace.navigator.graph.pan( coord );
 
-			switch( true ){
-				case _x < 340    :
-					myScroll.scrollTo(0, 0, 500);
-					break;
-				case _x > (_w - 340)     :
-
-					myScroll.scrollTo(-_w + 680, 0, 500);
-					break;
-				default :
-					myScroll.scrollTo(-_x + 340, 0, 500);
-
-			}
-
-			namespace.navigator.checkX();
 		},
 		scrollToNext : function() {
 			namespace = this;
-			delta = 680;
+			namespace.navigator.graph.pan({ left: +1000 });
 
-			if(myScroll.scrollerW + myScroll.x - 680 > 680)  {
-				myScroll.scrollTo(myScroll.x - 680, 0, 500);
-			} else {
-				myScroll.scrollTo(-myScroll.scrollerW + 680, 0, 500);
-			}
+
 		},
 		scrollToPrev : function() {
 			namespace = this;
-			delta = 680;
-			if(-myScroll.x > 680)  {
-				myScroll.scrollTo(myScroll.x + delta, 0, 500);
-			} else {
-				myScroll.scrollTo(0, 0, 500);
-			}
+			namespace.navigator.graph.pan({ left: -1000 });
+
 		},
 		"get"	:	{
 			"nextArticleByTimestamp"	:	function(timestamp){
@@ -1309,63 +1261,7 @@
 							})
 
 						}
-					},
-
-					"redraw"		:	function(){
-						var plot_xaxis = this.navigator.graph.getAxes().xaxis,
-							active_day_date = this.article_list.active.item.data("timestamp"),
-							new_day_date  = 0,
-							coord = {};
-
-						if( active_day_date - 24*60*60*1000 < plot_xaxis.min ){
-							new_day_date = this.navigator.get.hour.prev.apply( this.navigator, [ new Date(active_day_date) ] );
-
-						}else if( active_day_date + 24*60*60*1000 > plot_xaxis.max ){
-							new_day_date = this.navigator.get.hour.next.apply( this.navigator, [ new Date(active_day_date) ] );
-
-
-						}
-
-						if (new_day_date) {
-							this.navigator.replot( new_day_date )
-						};
-					},
-					scrollCenter : function() {
-
-
-//                        namespace = this;
-//                        var date_range = {
-//                            from:  new Date(this.navigator.graph.getAxes().xaxis.min)
-//                            to:  new Date(this.navigator.graph.getAxes().xaxis.max)
-//                        };
-//                        namespace.navigator.graph.setCrosshair({"x" : namespace.navigator.crosshair_position});
-						var min_value = this.navigator.graph.getAxes().xaxis.min,
-							max_value = this.navigator.graph.getAxes().xaxis.max;
-
-						var fix_timestamp = ({
-							"MONTH" : 31 * 24 * 60 * 60 * 1000, //12*60*60*1000
-							"WEEK" : 14 * 24 * 60 * 60 * 1000,
-							"DAY" : 1 * 24 * 60 * 60 * 1000 //30*60*1000
-						})[ this.navigator.scale_change.state.settings.state.settings.state ];
-
-						_w = 680 * (max_value - min_value)  / fix_timestamp; //width_plot
-						_x = 680 * (this.navigator.crosshair_position - min_value)  / fix_timestamp;
-
-
-						switch( true ){
-							case _x < 340    :
-								myScroll.scrollTo(0, 0, 500);
-								break;
-							case _x > (_w - 340)     :
-
-								myScroll.scrollTo(-_w + 680, 0, 500);
-								break;
-							default :
-								myScroll.scrollTo(-_x + 340, 0, 500);
-
-						}
 					}
-
 				}
 			}
 		}
