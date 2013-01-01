@@ -164,12 +164,27 @@
 
             });
 
-
-
-
-
-
             namespace.plotInit();
+            namespace.plotSlider();
+
+
+        },
+        plotSlider : function() {
+            var namespace = this,
+                view_mode = namespace.scale_change.state.get().name,
+                min_value = namespace.data.data.by_day.a[0][0].getTime(),
+                max_value = namespace.data.data.by_day.a[namespace.data.data.by_day.a.length - 1][0].getTime();
+            $( "#slider" ).slider({
+                range: true,
+                min: min_value,
+                max: max_value,
+                values: [ min_value, max_value ],
+                step: 24*60*60*1000,
+                slide: function( event, ui ) {
+                    $( "#amount" ).val( "$" + ui.value );
+                }
+            });
+            $( "#amount" ).val( "$" + $( "#slider" ).slider( "value" ) );
         },
         plotInit : function() {
             var namespace = this,
@@ -342,11 +357,9 @@
 //                namespace.graph.pan({ left: 1000 });
 //
 //            })
-//            $("#zoom").on("click", function(){
-//                namespace.graph.setCrosshair({ "x" : 1356613740772 });
-//
-//
-//            })
+            $("#zoom").on("click", function(){
+
+            })
 
 
 

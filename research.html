@@ -6,8 +6,10 @@
 
 
     <link rel="stylesheet" type="text/css" href="css/common.css">
+	<link rel="stylesheet" href="http://code.jquery.com/ui/1.9.2/themes/base/jquery-ui.css" />
 
     <script type="text/javascript" src="js/jquery.min.js"></script>
+	<script src="http://code.jquery.com/ui/1.9.2/jquery-ui.js"></script>
     <script type="text/javascript" src="js/jquery.state.js?"></script>
     <script type="text/javascript" src="js/jquery.tmpl.js?"></script>
     <script type="text/javascript" src="js/jquery.flot.js?"></script>
@@ -19,6 +21,7 @@
     <!--<script type="text/javascript" src="js/article_timeline.js"></script>-->
     <script type="text/javascript" src="js/iscroll4.js"></script>
     <script type="text/javascript" src="js/timeline.js"></script>
+
     <style type="text/css">
         #timeline_flow {
 			border: 1px solid red;
@@ -73,6 +76,14 @@
 				<div class="clear"></div>
 				<span class="bottom-shadow"></span>
 			</div>
+
+
+			<p>
+				<label for="amount">Donation amount ($50 increments):</label>
+				<input type="text" id="amount" style="border: 0; color: #f6931f; font-weight: bold;" />
+			</p>
+
+			<div id="slider"></div>
         </div>
         <span class="timeline_article_cursor"></span>
     </div>
