@@ -165,26 +165,8 @@
             });
 
             namespace.plotInit();
-            namespace.plotSlider();
 
 
-        },
-        plotSlider : function() {
-            var namespace = this,
-                view_mode = namespace.scale_change.state.get().name,
-                min_value = namespace.data.data.by_day.a[0][0].getTime(),
-                max_value = namespace.data.data.by_day.a[namespace.data.data.by_day.a.length - 1][0].getTime();
-            $( "#slider" ).slider({
-                range: true,
-                min: min_value,
-                max: max_value,
-                values: [ min_value, max_value ],
-                step: 24*60*60*1000,
-                slide: function( event, ui ) {
-                    $( "#amount" ).val( "$" + ui.value );
-                }
-            });
-            $( "#amount" ).val( "$" + $( "#slider" ).slider( "value" ) );
         },
         plotInit : function() {
             var namespace = this,
@@ -209,7 +191,6 @@
 
 
             fixstamp =   ({
-                "YEAR" : 365*24*60*60*1000,
                 "MONTH" : 31*24*60*60*1000,
                 "WEEK" : 14*24*60*60*1000,
                 "DAY" : 24*60*60*1000
@@ -221,11 +202,6 @@
                         min         :   (max_value - min_value < fixstamp) ? min_value : max_value - fixstamp,
                         max         :   max_value,
                         panRange: [min_value, max_value],
-                        zoomRange: ({
-                            "MONTH" : [31*24*60*60*1000, 365*24*60*60*1000],
-                            "WEEK" : [7*24*60*60*1000, 31*24*60*60*1000],
-                            "DAY" : [24*60*60*1000, 3*24*60*60*1000]
-                        })[ view_mode ],
                         mode: "time",
                         tickLength: 5,
                         "position": "bottom",
@@ -234,7 +210,7 @@
 
                             var ticks = [],
                                 last_date = new Date(date_range.max),
-                                tick_counter = ({ "MONTH": 100, "WEEK": 100, "DAY": 100 })[ namespace.scale_change.state.get().name ];
+                                tick_counter = ({ "MONTH": 1000, "WEEK": 1000, "DAY": 1000 })[ namespace.scale_change.state.get().name ];
 
                             switch (namespace.scale_change.state.get().name) {
                                 case 'DAY':
@@ -256,11 +232,6 @@
                     {
                         min         :   (max_value - min_value < fixstamp) ? min_value : max_value - fixstamp,
                         max         :   max_value,
-                        zoomRange: ({
-                            "MONTH" : [31*24*60*60*1000, 365*24*60*60*1000],
-                            "WEEK" : [7*24*60*60*1000, 31*24*60*60*1000],
-                            "DAY" : [24*60*60*1000, 3*24*60*60*1000]
-                        })[ view_mode ],
                         panRange: [min_value, max_value],
                         mode: "time",
                         tickLength: 5,
@@ -377,6 +348,8 @@
 
 //                plot.setCrosshair({ "x" : namespace.crosshair_position });
 //                plot.lockCrosshair();
+
+                    $( "#slider" ).slider( "option", "values", [namespace.graph.getAxes().xaxis.min, namespace.graph.getAxes().xaxis.max] )
             });
             placeholder.bind('plotzoom', function (event, plot) {
                 var axes = plot.getAxes();
@@ -391,13 +364,49 @@
             });
 
 
+            $( "#slider" ).slider({
+                range: true,
+                min: namespace.data.data.by_day.a[0][0].getTime(),
+                max: namespace.data.data.by_day.a[namespace.data.data.by_day.a.length - 1][0].getTime(),
+                values: [ min_value, max_value ],
+                step: 24*60*60*1000,
+                slide: function( event, ui ) {
+                    $( "#amount" ).html( ui.values[0] + " " + ui.values[1] );
+
+
+
+//                    coord = namespace.graph.p2c({"x" : namespace.graph.getAxes().xaxis.min - (namespace.graph.getAxes().xaxis.min - ui.values[0])})
+//
+//                    if( typeof( coord.left ) != 'undefined' && coord.left != 0 )
+//                        namespace.graph.pan( coord );
+                    var range = {};
+                    range.from = ui.values[0];
+                    range.to = ui.values[1];
+                    namespace.pereplot(range)
+                }
+            });
 
 
 
 
 
+        },
+        pereplot : function (range) {
+            namespace = this;
 
 
+            var d = namespace.graph.getAxes().xaxis.datamax - namespace.graph.getAxes().xaxis.datamin;
+            var b = range.to - range.from;
+            namespace.graph.zoom({ amount: 0.0000000000000000000000001});
+            namespace.graph.zoom({ amount: d/b });
+//            namespace.graph.pan(({ left: -100 }));
+
+            coord = namespace.graph.p2c({"x" : namespace.graph.getAxes().xaxis.min - (namespace.graph.getAxes().xaxis.min - range.from)})
+
+            if( typeof( coord.left ) != 'undefined' && coord.left != 0 )
+                namespace.graph.pan( coord );
+
+           console.log(new Date (namespace.graph.getAxes().xaxis.min) + " " +new Date (namespace.graph.getAxes().xaxis.max))
 
         },
         "assembly"  :   function( data ){
