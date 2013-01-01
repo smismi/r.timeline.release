@@ -105,10 +105,8 @@
 
             this.data = {
                 "statistic"			:	[],
-                "statistic_by_day"	:	[],
-                "statistic_by_day0"	:	[],
-                "statistic_by_hour"	:	[],
-                "statistic_by_hour0"	:	[],
+                "data"			    :	[],
+                "points"			:	{},
                 "list"				:	this.settings.list,
                 "queries"			:	{},
                 "date_range"		:	{}
@@ -164,6 +162,12 @@
 
             });
 
+            this.data.points.viewmin = namespace.data.data.by_day.a[0][0];
+            this.data.points.viewmax = namespace.data.data.by_day.a[namespace.data.data.by_day.a.length - 1][0];
+
+            this.data.points.min = namespace.data.data.by_day.a[0][0];
+            this.data.points.max = namespace.data.data.by_day.a[namespace.data.data.by_day.a.length - 1][0];
+
             namespace.plotInit();
 
 
@@ -171,8 +175,10 @@
         plotInit : function() {
             var namespace = this,
                 view_mode = namespace.scale_change.state.get().name,
-                min_value = namespace.data.data.by_day.a[0][0],
-                max_value = namespace.data.data.by_day.a[namespace.data.data.by_day.a.length - 1][0];
+                min_value = namespace.data.points.min,
+                max_value = namespace.data.points.max,
+                min_value_view = namespace.data.points.viewmin,
+                max_value_view = namespace.data.points.viewmax;
 
             switch (view_mode) {
                 case 'YEAR':
@@ -199,84 +205,22 @@
             var options = {
                 "xaxes"	:	[
                     {
-                        min         :   (max_value - min_value < fixstamp) ? min_value : max_value - fixstamp,
-                        max         :   max_value,
+                        min         :   min_value_view,
+                        max         :   max_value_view,
                         panRange: [min_value, max_value],
                         mode: "time",
                         tickLength: 5,
                         "position": "bottom",
-                        "tickColor"     :   "#ffffff",
-                        "ticks": function (date_range) {
-
-                            var ticks = [],
-                                last_date = new Date(date_range.max),
-                                tick_counter = ({ "MONTH": 1000, "WEEK": 1000, "DAY": 1000 })[ namespace.scale_change.state.get().name ];
-
-                            switch (namespace.scale_change.state.get().name) {
-                                case 'DAY':
-                                    for (var i = 0; i < tick_counter; i++) {
-                                        var tick_date = new Date(last_date.getFullYear(), last_date.getMonth(), last_date.getDate(), last_date.getHours() - i - 1);
-                                        ticks.push([ tick_date.getTime() + 30*60*1000, "" + (( tick_date.getHours() < 10 ) ? "0" : "" ) + tick_date.getHours() ]);
-                                    }
-                                    break;
-                                default     :
-                                    for (var i = 0; i <= tick_counter; i++) {
-                                        var tick_date = new Date(last_date.getFullYear(), last_date.getMonth(), last_date.getDate() - i);
-                                        ticks.push([ tick_date.getTime() + 12*60*60*1000, tick_date.getDate() ]); // 12*60*60*1000 = 43200000 for correcting position (left border)
-                                    }
-                                    break;
-                            }
-                            return ticks;
-                        }
+                        "tickColor"     :   "#ffffff"
                     },
                     {
-                        min         :   (max_value - min_value < fixstamp) ? min_value : max_value - fixstamp,
-                        max         :   max_value,
+                        min         :   min_value_view,
+                        max         :   max_value_view,
                         panRange: [min_value, max_value],
                         mode: "time",
                         tickLength: 5,
                         "position": "top",
-                        "tickColor"     :   "#ffffff",
-                        "ticks": function (date_range) {
-
-
-                            var ticks = [],
-                                first_tick_date = new Date( date_range.min ),
-                                last_tick_date = new Date( date_range.max );
-
-                            switch( namespace.scale_change.state.get().name ) {
-                                case 'MONTH':
-                                default     :
-                                    var month_count = (last_tick_date.getFullYear() - first_tick_date.getFullYear()) * 6 - first_tick_date.getMonth() + 1 + last_tick_date.getMonth()
-                                    for( var i = 0; i < month_count; i++ ){
-                                        var month_date_end = new Date( first_tick_date.getFullYear(), first_tick_date.getMonth() + i + 1, 0 ),
-                                            month_date_middle = new Date( month_date_end.getFullYear(), month_date_end.getMonth(), parseInt( month_date_end.getDate()/2 ));
-                                        ticks.push( [ month_date_middle.getTime(), months_names.nominative[ month_date_middle.getMonth() ] + " " + month_date_middle.getFullYear() ] );
-                                    }
-                                    break;
-                                case 'WEEK' :
-                                    var month_count = (last_tick_date.getFullYear() - first_tick_date.getFullYear()) * 6 - first_tick_date.getMonth() + 1 + last_tick_date.getMonth()
-                                    for( var i = 0; i < month_count; i++ ){
-                                        var month_date_end = new Date( first_tick_date.getFullYear(), first_tick_date.getMonth() + i + 1, 0 ),
-                                            month_date_middle = new Date( month_date_end.getFullYear(), month_date_end.getMonth(), parseInt( month_date_end.getDate()/1.2 ));
-                                        month_date_middle2 = new Date( month_date_end.getFullYear(), month_date_end.getMonth(), parseInt( month_date_end.getDate()/2.5 ));
-                                        ticks.push( [ month_date_middle.getTime(), months_names.nominative[ month_date_middle.getMonth() ] + " " + month_date_middle.getFullYear() ] );
-                                        ticks.push( [ month_date_middle2.getTime(), months_names.nominative[ month_date_middle2.getMonth() ] + " " + month_date_middle2.getFullYear() ] );
-                                    }
-                                    break;
-                                case 'DAY'  :
-                                    var day_count = (last_tick_date.getTime() - first_tick_date.getTime())/ (12*60*60*1000);
-                                    for( var i = 0; i < day_count; i++ ){
-                                        var day_date_end = new Date( first_tick_date.getFullYear(), first_tick_date.getMonth(), first_tick_date.getDate() + i ),
-                                            day_date_middle = new Date( day_date_end.getFullYear(), day_date_end.getMonth(), day_date_end.getDate(), 6 );
-                                        day_date_middle2 = new Date( day_date_end.getFullYear(), day_date_end.getMonth(), day_date_end.getDate(), 18 );
-                                        ticks.push( [ day_date_middle.getTime(), day_date_middle.getDate() + " " + months_names.nominative[ day_date_middle.getMonth() ] + " " + day_date_middle.getFullYear() ] );
-                                        ticks.push( [ day_date_middle2.getTime(), day_date_middle2.getDate() + " " + months_names.nominative[ day_date_middle2.getMonth() ] + " " + day_date_middle2.getFullYear() ] );
-                                    }
-                                    break;
-                            }
-                            return ticks;
-                        }
+                        "tickColor"     :   "#ffffff"
                     }
                 ] ,
                 "crosshair" :   { "mode" : "x", "locked" : true, "image" : this.plot_crosshair_image },
@@ -349,7 +293,9 @@
 //                plot.setCrosshair({ "x" : namespace.crosshair_position });
 //                plot.lockCrosshair();
 
-                    $( "#slider" ).slider( "option", "values", [namespace.graph.getAxes().xaxis.min, namespace.graph.getAxes().xaxis.max] )
+                    $( "#slider" ).slider( "option", "values", [namespace.graph.getAxes().xaxis.min, namespace.graph.getAxes().xaxis.max] );
+                namespace.data.points.viewmin = namespace.graph.getAxes().xaxis.min;
+                namespace.data.points.viewmax = namespace.graph.getAxes().xaxis.max;
             });
             placeholder.bind('plotzoom', function (event, plot) {
                 var axes = plot.getAxes();
@@ -358,23 +304,22 @@
                     + " and y: " + axes.yaxis.min.toFixed(2)
                     + " &ndash; " + axes.yaxis.max.toFixed(2));
 
-//                plot.setCrosshair({ "x" : namespace.crosshair_position });
-//                plot.lockCrosshair();
 
             });
 
 
             $( "#slider" ).slider({
                 range: true,
-                min: namespace.data.data.by_day.a[0][0].getTime(),
-                max: namespace.data.data.by_day.a[namespace.data.data.by_day.a.length - 1][0].getTime(),
-                values: [ min_value, max_value ],
+                min: namespace.data.points.min.getTime(),
+                max: namespace.data.points.max.getTime(),
+                values: [ namespace.data.points.viewmin, namespace.data.points.viewmax ],
                 step: 24*60*60*1000,
                 slide: function( event, ui ) {
                     $( "#amount" ).html( ui.values[0] + " " + ui.values[1] );
 
 
-
+                    namespace.data.points.viewmin = ui.values[0];
+                    namespace.data.points.viewmax = ui.values[1];
 //                    coord = namespace.graph.p2c({"x" : namespace.graph.getAxes().xaxis.min - (namespace.graph.getAxes().xaxis.min - ui.values[0])})
 //
 //                    if( typeof( coord.left ) != 'undefined' && coord.left != 0 )
@@ -406,7 +351,6 @@
             if( typeof( coord.left ) != 'undefined' && coord.left != 0 )
                 namespace.graph.pan( coord );
 
-           console.log(new Date (namespace.graph.getAxes().xaxis.min) + " " +new Date (namespace.graph.getAxes().xaxis.max))
 
         },
         "assembly"  :   function( data ){
