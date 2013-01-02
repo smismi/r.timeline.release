@@ -180,25 +180,21 @@
             switch (this.scale_change.state.get().name) {
                 case 'YEAR':
                     var data = [ { color:'#b7c1c4', "data" : namespace.data.data.by_year.b }, { color:'#f00',  "data" : namespace.data.data.by_year.a, "xaxis" : 2 } ]
-	                console.log(namespace.data.data.by_year.a[0][0] + " " + namespace.data.data.by_year.a[namespace.data.data.by_year.a.length - 1][0] );
 	                min_value = namespace.data.data.by_year.a[0][0].getTime();
 	                max_value = namespace.data.data.by_year.a[namespace.data.data.by_year.a.length - 1][0].getTime() + namespace.fix_timestamp;
 	                break;
                 case 'MONTH':
                     var data = [ { color:'#b7c1c4', "data" : namespace.data.data.by_month.b }, { color:'#f00',  "data" : namespace.data.data.by_month.a, "xaxis" : 2 } ]
-	                console.log(namespace.data.data.by_month.a[0][0] + " " + namespace.data.data.by_month.a[namespace.data.data.by_month.a.length - 1][0] );
 	                min_value = namespace.data.data.by_month.a[0][0].getTime();
 	                max_value = namespace.data.data.by_month.a[namespace.data.data.by_month.a.length - 1][0].getTime() + namespace.fix_timestamp;
 	                break;
                 case 'DAY':
                     var data = [ { color:'#b7c1c4', "data" : namespace.data.data.by_day.b }, { color:'#f00',  "data" : namespace.data.data.by_day.a, "xaxis" : 2 } ];
-	                console.log(namespace.data.data.by_day.a[0][0] + " " + namespace.data.data.by_day.a[namespace.data.data.by_day.a.length - 1][0] );
 	                min_value = namespace.data.data.by_day.a[0][0].getTime();
 	                max_value = namespace.data.data.by_day.a[namespace.data.data.by_day.a.length - 1][0].getTime();
 	                break;
                 case 'HOUR':
                     var data = [ { color:'#b7c1c4', "data" : namespace.data.data.by_hour.b }, { color:'#f00',  "data" : namespace.data.data.by_hour.a, "xaxis" : 2 } ]
-	                console.log(namespace.data.data.by_hour.a[0][0] + " " + namespace.data.data.by_hour.a[namespace.data.data.by_hour.a.length - 1][0] );
 	                min_value = namespace.data.data.by_hour.a[0][0].getTime();
 	                max_value = namespace.data.data.by_hour.a[namespace.data.data.by_hour.a.length - 1][0].getTime();
 	                break;
@@ -208,9 +204,9 @@
             }
 
 
+	        if (namespace.data.points.viewmin) {min_value_view = namespace.data.points.viewmin } else { min_value_view = min_value }
+	        if (namespace.data.points.viewmax) {max_value_view = namespace.data.points.viewmax } else { max_value_view = max_value  }
 
-	        var min_value_view = min_value,
-		        max_value_view = max_value;
 
             var placeholder = $("#placeholder");
             var options = {
@@ -219,6 +215,7 @@
                         min         :   min_value_view,
                         max         :   max_value_view,
                         panRange: [min_value, max_value],
+                        zoomRange: [24*60*60*1000, max_value - min_value],
                         mode: "time",
                         tickLength: 5,
                         "position": "bottom",
@@ -228,7 +225,8 @@
                         min         :   min_value_view,
                         max         :   max_value_view,
                         panRange: [min_value, max_value],
-                        mode: "time",
+	                    zoomRange: [24*60*60*1000, max_value - min_value],
+	                    mode: "time",
                         tickLength: 5,
                         "position": "top",
                         "tickColor"     :   "#ffffff"
@@ -265,7 +263,8 @@
                     max         :   null,
                 },
                 zoom: {
-                    interactive: true
+                    interactive: true,
+	                amount: 1.1
                 },
                 pan: {
                     interactive: true,
@@ -314,10 +313,38 @@
 
 //                plot.setCrosshair({ "x" : namespace.crosshair_position });
 //                plot.lockCrosshair();
+
+				if (!pan_lock)  $( "#slider" ).slider( "option", "values", [namespace.graph.getAxes().xaxis.min, namespace.graph.getAxes().xaxis.max] );
+				namespace.data.points.viewmin = namespace.graph.getAxes().xaxis.min;
+				namespace.data.points.viewmax = namespace.graph.getAxes().xaxis.max;
+
+
+
+//	            switch (true) {
+//		            case namespace.graph.getAxes().xaxis.max - namespace.graph.getAxes().xaxis.min < 7*24*60*60*1000 :
+//			            state = "HOUR";
+//			            break;
+//		            case namespace.graph.getAxes().xaxis.max - namespace.graph.getAxes().xaxis.min < 3*30*24*60*60*1000 :
+//			            state = "DAY";
+//			            break;
+//		            case namespace.graph.getAxes().xaxis.max - namespace.graph.getAxes().xaxis.min < 6*31*24*60*60*1000 :
+//			            state = "MONTH";
+//			            break;
+//		            default :
+//			            state = "DAY";
+//	            }
 //
-                  if (!pan_lock)  $( "#slider" ).slider( "option", "values", [namespace.graph.getAxes().xaxis.min, namespace.graph.getAxes().xaxis.max] );
-//                namespace.data.points.viewmin = namespace.graph.getAxes().xaxis.min;
-//                namespace.data.points.viewmax = namespace.graph.getAxes().xaxis.max;
+//	            if(state != namespace.scale_change.state.get().name)  {
+//		            namespace.scale_change.state.set(state);
+//
+//		            console.log("change") ;
+//		            namespace.plotInit();
+//
+//
+//	            }
+
+
+
             });
             placeholder.bind('plotzoom', function (event, plot) {
                 var axes = plot.getAxes();
@@ -327,7 +354,30 @@
                     + " &ndash; " + axes.yaxis.max.toFixed(2));
 
 	            if (!zoom_lock)  $( "#slider" ).slider( "option", "values", [namespace.graph.getAxes().xaxis.min, namespace.graph.getAxes().xaxis.max] )
-
+//
+//	            switch (true) {
+//		            case namespace.graph.getAxes().xaxis.max - namespace.graph.getAxes().xaxis.min < 7*24*60*60*1000 :
+//			            state = "HOUR";
+//			            break;
+//		            default :
+//			            state = "DAY";
+//			            break;
+////		            case namespace.graph.getAxes().xaxis.max - namespace.graph.getAxes().xaxis.min < 6*31*24*60*60*1000 :
+////			            state = "MONTH";
+////			            break;
+////		            default :
+////			            state = "DAY";
+//	            }
+//
+//	            namespace.data.points.viewmin = namespace.graph.getAxes().xaxis.min;
+//	            namespace.data.points.viewmax = namespace.graph.getAxes().xaxis.max;
+//
+//	            if(state != namespace.scale_change.state.get().name)  {
+//		            console.log("change")
+//
+//		            namespace.scale_change.state.set(state);
+////		            namespace.plotInit();
+//	            }
 
             });
 
@@ -338,45 +388,21 @@
                 min: min_value,
                 max: max_value,
                 values: [ min_value_view, max_value_view ],
-                step: 24*60*60*1000,
+                step: 60*60*1000,
                 slide: function( event, ui ) {
                     $( "#amount" ).html( ui.values[0] + " " + ui.values[1] );
 
 
 //	                namespace.data.points.viewmin = ui.values[0];
 //                    namespace.data.points.viewmax = ui.values[1];
-////                    coord = namespace.graph.p2c({"x" : namespace.graph.getAxes().xaxis.min - (namespace.graph.getAxes().xaxis.min - ui.values[0])})
-////
-////                    if( typeof( coord.left ) != 'undefined' && coord.left != 0 )
-////                        namespace.graph.pan( coord );
+
                     var range = {};
                     range.from = ui.values[0];
                     range.to = ui.values[1];
                     namespace.pereplot(range);
 //
 
-//	                switch (true) {
-//		                case ui.values[1] - ui.values[0] < 7*24*60*60*1000 :
-//			                state = "HOUR";
-//			                break;
-//		                case ui.values[1] - ui.values[0] < 3*30*24*60*60*1000 :
-//			                state = "DAY";
-//			                break;
-//		                case ui.values[1] - ui.values[0] < 6*31*24*60*60*1000 :
-//			                state = "MONTH";
-//			                break;
-//		                default :
-//			                state = "DAY";
-//	                }
-//
-//	                if(state != namespace.scale_change.state.get().name)  {
-//		                namespace.scale_change.state.set(state);
-//
-//		                console.log("change") ;
-//		                namespace.plotInit();
-//
-//
-//	                }
+
                 }
             });
 
@@ -429,7 +455,8 @@
 
 
             var diff_days = Math.floor( ( date_range.to.getTime() - date_range.from.getTime() ) / 86400000 ); // 86400000 = 24*60*60*1000;
-            for( var i = 0; i < diff_days + 1; i++ ){
+	        data.by_day.a.push( [ new Date( date_range.to.getFullYear(), date_range.to.getMonth(), date_range.to.getDate() ), 0 ] )
+	        for( var i = 0; i < diff_days + 1; i++ ){
                 var items_count = 0;
                 for( var k = 0; k < 24; k++ ){
                     var hour = i*24 + k;
@@ -440,8 +467,8 @@
 
                 }
                 if (i % 2) {items_count0 = 10} else {items_count0 = 0};
-                data.by_day.a.push( [ new Date( date_range.to.getFullYear(), date_range.to.getMonth(), date_range.to.getDate() - i), items_count ] )
-                data.by_day.b.push( [ new Date( date_range.to.getFullYear(), date_range.to.getMonth(), date_range.to.getDate() - i), items_count0 ] )
+                data.by_day.a.push( [ new Date( date_range.to.getFullYear(), date_range.to.getMonth(), date_range.to.getDate() - i - 1), items_count ] )
+                data.by_day.b.push( [ new Date( date_range.to.getFullYear(), date_range.to.getMonth(), date_range.to.getDate() - i - 1), items_count0 ] )
 
             }
 //по часам
