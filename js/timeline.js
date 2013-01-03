@@ -170,31 +170,25 @@
         plotInit : function() {
             var namespace = this;
 
-	        namespace.fix_timestamp = ({
-		        "YEAR" : 365*24*60*60*1000,
-		        "MONTH" : 30*24*60*60*1000,
-		        "WEEK" : 7*24*60*60*1000 * 2,
-		        "DAY" : 24*60*60*1000  * 1
-	        })[ namespace.scale_change.state.get().name ];
 
             switch (this.scale_change.state.get().name) {
-                case 'YEAR':
-                    var data = [ { color:'#b7c1c4', "data" : namespace.data.data.by_year.b }, { color:'#f00',  "data" : namespace.data.data.by_year.a, "xaxis" : 2 } ]
-	                min_value = namespace.data.data.by_year.a[0][0].getTime();
-	                max_value = namespace.data.data.by_year.a[namespace.data.data.by_year.a.length - 1][0].getTime() + namespace.fix_timestamp;
-	                break;
-                case 'MONTH':
-                    var data = [ { color:'#b7c1c4', "data" : namespace.data.data.by_month.b }, { color:'#f00',  "data" : namespace.data.data.by_month.a, "xaxis" : 2 } ]
-	                min_value = namespace.data.data.by_month.a[0][0].getTime();
-	                max_value = namespace.data.data.by_month.a[namespace.data.data.by_month.a.length - 1][0].getTime() + namespace.fix_timestamp;
-	                break;
+//                case 'YEAR':
+//                    var data = [ { color:'#b7c1c4', "data" : namespace.data.data.by_year.a }, { color:'#f00',  "data" : namespace.data.data.by_year.a, "xaxis" : 2 } ]
+//	                min_value = namespace.data.data.by_year.a[0][0].getTime();
+//	                max_value = namespace.data.data.by_year.a[namespace.data.data.by_year.a.length - 1][0].getTime();
+//	                break;
+//                case 'MONTH':
+//                    var data = [ { color:'#b7c1c4', "data" : namespace.data.data.by_month.b }, { color:'#f00',  "data" : namespace.data.data.by_month.a, "xaxis" : 2 } ]
+//	                min_value = namespace.data.data.by_month.a[0][0].getTime();
+//	                max_value = namespace.data.data.by_month.a[namespace.data.data.by_month.a.length - 1][0].getTime();
+//	                break;
                 case 'DAY':
-                    var data = [ { color:'#b7c1c4', "data" : namespace.data.data.by_day.b }, { color:'#f00',  "data" : namespace.data.data.by_day.a, "xaxis" : 2 } ];
+                    var data = [ { color:'#b7c1c4', "data" : namespace.data.data.by_day.a }, { color:'#b7c1c4', "data" : namespace.data.data.by_day.a, "xaxis" : 2 }];
 	                min_value = namespace.data.data.by_day.a[0][0].getTime();
 	                max_value = namespace.data.data.by_day.a[namespace.data.data.by_day.a.length - 1][0].getTime();
 	                break;
                 case 'HOUR':
-                    var data = [ { color:'#b7c1c4', "data" : namespace.data.data.by_hour.b }, { color:'#f00',  "data" : namespace.data.data.by_hour.a, "xaxis" : 2 } ]
+                    var data = [ { color:'#b7c1c4', "data" : namespace.data.data.by_hour.a }, { color:'#f00',  "data" : namespace.data.data.by_hour.a, "xaxis" : 2 } ]
 	                min_value = namespace.data.data.by_hour.a[0][0].getTime();
 	                max_value = namespace.data.data.by_hour.a[namespace.data.data.by_hour.a.length - 1][0].getTime();
 	                break;
@@ -204,32 +198,87 @@
             }
 
 
-	        if (namespace.data.points.viewmin) {min_value_view = namespace.data.points.viewmin } else { min_value_view = min_value }
-	        if (namespace.data.points.viewmax) {max_value_view = namespace.data.points.viewmax } else { max_value_view = max_value  }
+	        if (namespace.data.points.viewmin) {
+		        min_value_view = namespace.data.points.viewmin
+	        } else {
+		        min_value_view = min_value
+	        }
+	        if (namespace.data.points.viewmax) {
+		        max_value_view = namespace.data.points.viewmax
+	        } else {
+		        max_value_view = max_value
+	        }
 
 
-            var placeholder = $("#placeholder");
+	        var placeholder = $("#placeholder");
             var options = {
                 "xaxes"	:	[
                     {
                         min         :   min_value_view,
                         max         :   max_value_view,
+	                    position: "bottom",
                         panRange: [min_value, max_value],
                         zoomRange: [24*60*60*1000, max_value - min_value],
                         mode: "time",
-                        tickLength: 5,
-                        "position": "bottom",
-                        "tickColor"     :   "#ffffff"
+	                    tickColor: "#f5f5f5",
+	                    "ticks"         :   function( date_range ){
+
+		                    var ticks       =   [],
+			                    first_date   =   new Date( min_value ),
+			                    last_date   =   new Date( max_value),
+			                    tick_counter =   ({
+				                    "MONTH" : (max_value - min_value) / (24*60*60*1000),
+				                    "HOUR" : (max_value - min_value) / (60*60*1000),
+				                    "DAY" : (max_value - min_value) / (24*60*60*1000)
+			                    })[ namespace.scale_change.state.get().name ];
+
+		                    switch( namespace.scale_change.state.get().name ) {
+			                    default     :
+				                    for( var i = 0; i <= tick_counter; i++ ){
+					                    var tick_date = new Date( last_date.getFullYear(), last_date.getMonth(), last_date.getDate() - i );
+					                    ticks.push( [ tick_date.getTime(), tick_date.getDate() ] ); // 12*60*60*1000 = 43200000 for correcting position (left border)
+				                    }
+				                    break;
+		                    }
+		                    return ticks;
+	                    }
                     },
                     {
                         min         :   min_value_view,
                         max         :   max_value_view,
+	                    position: "top",
                         panRange: [min_value, max_value],
-	                    zoomRange: [24*60*60*1000, max_value - min_value],
-	                    mode: "time",
-                        tickLength: 5,
-                        "position": "top",
-                        "tickColor"     :   "#ffffff"
+                        zoomRange: [24*60*60*1000, max_value - min_value],
+                        mode: "time",
+	                    "ticks"         :   function( date_range ){
+
+		                    var ticks       =   [],
+			                    first_tick_date = new Date( min_value ),
+			                    last_tick_date = new Date( max_value ),
+			                    tick_counter =   ({
+				                    "MONTH" : (max_value - min_value) / (24*60*60*1000),
+				                    "HOUR" : (max_value - min_value) / (60*60*1000),
+				                    "DAY" : (max_value - min_value) / (15*24*60*60*1000)
+			                    })[ namespace.scale_change.state.get().name ];
+
+		                    switch( namespace.scale_change.state.get().name ) {
+			                    case "HOUR"     :
+				                    var month_count = (last_tick_date.getTime() - first_tick_date.getTime())/ (4*24*60*60*1000);
+				                    for( var i = 0; i < month_count; i++ ){
+					                    var month_date_end = new Date( first_tick_date.getFullYear(), first_tick_date.getMonth(), first_tick_date.getDate() + i*4 ),
+						                    month_date_middle = new Date( month_date_end.getFullYear(), month_date_end.getMonth(), month_date_end.getDate());
+					                    ticks.push( [ month_date_middle.getTime(), months_names.nominative[ month_date_middle.getMonth() ] + " " + month_date_middle.getFullYear() ] );
+				                    }
+			                    default     :
+				                    var month_count = (last_tick_date.getTime() - first_tick_date.getTime())/ (4*24*60*60*1000);
+				                    for( var i = 0; i < month_count; i++ ){
+					                    var month_date_end = new Date( first_tick_date.getFullYear(), first_tick_date.getMonth(), first_tick_date.getDate() + i*4 ),
+						                    month_date_middle = new Date( month_date_end.getFullYear(), month_date_end.getMonth(), month_date_end.getDate());
+					                    ticks.push( [ month_date_middle.getTime(), months_names.nominative[ month_date_middle.getMonth() ] + " " + month_date_middle.getFullYear() ] );
+				                    }
+		                    }
+		                    return ticks;
+	                    }
                     }
                 ] ,
                 "crosshair" :   { "mode" : "x", "locked" : true, "image" : this.plot_crosshair_image },
@@ -273,20 +322,6 @@
             };
 
             this.graph = $.plot(placeholder, data, options);
-//            this.graph.lockCrosshair();
-//            $("#m100").on("click", function(){
-//                namespace.graph.pan({ left: -1000 });
-//
-//            })
-//            $("#p100").on("click", function(){
-//                namespace.graph.pan({ left: 1000 });
-//
-//            })
-            $("#zoom").on("click", function(){
-
-            })
-
-
 
 	        var pan_lock = true;
 	        $('#timeline_navigator canvas').bind('drag', function(){
@@ -355,28 +390,28 @@
 
 	            if (!zoom_lock)  $( "#slider" ).slider( "option", "values", [namespace.graph.getAxes().xaxis.min, namespace.graph.getAxes().xaxis.max] )
 //
-//	            switch (true) {
-//		            case namespace.graph.getAxes().xaxis.max - namespace.graph.getAxes().xaxis.min < 7*24*60*60*1000 :
-//			            state = "HOUR";
+	            switch (true) {
+		            case namespace.graph.getAxes().xaxis.max - namespace.graph.getAxes().xaxis.min < 7*24*60*60*1000 :
+			            state = "HOUR";
+			            break;
+		            default :
+			            state = "DAY";
+			            break;
+//		            case namespace.graph.getAxes().xaxis.max - namespace.graph.getAxes().xaxis.min < 6*31*24*60*60*1000 :
+//			            state = "MONTH";
 //			            break;
 //		            default :
 //			            state = "DAY";
-//			            break;
-////		            case namespace.graph.getAxes().xaxis.max - namespace.graph.getAxes().xaxis.min < 6*31*24*60*60*1000 :
-////			            state = "MONTH";
-////			            break;
-////		            default :
-////			            state = "DAY";
-//	            }
+	            }
 //
-//	            namespace.data.points.viewmin = namespace.graph.getAxes().xaxis.min;
-//	            namespace.data.points.viewmax = namespace.graph.getAxes().xaxis.max;
+	            namespace.data.points.viewmin = namespace.graph.getAxes().xaxis.min;
+	            namespace.data.points.viewmax = namespace.graph.getAxes().xaxis.max;
 //
 //	            if(state != namespace.scale_change.state.get().name)  {
-//		            console.log("change")
-//
+//		            console.log(state + " " + namespace.scale_change.state.get().name)
+////
 //		            namespace.scale_change.state.set(state);
-////		            namespace.plotInit();
+//////		            namespace.plotInit();
 //	            }
 
             });
@@ -480,8 +515,8 @@
 
             for( var i = 0; i < diff_hours; i++ ){
                 var items_count = ( typeof( this.data.statistic[ i ] ) != 'undefined' ) ? this.data.statistic[ i ][1] : 0;
-                data.by_hour.a.push( [ new Date( new Date(date_range.to.getFullYear(), date_range.to.getMonth(), date_range.to.getDate(), date_range.to.getHours() - i  ).getTime()), items_count ] )
-                data.by_hour.b.push( [ new Date( new Date(date_range.to.getFullYear(), date_range.to.getMonth(), date_range.to.getDate(), date_range.to.getHours() - i  ).getTime()), (i % 2) ? 10 : 0 ] )
+                data.by_hour.a.push( [ new Date( date_range.to.getFullYear(), date_range.to.getMonth(), date_range.to.getDate(), date_range.to.getHours() - i  ), items_count ] )
+                data.by_hour.b.push( [ new Date( date_range.to.getFullYear(), date_range.to.getMonth(), date_range.to.getDate(), date_range.to.getHours() - i  ), (i % 2) ? 10 : 0 ] )
             }
 
 
