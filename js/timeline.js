@@ -106,8 +106,6 @@
             this.data = {
                 "statistic"			:	[],
                 "data"			    :	[],
-                "points"			:	{},
-                "state"			    :	false,
                 "list"				:	this.settings.list,
                 "queries"			:	{},
                 "date_range"		:	{}
@@ -148,28 +146,28 @@
             var scale_change_bar = $(".scale-change-bar", this.target),
                 scale_change_bar_state = scale_change_bar.state({ "state_list" : SCALE_CHANGE_BAR_STATELIST });
 
+
+	        scale_change_bar_state.set( "DAY" );               // set default
             $("a", scale_change_bar).bind("click", function(e){
                 e.preventDefault();
                 scale_change_bar_state.set( $(this).data("scale-size") );
             });
-            this.scale_change = {
+
+	        this.scale_change = {
                 "bar"	:	scale_change_bar,
                 "state"	:	scale_change_bar_state
             };
 
             scale_change_bar.bind("state-change", function(e, state){
-	            namespace.data.state = state;
-                namespace.plotInit();
+                 namespace.plotInit();
 
             });
-	        scale_change_bar_state.set( "DAY" )
-            namespace.plotInit();
+	        namespace.plotInit();
 
 
         },
         plotInit : function() {
             var namespace = this;
-
 
             switch (this.scale_change.state.get().name) {
 //                case 'YEAR':
@@ -189,54 +187,48 @@
 	                break;
                 case 'HOUR':
                     var data = [ { color:'#b7c1c4', "data" : namespace.data.data.by_hour.a }, { color:'#f00',  "data" : namespace.data.data.by_hour.a, "xaxis" : 2 } ]
-	                min_value = namespace.data.data.by_hour.a[0][0].getTime();
-	                max_value = namespace.data.data.by_hour.a[namespace.data.data.by_hour.a.length - 1][0].getTime();
+	                min_value = namespace.data.data.by_day.a[0][0].getTime();
+	                max_value = namespace.data.data.by_day.a[namespace.data.data.by_day.a.length - 1][0].getTime();
 	                break;
                 default:
-                    var data = [ { color:'#b7c1c4', "data" : namespace.data.data.by_day.b}, { color:'#f00',  "data" : namespace.data.data.by_day.a, "xaxis" : 2 } ]
-                    break;
+	                var data = [ { color:'#b7c1c4', "data" : namespace.data.data.by_day.a }, { color:'#b7c1c4', "data" : namespace.data.data.by_day.a, "xaxis" : 2 }];
+	                min_value = namespace.data.data.by_day.a[0][0].getTime();
+	                max_value = namespace.data.data.by_day.a[namespace.data.data.by_day.a.length - 1][0].getTime();
+	                break;
             }
 
 
-	        if (namespace.data.points.viewmin) {
-		        min_value_view = namespace.data.points.viewmin
-	        } else {
-		        min_value_view = min_value
-	        }
-	        if (namespace.data.points.viewmax) {
-		        max_value_view = namespace.data.points.viewmax
-	        } else {
-		        max_value_view = max_value
-	        }
-
+	        if (!namespace.data.viewmin) { namespace.data.viewmin = min_value }
+	        if (!namespace.data.viewmax) { namespace.data.viewmax = max_value }
 
 	        var placeholder = $("#placeholder");
             var options = {
                 "xaxes"	:	[
                     {
-                        min         :   min_value_view,
-                        max         :   max_value_view,
+                        min         :   namespace.data.viewmin,
+                        max         :   namespace.data.viewmax,
 	                    position: "bottom",
                         panRange: [min_value, max_value],
                         zoomRange: [24*60*60*1000, max_value - min_value],
                         mode: "time",
 	                    tickColor: "#f5f5f5",
-	                    "ticks"         :   function( date_range ){
-
+	                    "ticks"         :   function(){
+		                    __((namespace.data.viewmax - namespace.data.viewmin)/ (60*60*1000))
 		                    var ticks       =   [],
-			                    first_date   =   new Date( min_value ),
-			                    last_date   =   new Date( max_value),
-			                    tick_counter =   ({
-				                    "MONTH" : (max_value - min_value) / (24*60*60*1000),
-				                    "HOUR" : (max_value - min_value) / (60*60*1000),
-				                    "DAY" : (max_value - min_value) / (24*60*60*1000)
-			                    })[ namespace.scale_change.state.get().name ];
+			                    last_date   =   new Date( namespace.data.viewmax ),
+			                    tick_counter=   ({ "MONTH" : 31, "DAY" : 100, "HOUR" : 333 })[ namespace.scale_change.state.get().name ];
 
 		                    switch( namespace.scale_change.state.get().name ) {
+			                    case 'HOUR':
+				                    for( var i = 0; i < tick_counter; i++ ){
+					                    var tick_date = new Date( last_date.getFullYear(), last_date.getMonth(), last_date.getDate(),  last_date.getHours() - i - 1 );
+					                    ticks.push( [ tick_date.getTime() /*+ 30*60*1000 */, "" + (( tick_date.getHours() < 10 ) ? "0" : "" ) + tick_date.getHours() ] );
+				                    }
+				                    break;
 			                    default     :
 				                    for( var i = 0; i <= tick_counter; i++ ){
 					                    var tick_date = new Date( last_date.getFullYear(), last_date.getMonth(), last_date.getDate() - i );
-					                    ticks.push( [ tick_date.getTime(), tick_date.getDate() ] ); // 12*60*60*1000 = 43200000 for correcting position (left border)
+					                    ticks.push( [ tick_date.getTime() /*+ 43200000*/, tick_date.getDate() ] ); // 12*60*60*1000 = 43200000 for correcting position (left border)
 				                    }
 				                    break;
 		                    }
@@ -244,41 +236,38 @@
 	                    }
                     },
                     {
-                        min         :   min_value_view,
-                        max         :   max_value_view,
+	                    min         :   namespace.data.viewmin,
+	                    max         :   namespace.data.viewmax,
 	                    position: "top",
                         panRange: [min_value, max_value],
                         zoomRange: [24*60*60*1000, max_value - min_value],
                         mode: "time",
-	                    "ticks"         :   function( date_range ){
+	                    "ticks"         :   function(){
 
-		                    var ticks       =   [],
-			                    first_tick_date = new Date( min_value ),
-			                    last_tick_date = new Date( max_value ),
-			                    tick_counter =   ({
-				                    "MONTH" : (max_value - min_value) / (24*60*60*1000),
-				                    "HOUR" : (max_value - min_value) / (60*60*1000),
-				                    "DAY" : (max_value - min_value) / (15*24*60*60*1000)
-			                    })[ namespace.scale_change.state.get().name ];
+		                    var ticks = [],
+			                    first_tick_date = new Date( namespace.data.viewmin ),
+			                    last_tick_date = new Date( namespace.data.viewmax );
 
 		                    switch( namespace.scale_change.state.get().name ) {
-			                    case "HOUR"     :
-				                    var month_count = (last_tick_date.getTime() - first_tick_date.getTime())/ (4*24*60*60*1000);
-				                    for( var i = 0; i < month_count; i++ ){
-					                    var month_date_end = new Date( first_tick_date.getFullYear(), first_tick_date.getMonth(), first_tick_date.getDate() + i*4 ),
-						                    month_date_middle = new Date( month_date_end.getFullYear(), month_date_end.getMonth(), month_date_end.getDate());
-					                    ticks.push( [ month_date_middle.getTime(), months_names.nominative[ month_date_middle.getMonth() ] + " " + month_date_middle.getFullYear() ] );
-				                    }
+			                    case 'DAY':
 			                    default     :
-				                    var month_count = (last_tick_date.getTime() - first_tick_date.getTime())/ (4*24*60*60*1000);
+				                    var month_count = (last_tick_date.getFullYear() - first_tick_date.getFullYear()) * 12 - first_tick_date.getMonth() + 1 + last_tick_date.getMonth()
 				                    for( var i = 0; i < month_count; i++ ){
-					                    var month_date_end = new Date( first_tick_date.getFullYear(), first_tick_date.getMonth(), first_tick_date.getDate() + i*4 ),
-						                    month_date_middle = new Date( month_date_end.getFullYear(), month_date_end.getMonth(), month_date_end.getDate());
+					                    var month_date_end = new Date( first_tick_date.getFullYear(), first_tick_date.getMonth() + i + 1, 0 ),
+						                    month_date_middle = new Date( month_date_end.getFullYear(), month_date_end.getMonth(), parseInt( month_date_end.getDate()/2 ));
 					                    ticks.push( [ month_date_middle.getTime(), months_names.nominative[ month_date_middle.getMonth() ] + " " + month_date_middle.getFullYear() ] );
 				                    }
+			                    case 'HOUR' :
+				                    var month_count = last_tick_date.getUTCMonth() - first_tick_date.getUTCMonth() + 1;
+				                    for( var i = 0; i < month_count; i++ ){
+					                    var month_date_end = new Date( first_tick_date.getFullYear(), first_tick_date.getMonth() + i + 1, 0 ),
+						                    month_date_middle = new Date( month_date_end.getFullYear(), month_date_end.getMonth(), parseInt( month_date_end.getDate()/2 ));
+					                    ticks.push( [ month_date_middle.getTime(), months_names.nominative[ month_date_middle.getMonth() ] + " " + month_date_middle.getFullYear() ] );
+				                    }
+				                    break;
 		                    }
 		                    return ticks;
-	                    }
+	                    },
                     }
                 ] ,
                 "crosshair" :   { "mode" : "x", "locked" : true, "image" : this.plot_crosshair_image },
@@ -312,7 +301,7 @@
                     max         :   null,
                 },
                 zoom: {
-                    interactive: true,
+                    interactive: false,
 	                amount: 1.1
                 },
                 pan: {
@@ -349,9 +338,9 @@
 //                plot.setCrosshair({ "x" : namespace.crosshair_position });
 //                plot.lockCrosshair();
 
-				if (!pan_lock)  $( "#slider" ).slider( "option", "values", [namespace.graph.getAxes().xaxis.min, namespace.graph.getAxes().xaxis.max] );
-				namespace.data.points.viewmin = namespace.graph.getAxes().xaxis.min;
-				namespace.data.points.viewmax = namespace.graph.getAxes().xaxis.max;
+				namespace.data.viewmin = namespace.graph.getAxes().xaxis.min;
+	            namespace.data.viewmax = namespace.graph.getAxes().xaxis.max;
+	            if (!pan_lock)  $( "#slider" ).slider( "option", "values", [namespace.data.viewmin, namespace.data.viewmax] );
 
 
 
@@ -379,7 +368,6 @@
 //	            }
 
 
-
             });
             placeholder.bind('plotzoom', function (event, plot) {
                 var axes = plot.getAxes();
@@ -388,10 +376,10 @@
                     + " and y: " + axes.yaxis.min.toFixed(2)
                     + " &ndash; " + axes.yaxis.max.toFixed(2));
 
-	            if (!zoom_lock)  $( "#slider" ).slider( "option", "values", [namespace.graph.getAxes().xaxis.min, namespace.graph.getAxes().xaxis.max] )
-//
+ //
+	            var state = namespace.scale_change.state.get().name;
 	            switch (true) {
-		            case namespace.graph.getAxes().xaxis.max - namespace.graph.getAxes().xaxis.min < 7*24*60*60*1000 :
+		            case namespace.data.viewmax - namespace.data.viewmin < 3*24*60*60*1000 :
 			            state = "HOUR";
 			            break;
 		            default :
@@ -403,33 +391,35 @@
 //		            default :
 //			            state = "DAY";
 	            }
+
+
 //
-	            namespace.data.points.viewmin = namespace.graph.getAxes().xaxis.min;
-	            namespace.data.points.viewmax = namespace.graph.getAxes().xaxis.max;
-//
-//	            if(state != namespace.scale_change.state.get().name)  {
+	            if(state != namespace.scale_change.state.get().name)  {
 //		            console.log(state + " " + namespace.scale_change.state.get().name)
-////
-//		            namespace.scale_change.state.set(state);
-//////		            namespace.plotInit();
-//	            }
+					__("change")
+		            namespace.scale_change.state.set(state);
+////		            namespace.plotInit();
+	            }
+//	            namespace.data.viewmin = namespace.graph.getAxes().xaxis.min;
+//	            namespace.data.viewmax = namespace.graph.getAxes().xaxis.max;
+//	            if (!zoom_lock)  $( "#slider" ).slider( "option", "values", [namespace.data.viewmin, namespace.data.viewmax] );
 
             });
 
 //	        var state = namespace.data.state;
-
+	        __("slder")
 	        $( "#slider" ).slider({
                 range: true,
                 min: min_value,
                 max: max_value,
-                values: [ min_value_view, max_value_view ],
+                values: [ namespace.data.viewmin, namespace.data.viewmax ],
                 step: 60*60*1000,
                 slide: function( event, ui ) {
                     $( "#amount" ).html( ui.values[0] + " " + ui.values[1] );
 
+	                namespace.data.viewmin = ui.values[0];
+                    namespace.data.viewmax = ui.values[1];
 
-//	                namespace.data.points.viewmin = ui.values[0];
-//                    namespace.data.points.viewmax = ui.values[1];
 
                     var range = {};
                     range.from = ui.values[0];
@@ -461,11 +451,9 @@
             if( typeof( coord.left ) != 'undefined' && coord.left != 0 )
                 namespace.graph.pan( coord );
 
+//	         $( "#slider" ).slider( "option", "values", [namespace.data.viewmin, namespace.data.viewmax] );
 
         },
-	    daysInMonth: function (month,year) {
-			return new Date(year, month, 0).getDate();
-		},
         "assembly"  :   function( data ){
             var end_date = this.data.date_range.to;
 
