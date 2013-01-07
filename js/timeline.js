@@ -196,12 +196,15 @@
 	                max_value = namespace.data.data.by_day.a[namespace.data.data.by_day.a.length - 1][0].getTime();
 	                break;
             }
-
+	        var data2 = [ { color:'#b7c1c4', "data" : namespace.data.data.by_day.a }];
+	        min_value2 = namespace.data.data.by_day.a[0][0].getTime();
+	        max_value2 = namespace.data.data.by_day.a[namespace.data.data.by_day.a.length - 1][0].getTime();
 
 	        if (!namespace.data.viewmin) { namespace.data.viewmin = min_value }
 	        if (!namespace.data.viewmax) { namespace.data.viewmax = max_value }
 
 	        var placeholder = $("#placeholder");
+	        var placeholder2 = $("#slider");
             var options = {
                 "xaxes"	:	[
                     {
@@ -213,7 +216,6 @@
                         mode: "time",
 	                    tickColor: "#f5f5f5",
 	                    "ticks"         :   function(){
-		                    __((namespace.data.viewmax - namespace.data.viewmin)/ (60*60*1000))
 		                    var ticks       =   [],
 			                    last_date   =   new Date( namespace.data.viewmax ),
 			                    tick_counter=   ({ "MONTH" : 31, "DAY" : 100, "HOUR" : 333 })[ namespace.scale_change.state.get().name ];
@@ -309,8 +311,51 @@
                     frameRate: 1000
                 }
             };
+            var options2 = {
+                "xaxes"	:
+
+                    {
+	                    min         :   namespace.data.viewmin,
+	                    max         :   namespace.data.viewmax,
+	                    position: "top",
+                        mode: "time"
+
+                    }
+                ,
+                "crosshair" :   { "mode" : "x", "locked" : true, "image" : this.plot_crosshair_image },
+                "grid"		:	{
+                    "clickable"     :   true,
+                    "hoverable"     :   false,
+                    "autoHighlight" :   false,
+                    "show"			:	false,
+                    "borderWidth"	:	0,
+                    "lineWidth"		:	0
+                },
+                "series":	{
+//                     "lines"		:	{
+//                     "lineWidth"	:	0,
+//                     "fill"			:	true,
+//                     "fillColor"	:	"#b7c1c4"
+//                     },
+                    "bars"		:	{
+                        "show"			:	true,
+                        "lineWidth"		:	0,
+                        "fill"			:	true,
+//                        align : "center",
+                        "barWidth"		:   24*60*60*1000
+                    }
+                },
+                yaxis: {
+                    zoomRange   :   false,
+                    panRange    :   false,
+                    show        :   false,
+                    min         :   null,
+                    max         :   null,
+                }
+            };
 
             this.graph = $.plot(placeholder, data, options);
+            this.graph2 = $.plot(placeholder2, data2, options2);
 
 	        var pan_lock = true;
 	        $('#timeline_navigator canvas').bind('drag', function(){
@@ -396,7 +441,6 @@
 //
 	            if(state != namespace.scale_change.state.get().name)  {
 //		            console.log(state + " " + namespace.scale_change.state.get().name)
-					__("change")
 		            namespace.scale_change.state.set(state);
 ////		            namespace.plotInit();
 	            }
@@ -407,7 +451,6 @@
             });
 
 //	        var state = namespace.data.state;
-	        __("slder")
 	        $( "#slider" ).dragslider({
                 range: true,
 		        rangeDrag: true,
