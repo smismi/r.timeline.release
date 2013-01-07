@@ -340,7 +340,7 @@
 
 				namespace.data.viewmin = namespace.graph.getAxes().xaxis.min;
 	            namespace.data.viewmax = namespace.graph.getAxes().xaxis.max;
-	            if (!pan_lock)  $( "#slider" ).slider( "option", "values", [namespace.data.viewmin, namespace.data.viewmax] );
+	            if (!pan_lock)  $( "#slider" ).dragslider( "option", "values", [namespace.data.viewmin, namespace.data.viewmax] );
 
 
 
@@ -408,8 +408,10 @@
 
 //	        var state = namespace.data.state;
 	        __("slder")
-	        $( "#slider" ).slider({
+	        $( "#slider" ).dragslider({
                 range: true,
+		        rangeDrag: true,
+		        animate: true,
                 min: min_value,
                 max: max_value,
                 values: [ namespace.data.viewmin, namespace.data.viewmax ],
