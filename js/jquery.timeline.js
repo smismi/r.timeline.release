@@ -278,7 +278,7 @@
 
 		},
 
-		"plotInit"	:	function( date_range ){
+		"plotInit"	:	function( ){
 
 			var namespace = this;
 
@@ -443,17 +443,10 @@
 					interactive: true,
 					frameRate: 1000
 				}
-			}
+			};
 
 			this.graph = $.plot($("#timeline_navigator", this.target), data, options);
 			this.graph.lockCrosshair();
-
-
-			$("#timeline_navigator").bind('plotpan', function (event, plot) {
-				(namespace.graph.getAxes().xaxis.min -  namespace.graph.getAxes().xaxis.datamin < 0) ? $(".prev span.ico").hide() : $(".prev span.ico").show();
-				(namespace.graph.getAxes().xaxis.max -  namespace.graph.getAxes().xaxis.datamax > 0) ? $(".next span.ico").hide() : $(".next span.ico").show();
-
-			});
 		},
 
 		"assembly"  :   function( data ){
