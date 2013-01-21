@@ -28,7 +28,7 @@
                                 <div class=\"announce\">\n\
                                     <div class=\"article-actions\">\n\
                                         <a class=\"comments_link\" href=\"${url}#comments\" target=\"_blank\">\n\
-                                            <span class=\"ico comments_ico\" />\n\
+                                              <span class=\"ico comments_ico\" />\n\
                                             <span class=\"count\">${comments}</span>\n\
                                         </a>\n\
                                         <span class=\"views_count\">\n\

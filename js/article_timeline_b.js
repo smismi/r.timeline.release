@@ -188,7 +188,7 @@
 
 
 			namespace.plot_crosshair_image = new Image();
-			namespace.plot_crosshair_image.src = "/i/icons/timeline/crosshair.png";
+			namespace.plot_crosshair_image.src = "i/icons/timeline/crosshair.png";
 
 
 			date_range  = this.getActualDate();
@@ -397,7 +397,9 @@
 						"min"           :   min_value,
 						"max"           :   max_value,
 						"panRange"		: 	[min_date, max_date],
-						"tickSize"      :   4,
+						"tickLength"    :   0,
+						"position"      :   "top",
+						"tickcolor"		: 	"#ffffff",
 						"ticks"         :   function( date_range ){
 
 							var ticks = [],
@@ -996,7 +998,7 @@
 			$("#timeline_flow").css({"height": 400, overflow: "auto"}).bind("scroll", function(e){
 				namespace.story.scrollTop = $("#timeline_flow").scrollTop();
 
-				namespace.story.dummy.position_top =  namespace.story.dummy.position().top + namespace.story.dummy.outerHeight()/2 + 200;
+				namespace.story.dummy.position_top =  namespace.story.dummy.position().top + namespace.story.dummy.outerHeight()/2;
 				namespace.scrollEvents.update.objects.activate.apply(namespace);
 				namespace.scrollEvents.update.statistic.upload.apply(namespace);
 				namespace.scrollEvents.update.objects.upload.apply(namespace);
