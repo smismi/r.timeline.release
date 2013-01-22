@@ -189,7 +189,7 @@
 
 
 			namespace.plot_crosshair_image = new Image();
-			namespace.plot_crosshair_image.src = "/i/icons/timeline/crosshair.png";
+			namespace.plot_crosshair_image.src = "i/icons/timeline/crosshair.png";
 
 
 			date_range  = this.getActualDate();
@@ -364,7 +364,7 @@
 						{
 							"min"           :   min_value,
 							"max"           :   max_value,
-						"panRange"		: 	[min_date, max_date],
+							"panRange"		: 	[min_date, max_date],
 							"tickLength"    :   0,
 							"position"      :   "bottom",
 							"ticks"         :   function( date_range ){
@@ -397,8 +397,10 @@
 						{
 							"min"           :   min_value,
 							"max"           :   max_value,
-						"panRange"		: 	[min_date, max_date],
-							"tickSize"      :   4,
+							"panRange"		: 	[min_date, max_date],
+							"tickLength"    :   0,
+							"position"      :   "top",
+							"tickcolor"		: 	"#ffffff",
 							"ticks"         :   function( date_range ){
 
 								var ticks = [],
@@ -433,10 +435,7 @@
 										break;
 								}
 								return ticks;
-							},
-							"position"      :   "top",
-							"labelHeight"   :   0,
-							"tickColor"     :   "#ffffff"
+							}
 						}
 				],
 				pan: {

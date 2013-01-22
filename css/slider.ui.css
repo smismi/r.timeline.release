@@ -12,9 +12,9 @@
 .ui-slider .ui-slider-handle { position: absolute; z-index: 2; width: 10px; height: 20px; cursor: default; }
 .ui-slider .ui-slider-range { position: absolute; z-index: 1; font-size: 12px; display: block; border: 0; background-position: 0 0; }
 
-.ui-slider-horizontal { height: 20px;  background: #ffffee }
+.ui-slider-horizontal { height: 20px;  background: transparent }
 .ui-slider-horizontal .ui-slider-handle { top: 22px; margin-left: -5px; background: #00f;}
-.ui-slider-horizontal .ui-slider-range { top: 0; height: 100%; border: 2px solid red;}
+.ui-slider-horizontal .ui-slider-range { top: 0; height: 100%; border: 2px solid #40e0d0;}
 .ui-slider-horizontal .ui-slider-range-min { left: 0; }
 .ui-slider-horizontal .ui-slider-range-max { right: 0; }
 
