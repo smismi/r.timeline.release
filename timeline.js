@@ -56,6 +56,7 @@ var barWidth = 24*60*60*1000;
 function plotInit() {
 
 	var placeholder = $("#timeline_navigator");
+	var placeholder2 = $("#timeline_navigator2");
 	var data = [ { "data" : data0 } ];
    	var min_value = new Date("2012-10-30 00:00:00");
    	var max_value = new Date("2012-12-14 00:00:00");
@@ -80,15 +81,10 @@ function plotInit() {
 					var last_date = new Date(plot.getAxes().xaxis.max);
 				}
 
-				console.log(tick_counter);
-
-
-
-
-				for( var i = 0; i <= tick_counter; i++ ){
-					var tick_date = new Date( last_date.getFullYear(), last_date.getMonth(), last_date.getDate() - i );
-					ticks.push( [ tick_date.getTime() /*+ 43200000*/, tick_date.getDate() ] ); // 12*60*60*1000 = 43200000 for correcting position (left border)
-				}
+										for( var i = 0; i <= tick_counter; i++ ){
+											var tick_date = new Date( last_date.getFullYear(), last_date.getMonth(), last_date.getDate() - i );
+											ticks.push( [ tick_date.getTime() /*+ 43200000*/, tick_date.getDate() ] ); // 12*60*60*1000 = 43200000 for correcting position (left border)
+										}
 
 
 
@@ -127,8 +123,47 @@ function plotInit() {
 			amount: 1.1
 		}
 
+	}
+	var options2 = {
+		xaxis: {
+			min			:	viewmin,
+			max			:	viewmax,
+			position	:	"bottom",
+			panRange	:	[min_value, max_value],
+			"ticks"         :   function(){
+				var ticks =   [];
+				return ticks;
+			}
+		},
+		"series":	{
+			"bars"		:	{
+				"show"			:	true,
+				"lineWidth"		:	0,
+				"fill"			:	true,
+				"fillColor"		:	"#b7c1c4",
+				"barWidth"		:	({ "MONTH" : 24*60*60*1000, "WEEK" : 24*60*60*1000, "DAY" : 60*60*1000 })[ "MONTH" ]
+			},
+			"shadowSize"	:	0
+		},
+		"yaxes"	:	[{
+			"zoomRange" :   false,
+			"panRange"  :   false,
+			"show"      :   false,
+			"min"       :   null,
+			"max"       :   null
+		}],
+		pan: {
+			interactive: true,
+			frameRate: 1000
+		},
+		zoom: {
+			interactive: true,
+			amount: 1.1
+		}
+
 	};
 	var plot = $.plot(placeholder, data, options);
+	$.plot(placeholder2, data, options2);
 
 	var pan_lock = true;
 	var zoom_lock = true;
