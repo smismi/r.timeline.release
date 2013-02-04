@@ -48,23 +48,53 @@ var data0 = [
 	[new Date("2012-12-14 00:00:00"), 0]
 ];
 
-
+var months_names    =   {
+	"nominative"    :   [ "январь", "февраль", "март", "апрель", "май", "июнь", "июль", "август", "сентябрь", "октябрь", "ноябрь", "декабрь" ],
+	"genitive"      :   [ "января", "февраля", "марта", "апреля", "мая", "июня", "июля", "августа", "сентября", "октября", "ноября", "декабря" ]
+};
 
 var barWidth = 24*60*60*1000;
 
 
 function plotInit() {
-
-	var placeholder = $("#timeline_navigator");
+ 	var placeholder = $("#timeline_navigator");
 	var placeholder2 = $("#timeline_navigator2");
-	var data = [ { "data" : data0 } ];
+	var data = [ { color:'#f00', "data" : data0 },  { color:'#f00', "data" : data0, "xaxis" : 2} ];
    	var min_value = new Date("2012-10-30 00:00:00");
    	var max_value = new Date("2012-12-14 00:00:00");
    	var viewmin = new Date("2012-10-30 00:00:00");
    	var viewmax = new Date("2012-12-14 00:00:00");
 
 	var options = {
-		xaxis: {
+		grid: {
+			labelMargin: 22
+//
+//			markings		:	function areas(axes) {
+//
+//				var markings            =   [],
+//					markings_counter    =    31;
+//
+//				do {
+//					if( axes.xaxis.ticks[ markings_counter  ] ){
+//
+//						var fix_timestamp =  43200000;
+//
+//						markings.push({
+//							"x1axis"		: {
+//								"from"	: axes.xaxis.ticks[ markings_counter  ].v + fix_timestamp,
+//								"to"	: axes.xaxis.ticks[ markings_counter - axes.xaxis.n ].v + fix_timestamp
+//							},
+//							"color"		: ( markings_counter % 2 ) ? "#ffffff" : "#f7f7f7"
+//						});
+//					}
+//
+//					markings_counter -= axes.xaxis.n;
+//				} while ( markings_counter > 0 );
+//
+//				return markings;
+//			}
+		},
+		"xaxes"	: [{
 			min			:	viewmin,
 			max			:	viewmax,
 			position	:	"bottom",
@@ -86,23 +116,48 @@ function plotInit() {
 											ticks.push( [ tick_date.getTime() /*+ 43200000*/, tick_date.getDate() ] ); // 12*60*60*1000 = 43200000 for correcting position (left border)
 										}
 
-
-
-//				for( var i = 0; i <= tick_counter; i++ ){
-//					var tick_date = new Date( last_date.getFullYear(), last_date.getMonth(), last_date.getDate(), last_date.getHours() - i );
-//					ticks.push( [ tick_date.getTime() /*+ 43200000*/, tick_date.getHours() ] ); // 12*60*60*1000 = 43200000 for correcting position (left border)
-//				}
 				return ticks;
 			}
+//			tickFormatter: function formatter(val, axis) {
+//				return val.toFixed(axis.tickDecimals);
+//			}
 
 
 		},
+			{
+			min			:	viewmin,
+			max			:	viewmax,
+			position	:	"top",
+			panRange	:	[min_value, max_value],
+			tickOffset: {x:12, y:0},
+			"ticks"         :   function(){
+
+				var ticks =   [],
+					first_tick_date = new Date( viewmin ),
+					last_tick_date = new Date( viewmax );
+//				if (!plot) {
+//					var month_counter = Math.floor((viewmax - viewmin) /  15*24*60*60*1000);
+//					var month_last_date = viewmax;
+//				} else {
+//					var month_counter = Math.floor((plot.getAxes().xaxis.max - plot.getAxes().xaxis.min) /  15*24*60*60*1000);
+//					var month_last_date = new Date(plot.getAxes().xaxis.max);
+//				}
+
+				var month_count = (last_tick_date.getFullYear() - first_tick_date.getFullYear()) * 12 - first_tick_date.getMonth() + 1 + last_tick_date.getMonth()
+				for( var i = 0; i < month_count; i++ ){
+					var month_date_end = new Date( first_tick_date.getFullYear(), first_tick_date.getMonth() + i + 1, 0 ),
+						month_date_middle = new Date( month_date_end.getFullYear(), month_date_end.getMonth(), parseInt( month_date_end.getDate() ));
+					ticks.push( [ month_date_middle.getTime(), months_names.nominative[ month_date_middle.getMonth() ] + " " + month_date_middle.getFullYear() ] );
+				}
+
+				return ticks;
+			}
+		}],
 		"series":	{
 			"bars"		:	{
 				"show"			:	true,
 				"lineWidth"		:	0,
 				"fill"			:	true,
-				"fillColor"		:	"#b7c1c4",
 				"barWidth"		:	({ "MONTH" : 24*60*60*1000, "WEEK" : 24*60*60*1000, "DAY" : 60*60*1000 })[ "MONTH" ]
 			},
 			"shadowSize"	:	0
@@ -164,6 +219,15 @@ function plotInit() {
 	};
 	var plot = $.plot(placeholder, data, options);
 	$.plot(placeholder2, data, options2);
+
+
+
+	// add labels
+
+
+
+
+
 
 	var pan_lock = true;
 	var zoom_lock = true;
