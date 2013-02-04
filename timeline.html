@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Назначение Шойгу и отставка Сердюкова | РИА Новости</title>
+
+	<link rel="stylesheet" type="text/css" href="css/common.css">
+	<link rel="stylesheet" href="css/slider.ui.css" />
+
+    <script type="text/javascript" src="js/jquery.min.js"></script>
+    <script type="text/javascript" src="js/jquery-ui.js"></script>
+    <script type="text/javascript" src="js/dragslider.js"></script>
+    <script type="text/javascript" src="js/jquery.state.js?"></script>
+    <script type="text/javascript" src="js/jquery.tmpl.js?"></script>
+    <script type="text/javascript" src="js/jquery.flot.js?"></script>
+    <script type="text/javascript" src="js/jquery.flot.crosshair.js"></script>
+    <script type="text/javascript" src="js/jquery.flot.navigate.js"></script>
+    <script type="text/javascript" src="js/jquery.flot.time.js"></script>
+    <script type="text/javascript" src="js/jquery.flot.selection.js"></script>
+    <script type="text/javascript" src="js/iscroll4.js"></script>
+	<script type="text/javascript" src="timeline.js"></script>
+	<style type="text/css">
+		#timeline_navigator {
+			border: 1px solid red;
+			width: 1014px;
+			height: 500px;
+			margin-left: -7px;
+			/*overflow: scroll;*/
+		}
+		#timeline_navigator2 {
+			border: 1px solid red;
+			width: 1014px;
+			height: 40px;
+			margin-left: -7px;
+			/*overflow: scroll;*/
+		}
+		#slider {
+			border: 1px solid red;
+			width: 1000px;
+			height: 20px;
+			/*overflow: scroll;*/
+		}
+	</style>
+</head>
+<body>
+
+
+	<div id="story_timeline_container" class="story_timeline_container">
+		<div id="timeline_navigator" unselectable="on"
+		     style="padding: 0px; position: relative;">
+		</div>
+	</div>
+	<div id="story_timeline_container2" class="story_timeline_container">
+		<div id="timeline_navigator2" unselectable="on"
+		     style="padding: 0px; position: relative;">
+		</div>
+	</div>
+	<div id="slider" class="story_timeline_container">
+
+	</div>
+
+
+<script type="text/javascript">
+
+	$(function(){
+
+
+		plotInit();
+
+
+
+	});
+
+</script>
+
+</body>
+</html>
