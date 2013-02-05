@@ -39,12 +39,12 @@ var data0 = [
 	[new Date("2012-12-05 00:00:00"), 0],
 	[new Date("2012-12-06 00:00:00"), 0],
 	[new Date("2012-12-07 00:00:00"), 0],
-	[new Date("2012-12-08 00:00:00"), 0],
-	[new Date("2012-12-09 00:00:00"), 1],
-	[new Date("2012-12-10 00:00:00"), 0],
-	[new Date("2012-12-11 00:00:00"), 0],
-	[new Date("2012-12-12 00:00:00"), 0],
-	[new Date("2012-12-13 00:00:00"), 0],
+	[new Date("2012-12-08 00:00:00"), 1],
+	[new Date("2012-12-09 00:00:00"), 3],
+	[new Date("2012-12-10 00:00:00"), 4],
+	[new Date("2012-12-11 00:00:00"), 14],
+	[new Date("2012-12-12 00:00:00"), 29],
+	[new Date("2012-12-13 00:00:00"), 33],
 	[new Date("2012-12-14 00:00:00"), 0]
 ];
 
@@ -62,15 +62,18 @@ function plotInit() {
 	var data = [ { color:'#f00', "data" : data0 },  { color:'#f00', "data" : data0, "xaxis" : 2} ];
 	var data2 = [ { color:'#f00', "data" : data0 } ];
    	var min_value = new Date("2012-10-30 00:00:00");
-   	var max_value = new Date("2012-12-14 00:00:00");
-   	var viewmin = new Date("2012-10-30 00:00:00");
-   	var viewmax = new Date("2012-12-14 00:00:00");
+   	var max_value = new Date("2012-12-15 00:00:00");
+   	var viewmin = new Date("2012-11-05 00:00:00");
+   	var viewmax = new Date("2012-11-10 00:00:00");
 
 	var options = {
 		crosshair :   { "mode" : "x", "locked" : true },
 		grid: {
 			borderWidth	:	1,
-			lineWidth	:	0
+			lineWidth	:	0,
+			borderColor	:	"#ddd",
+			hoverable: true,
+			clickable: true
 		},
 		"xaxes"	: [{
 			min			:	viewmin,
@@ -165,11 +168,10 @@ function plotInit() {
 		crosshair :   { "mode" : "x", "locked" : true },
 		grid: {
 			borderWidth	:	1,
-			lineWidth	:	0
+			lineWidth	:	0,
+			borderColor	:	"#ddd"
 		},
 		xaxis: {
-			min			:	viewmin,
-			max			:	viewmax,
 			position	:	"top",
 			"show"      :   false,
 			tickOffset	: 	function(){
@@ -271,6 +273,31 @@ function plotInit() {
 
 	});
 
+	var previousPoint = null;
+	placeholder.bind("plothover", function (event, pos, item) {
+
+			if (item) {
+				if (previousPoint != item.dataIndex) {
+					previousPoint = item.dataIndex;
+
+					$("#tooltip").remove();
+					var x = item.datapoint[0].toFixed(2),
+						y = item.datapoint[1].toFixed(2);
+
+					showTooltip(item.pageX, item.pageY,
+						"title: 234");
+				}
+			}
+			else {
+				$("#tooltip").remove();
+				previousPoint = null;
+			}
+	});
+	placeholder.on("plotclick", function (event, pos, item) {
+
+
+
+	});
 
 
 
@@ -307,6 +334,20 @@ function plotInit() {
 		if( typeof( coord.left ) != 'undefined' && coord.left != 0 )
 			plot.pan( coord );
 
+	}
+
+	function showTooltip(x, y, contents) {
+		$('<div id="tooltip">' + contents + '</div>').css( {
+			position: 'absolute',
+			display: 'none',
+			top: y - 30,
+			left: x,
+			border: '3px solid #fdd',
+			borderRadius: 5,
+			padding: '2px',
+			'background-color': '#fee',
+			opacity: 0.80
+		}).appendTo("body").fadeIn(200);
 	}
 
 
