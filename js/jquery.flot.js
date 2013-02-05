@@ -58,7 +58,7 @@
 				xaxis: {
 					show: null, // null = auto-detect, true = always, false = never
 					position: "bottom", // or "top"
-					tickOffset: {x: 0, y:0}, // or "offset in px"
+					tickOffset: null, // or "offset in px"
 					mode: null, // null or "time"
 					timezone: null, // "browser" for local to the client or timezone for timezone-js
 					font: null, // null (derived from CSS in placeholder) or object like { size: 11, style: "italic", weight: "bold", family: "sans-serif", variant: "small-caps" }
@@ -1255,7 +1255,6 @@
 			// like flot.time.js.
 
 			if (!axis.tickGenerator) {
-
 				var maxDec = opts.tickDecimals;
 				var dec = -Math.floor(Math.log(axis.delta) / Math.LN10);
 				if (maxDec != null && dec > maxDec)
@@ -1708,15 +1707,14 @@
 					return;
 
 				var box = axis.box, f = axis.font;
-				var offsets = axis.options.tickOffset;
-				console.log(offsets);
+				var offsets = axis.options.tickOffset();
 				// placeholder.append('<div style="position:absolute;opacity:0.10;background-color:red;left:' + box.left + 'px;top:' + box.top + 'px;width:' + box.width +  'px;height:' + box.height + 'px"></div>') // debug
 
 				ctx.fillStyle = axis.options.color;
 				// Important: Don't use quotes around axis.font.family! Just around single
 				// font names like 'Times New Roman' that have a space or special character in it.
 				ctx.font = f.style + " " + f.variant + " " + f.weight + " " + f.size + "px " + f.family;
-				ctx.textAlign = "start";
+				ctx.textAlign = "end";
 				// middle align the labels - top would be more
 				// natural, but browsers can differ a pixel or two in
 				// where they consider the top to be, so instead we

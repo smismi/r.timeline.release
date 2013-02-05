@@ -13,13 +13,43 @@
 .ui-slider .ui-slider-range { position: absolute; z-index: 1; font-size: 12px; display: block; border: 0; background-position: 0 0; }
 
 .ui-slider-horizontal { height: 20px;  background: transparent }
-.ui-slider-horizontal .ui-slider-handle { top: 22px; margin-left: -5px; background: #00f;}
-.ui-slider-horizontal .ui-slider-range { top: 0; height: 100%; border: 2px solid #40e0d0;}
-.ui-slider-horizontal .ui-slider-range-min { left: 0; }
-.ui-slider-horizontal .ui-slider-range-max { right: 0; }
+.ui-slider-horizontal .ui-slider-handle { top: 50%; margin-left: -10px; margin-top: -10px; background: #00f;}
+.ui-slider-horizontal .ui-slider-range { top: 0; height: 100%; border: 2px solid #004F72; border-top: 0;  border-bottom: 0;  }
+.ui-slider-horizontal .ui-slider-range-min { left: -2px; }
+.ui-slider-horizontal .ui-slider-range-max { right: 2px; }
 
 .ui-slider-vertical { width: 20px; height: 100px; }
 .ui-slider-vertical .ui-slider-handle { left: -3px; margin-left: 0; margin-bottom: -6px; }
 .ui-slider-vertical .ui-slider-range { left: 0; width: 100%; }
 .ui-slider-vertical .ui-slider-range-min { bottom: 0; }
 .ui-slider-vertical .ui-slider-range-max { top: 0; }
+
+
+.ui-slider-horizontal .ui-slider-handle {
+
+text-decoration:none;
+	width: 2px;
+	height: 2px;
+	text-align:center;
+	padding:10px 10px;
+	border:solid 1px #004F72;
+	-webkit-border-radius:12px;
+	-moz-border-radius:12px;
+	border-radius: 12px;
+	font:6px Arial, Helvetica, sans-serif;
+	font-weight:bold;
+	color:#E5FFFF;
+	background-color:#3BA4C7;
+	background-image: -moz-linear-gradient(top, #3BA4C7 0%, #1982A5 100%);
+	background-image: -webkit-linear-gradient(top, #3BA4C7 0%, #1982A5 100%);
+	background-image: -o-linear-gradient(top, #3BA4C7 0%, #1982A5 100%);
+	background-image: -ms-linear-gradient(top, #3BA4C7 0% ,#1982A5 100%);
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#1982A5', endColorstr='#1982A5',GradientType=0 );
+	background-image: linear-gradient(top, #3BA4C7 0% ,#1982A5 100%);
+	-webkit-box-shadow:-1px 1px 7px #bababa, inset 0px 0px 2px #ffffff;
+	-moz-box-shadow: -1px 1px 7px #bababa,  inset 0px 0px 2px #ffffff;
+	box-shadow:-1px 1px 7px #bababa, inset 0px 0px 2px #ffffff;
+
+	text-shadow: -9px -11px 0px #bababa;
+	filter: dropshadow(color=#bababa, offx=-9, offy=-11); }
+}

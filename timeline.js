@@ -60,52 +60,27 @@ function plotInit() {
  	var placeholder = $("#timeline_navigator");
 	var placeholder2 = $("#timeline_navigator2");
 	var data = [ { color:'#f00', "data" : data0 },  { color:'#f00', "data" : data0, "xaxis" : 2} ];
+	var data2 = [ { color:'#f00', "data" : data0 } ];
    	var min_value = new Date("2012-10-30 00:00:00");
    	var max_value = new Date("2012-12-14 00:00:00");
    	var viewmin = new Date("2012-10-30 00:00:00");
    	var viewmax = new Date("2012-12-14 00:00:00");
 
 	var options = {
+		crosshair :   { "mode" : "x", "locked" : true },
 		grid: {
-			labelMargin: 22
-//
-//			markings		:	function areas(axes) {
-//
-//				var markings            =   [],
-//					markings_counter    =    31;
-//
-//				do {
-//					if( axes.xaxis.ticks[ markings_counter  ] ){
-//
-//						var fix_timestamp =  43200000;
-//
-//						markings.push({
-//							"x1axis"		: {
-//								"from"	: axes.xaxis.ticks[ markings_counter  ].v + fix_timestamp,
-//								"to"	: axes.xaxis.ticks[ markings_counter - axes.xaxis.n ].v + fix_timestamp
-//							},
-//							"color"		: ( markings_counter % 2 ) ? "#ffffff" : "#f7f7f7"
-//						});
-//					}
-//
-//					markings_counter -= axes.xaxis.n;
-//				} while ( markings_counter > 0 );
-//
-//				return markings;
-//			}
+			borderWidth	:	1,
+			lineWidth	:	0
 		},
 		"xaxes"	: [{
 			min			:	viewmin,
 			max			:	viewmax,
 			position	:	"bottom",
 			panRange	:	[min_value, max_value],
-			tickOffset	: 	{
-				x: (function(){
-					return 10*Math.random();
-				})()
-				,
-				y:0},
-			"ticks"         :   function(){
+			tickOffset	:  	function(){
+				return { x: 0, y: 0 }
+			},
+			ticks         :   function(){
 
 				var ticks =   [];
 
@@ -116,12 +91,10 @@ function plotInit() {
 					var tick_counter = Math.floor((plot.getAxes().xaxis.max - plot.getAxes().xaxis.min) /  barWidth);
 					var last_date = new Date(plot.getAxes().xaxis.max);
 				}
-
 										for( var i = 0; i <= tick_counter; i++ ){
 											var tick_date = new Date( last_date.getFullYear(), last_date.getMonth(), last_date.getDate() - i );
 											ticks.push( [ tick_date.getTime() /*+ 43200000*/, tick_date.getDate() ] ); // 12*60*60*1000 = 43200000 for correcting position (left border)
 										}
-
 				return ticks;
 			}
 //			tickFormatter: function formatter(val, axis) {
@@ -135,7 +108,11 @@ function plotInit() {
 			max			:	viewmax,
 			position	:	"top",
 			panRange	:	[min_value, max_value],
-			"ticks"         :   function(){
+			tickOffset	: 	function(){
+
+				return { x: 0, y: 0 }
+			},
+			ticks         :   function(){
 
 				var ticks =   [],
 					first_tick_date = new Date( viewmin ),
@@ -185,13 +162,40 @@ function plotInit() {
 
 	}
 	var options2 = {
+		crosshair :   { "mode" : "x", "locked" : true },
+		grid: {
+			borderWidth	:	1,
+			lineWidth	:	0
+		},
 		xaxis: {
 			min			:	viewmin,
 			max			:	viewmax,
-			position	:	"bottom",
-			panRange	:	[min_value, max_value],
-			"ticks"         :   function(){
-				var ticks =   [];
+			position	:	"top",
+			"show"      :   false,
+			tickOffset	: 	function(){
+
+				return { x: 0, y: 0 }
+			},
+			ticks         :   function(){
+
+				var ticks =   [],
+					first_tick_date = new Date( viewmin ),
+					last_tick_date = new Date( viewmax );
+//				if (!plot) {
+//					var month_counter = Math.floor((viewmax - viewmin) /  15*24*60*60*1000);
+//					var month_last_date = viewmax;
+//				} else {
+//					var month_counter = Math.floor((plot.getAxes().xaxis.max - plot.getAxes().xaxis.min) /  15*24*60*60*1000);
+//					var month_last_date = new Date(plot.getAxes().xaxis.max);
+//				}
+
+				var month_count = (last_tick_date.getFullYear() - first_tick_date.getFullYear()) * 12 - first_tick_date.getMonth() + 1 + last_tick_date.getMonth()
+				for( var i = 0; i < month_count; i++ ){
+					var month_date_end = new Date( first_tick_date.getFullYear(), first_tick_date.getMonth() + i + 1, 0 ),
+						month_date_middle = new Date( month_date_end.getFullYear(), month_date_end.getMonth(), parseInt( month_date_end.getDate() ));
+					ticks.push( [ month_date_middle.getTime(), months_names.nominative[ month_date_middle.getMonth() ] + " " + month_date_middle.getFullYear() ] );
+				}
+
 				return ticks;
 			}
 		},
@@ -200,7 +204,7 @@ function plotInit() {
 				"show"			:	true,
 				"lineWidth"		:	0,
 				"fill"			:	true,
-				"fillColor"		:	"#b7c1c4",
+				"fillColor"		:	"#f60",
 				"barWidth"		:	({ "MONTH" : 24*60*60*1000, "WEEK" : 24*60*60*1000, "DAY" : 60*60*1000 })[ "MONTH" ]
 			},
 			"shadowSize"	:	0
@@ -211,28 +215,18 @@ function plotInit() {
 			"show"      :   false,
 			"min"       :   null,
 			"max"       :   null
-		}],
-		pan: {
-			interactive: true,
-			frameRate: 1000
-		},
-		zoom: {
-			interactive: true,
-			amount: 1.1
-		}
+		}]
 
 	};
 	var plot = $.plot(placeholder, data, options);
-	$.plot(placeholder2, data, options2);
+		plot.setCrosshair({"x" : 1353321542000 });
+		plot.lockCrosshair();
 
-
+	var plot2 = $.plot(placeholder2, data2, options2);
+		plot2.setCrosshair({"x" : 1353321542000 });
+		plot2.lockCrosshair();
 
 	// add labels
-
-
-
-
-
 
 	var pan_lock = true;
 	var zoom_lock = true;
@@ -258,6 +252,9 @@ function plotInit() {
 
 		if (!pan_lock)  $( "#slider" ).dragslider( "option", "values", [viewmin.getTime() , viewmax.getTime() ] );
 
+		plot.setCrosshair({"x" : 1353321542000 });
+		plot2.setCrosshair({"x" : 1353321542000 });
+
 	});
 
 
@@ -269,7 +266,8 @@ function plotInit() {
 
 		if (!zoom_lock) $( "#slider" ).dragslider( "option", "values", [viewmin.getTime() , viewmax.getTime() ] );
 
-
+		plot.setCrosshair({"x" : 1353321542000 });
+		plot2.setCrosshair({"x" : 1353321542000 });
 
 	});
 
@@ -296,8 +294,6 @@ function plotInit() {
 			pereplot(range);
 		}
 	});
-
-
 
 	function pereplot (range) {
 
