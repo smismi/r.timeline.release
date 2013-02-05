@@ -99,6 +99,12 @@ function plotInit() {
 			max			:	viewmax,
 			position	:	"bottom",
 			panRange	:	[min_value, max_value],
+			tickOffset	: 	{
+				x: (function(){
+					return 10*Math.random();
+				})()
+				,
+				y:0},
 			"ticks"         :   function(){
 
 				var ticks =   [];
@@ -129,7 +135,6 @@ function plotInit() {
 			max			:	viewmax,
 			position	:	"top",
 			panRange	:	[min_value, max_value],
-			tickOffset: {x:12, y:0},
 			"ticks"         :   function(){
 
 				var ticks =   [],

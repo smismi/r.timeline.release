@@ -58,6 +58,7 @@
 				xaxis: {
 					show: null, // null = auto-detect, true = always, false = never
 					position: "bottom", // or "top"
+					tickOffset: {x: 0, y:0}, // or "offset in px"
 					mode: null, // null or "time"
 					timezone: null, // "browser" for local to the client or timezone for timezone-js
 					font: null, // null (derived from CSS in placeholder) or object like { size: 11, style: "italic", weight: "bold", family: "sans-serif", variant: "small-caps" }
@@ -1707,6 +1708,8 @@
 					return;
 
 				var box = axis.box, f = axis.font;
+				var offsets = axis.options.tickOffset;
+				console.log(offsets);
 				// placeholder.append('<div style="position:absolute;opacity:0.10;background-color:red;left:' + box.left + 'px;top:' + box.top + 'px;width:' + box.width +  'px;height:' + box.height + 'px"></div>') // debug
 
 				ctx.fillStyle = axis.options.color;
@@ -1760,7 +1763,7 @@
 							x = Math.floor(x);
 							y = Math.ceil(y - 2);
 						}
-						ctx.fillText(line.text, x, y);
+						ctx.fillText(line.text, x + offsets.x, y + offsets.y);
 					}
 				}
 			});
