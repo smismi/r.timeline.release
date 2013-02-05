@@ -48,12 +48,67 @@ var data0 = [
 	[new Date("2012-12-14 00:00:00"), 0]
 ];
 
+var data0_hour = [
+	[new Date("2012-10-30 00:00:00"), 0],
+	[new Date("2012-10-31 00:00:00"), 0],
+	[new Date("2012-11-01 00:00:00"), 0],
+	[new Date("2012-11-02 00:00:00"), 0],
+	[new Date("2012-11-03 00:00:00"), 0],
+	[new Date("2012-11-04 00:00:00"), 0],
+	[new Date("2012-11-05 00:00:00"), 3],
+	[new Date("2012-11-06 02:00:00"), 2],
+	[new Date("2012-11-06 03:00:00"), 3],
+	[new Date("2012-11-06 04:00:00"), 6],
+	[new Date("2012-11-06 08:00:00"), 3],
+	[new Date("2012-11-06 10:00:00"), 12],
+	[new Date("2012-11-06 11:00:00"), 3],
+	[new Date("2012-11-06 12:00:00"), 2],
+	[new Date("2012-11-06 13:00:00"), 4],
+	[new Date("2012-11-06 14:00:00"), 8],
+	[new Date("2012-11-06 15:00:00"), 5],
+	[new Date("2012-11-06 16:00:00"), 2],
+	[new Date("2012-11-06 17:00:00"), 2],
+	[new Date("2012-11-07 18:00:00"), 5],
+	[new Date("2012-11-08 00:00:00"), 2],
+	[new Date("2012-11-09 00:00:00"), 0],
+	[new Date("2012-11-10 00:00:00"), 0],
+	[new Date("2012-11-11 00:00:00"), 0],
+	[new Date("2012-11-12 05:00:00"), 1],
+	[new Date("2012-11-13 00:00:00"), 0],
+	[new Date("2012-11-14 11:00:00"), 2],
+	[new Date("2012-11-14 12:00:00"), 4],
+	[new Date("2012-11-15 13:00:00"), 1],
+	[new Date("2012-11-19 14:00:00"), 1],
+	[new Date("2012-11-21 16:00:00"), 1],
+	[new Date("2012-11-25 00:00:00"), 1],
+	[new Date("2012-11-28 00:00:00"), 1],
+	[new Date("2012-12-08 00:00:00"), 1],
+	[new Date("2012-12-09 00:00:00"), 3],
+	[new Date("2012-12-10 00:00:00"), 4],
+	[new Date("2012-12-11 00:00:00"), 14],
+	[new Date("2012-12-12 00:00:00"), 2],
+	[new Date("2012-12-12 03:00:00"), 3],
+	[new Date("2012-12-12 04:00:00"), 4],
+	[new Date("2012-12-12 06:00:00"), 6],
+	[new Date("2012-12-12 09:00:00"), 7],
+	[new Date("2012-12-12 11:00:00"), 9],
+	[new Date("2012-12-12 12:00:00"), 12],
+	[new Date("2012-12-12 13:00:00"), 2],
+	[new Date("2012-12-13 11:00:00"), 2],
+	[new Date("2012-12-13 12:00:00"), 3],
+	[new Date("2012-12-13 15:00:00"), 5],
+	[new Date("2012-12-13 16:00:00"), 6],
+	[new Date("2012-12-13 18:00:00"), 8],
+	[new Date("2012-12-14 00:00:00"), 0]
+];
+
 var months_names    =   {
 	"nominative"    :   [ "январь", "февраль", "март", "апрель", "май", "июнь", "июль", "август", "сентябрь", "октябрь", "ноябрь", "декабрь" ],
 	"genitive"      :   [ "января", "февраля", "марта", "апреля", "мая", "июня", "июля", "августа", "сентября", "октября", "ноября", "декабря" ]
 };
 
 var barWidth = 24*60*60*1000;
+//var barWidth = 60*60*1000;
 
 
 function plotInit() {
@@ -98,6 +153,12 @@ function plotInit() {
 											var tick_date = new Date( last_date.getFullYear(), last_date.getMonth(), last_date.getDate() - i );
 											ticks.push( [ tick_date.getTime() /*+ 43200000*/, tick_date.getDate() ] ); // 12*60*60*1000 = 43200000 for correcting position (left border)
 										}
+
+
+//				for( var i = 0; i < tick_counter; i++ ){
+//					var tick_date = new Date( last_date.getFullYear(), last_date.getMonth(), last_date.getDate(),  last_date.getHours() - i - 1 );
+//					ticks.push( [ tick_date.getTime() , "" + (( tick_date.getHours() < 10 ) ? "0" : "" ) + tick_date.getHours() ] );
+//				}
 				return ticks;
 			}
 //			tickFormatter: function formatter(val, axis) {
@@ -143,7 +204,7 @@ function plotInit() {
 				"show"			:	true,
 				"lineWidth"		:	0,
 				"fill"			:	true,
-				"barWidth"		:	({ "MONTH" : 24*60*60*1000, "WEEK" : 24*60*60*1000, "DAY" : 60*60*1000 })[ "MONTH" ]
+				"barWidth"		:	barWidth
 			},
 			"shadowSize"	:	0
 		},
@@ -271,6 +332,8 @@ function plotInit() {
 		plot.setCrosshair({"x" : 1353321542000 });
 		plot2.setCrosshair({"x" : 1353321542000 });
 
+
+
 	});
 
 	var previousPoint = null;
@@ -351,6 +414,18 @@ function plotInit() {
 	}
 
 
+	function update() {
+		plot.setData([ data0 ]);
+		// since the axes don't change, we don't need to call plot.setupGrid()
+		plot.draw();
+	}
+
+
+	$("#reload").on("click", function(){
+		update();
+	})
 }
+
+
 
 
