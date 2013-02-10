@@ -107,7 +107,7 @@ var months_names    =   {
 	"genitive"      :   [ "января", "февраля", "марта", "апреля", "мая", "июня", "июля", "августа", "сентября", "октября", "ноября", "декабря" ]
 };
 
-var barWidth = 24*60*60*1000;
+var state = "MONTH";
 //var barWidth = 60*60*1000;
 
 
@@ -120,7 +120,10 @@ function plotInit() {
    	var max_value = new Date("2012-12-15 00:00:00");
    	var viewmin = new Date("2012-11-05 00:00:00");
    	var viewmax = new Date("2012-11-10 00:00:00");
-
+	var barWidth = (function () {
+		return 24*60*60*1000;
+	})();
+//	({ "MONTH" : 24*60*60*1000, "WEEK" : 24*60*60*1000, "DAY" : 60*60*1000 })[ state ];
 	var options = {
 		crosshair :   { "mode" : "x", "locked" : true },
 		grid: {
@@ -138,29 +141,7 @@ function plotInit() {
 			tickOffset	:  	function(){
 				return { x: 0, y: 0 }
 			},
-			ticks         :   function(){
-
-				var ticks =   [];
-
-				if (!plot) {
-					var tick_counter = Math.floor((viewmax - viewmin) /  barWidth);
-					var last_date = viewmax;
-				} else {
-					var tick_counter = Math.floor((plot.getAxes().xaxis.max - plot.getAxes().xaxis.min) /  barWidth);
-					var last_date = new Date(plot.getAxes().xaxis.max);
-				}
-										for( var i = 0; i <= tick_counter; i++ ){
-											var tick_date = new Date( last_date.getFullYear(), last_date.getMonth(), last_date.getDate() - i );
-											ticks.push( [ tick_date.getTime() /*+ 43200000*/, tick_date.getDate() ] ); // 12*60*60*1000 = 43200000 for correcting position (left border)
-										}
-
-
-//				for( var i = 0; i < tick_counter; i++ ){
-//					var tick_date = new Date( last_date.getFullYear(), last_date.getMonth(), last_date.getDate(),  last_date.getHours() - i - 1 );
-//					ticks.push( [ tick_date.getTime() , "" + (( tick_date.getHours() < 10 ) ? "0" : "" ) + tick_date.getHours() ] );
-//				}
-				return ticks;
-			}
+			ticks         :  ticks_reinit
 //			tickFormatter: function formatter(val, axis) {
 //				return val.toFixed(axis.tickDecimals);
 //			}
@@ -268,7 +249,7 @@ function plotInit() {
 				"lineWidth"		:	0,
 				"fill"			:	true,
 				"fillColor"		:	"#f60",
-				"barWidth"		:	({ "MONTH" : 24*60*60*1000, "WEEK" : 24*60*60*1000, "DAY" : 60*60*1000 })[ "MONTH" ]
+				"barWidth"		:	barWidth
 			},
 			"shadowSize"	:	0
 		},
@@ -415,9 +396,38 @@ function plotInit() {
 
 
 	function update() {
-		plot.setData([ data0 ]);
+		state = "DAY";
+		plot.setData([ { color:'#f00', "data" : data0 }, { color:'#00f', "data" : data0_hour } ]);
 		// since the axes don't change, we don't need to call plot.setupGrid()
+//		plot.setupGrid();
 		plot.draw();
+	}
+
+	function ticks_reinit() {
+
+			var ticks =   [];
+			barWidth = ({ "MONTH" : 24*60*60*1000, "WEEK" : 24*60*60*1000, "DAY" : 60*60*1000 })[ state ];
+			if (!plot) {
+				var tick_counter = Math.floor((viewmax - viewmin) /  barWidth);
+				var last_date = viewmax;
+			} else {
+				var tick_counter = Math.floor((plot.getAxes().xaxis.max - plot.getAxes().xaxis.min) /  barWidth);
+				var last_date = new Date(plot.getAxes().xaxis.max);
+			}
+			for( var i = 0; i <= tick_counter; i++ ){
+				var tick_date = new Date( last_date.getFullYear(), last_date.getMonth(), last_date.getDate() - i );
+				ticks.push( [ tick_date.getTime() /*+ 43200000*/, tick_date.getDate() ] ); // 12*60*60*1000 = 43200000 for correcting position (left border)
+			}
+
+
+//				for( var i = 0; i < tick_counter; i++ ){
+//					var tick_date = new Date( last_date.getFullYear(), last_date.getMonth(), last_date.getDate(),  last_date.getHours() - i - 1 );
+//					ticks.push( [ tick_date.getTime() , "" + (( tick_date.getHours() < 10 ) ? "0" : "" ) + tick_date.getHours() ] );
+//				}
+			return ticks;
+	}
+	function bar_width_reinit() {
+			return ({ "MONTH" : 24*60*60*1000, "WEEK" : 24*60*60*1000, "DAY" : 60*60*1000 })[ state ];
 	}
 
 
